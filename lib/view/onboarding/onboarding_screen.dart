@@ -1,7 +1,9 @@
+import 'package:familyside/core/router/router_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/model/onboarding.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -108,7 +110,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 height: 56.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    context.push(RouterPath.familyLoginScreen);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -258,7 +260,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 SvgPicture.asset(
                   'assets/logo/app_logo.svg',
                   height: 32.h,
-                  // ignore: deprecated_member_use
                   color: theme.colorScheme.primary,
                 ),
                 SizedBox(width: 10.w),

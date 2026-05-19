@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Light Theme Colors
-  static const Color primaryLight = Color(0xFFEF477F);
+  static const Color primaryLight = Color(0xFFD83A51);
   static const Color onPrimaryLight = Color(0xFFFFFFFF);
-  static const Color secondaryLight = Color(0xFFF598BD);
-  static const Color backgroundLight = Color(0xFFFBFBFB);
+  static const Color secondaryLight = Color(0xFF9DC183);
+  static const Color backgroundLight = Color(0xFFFFF2E5);
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color errorLight = Color(0xFFB3261E);
 
@@ -19,4 +19,10 @@ class AppColors {
 
   // Add more colors as needed
   static const Color grey = Color(0xFF939094);
+
+  // Common UI / Text Colors
+  static const Color text = Color(0xFF1D1B20);
+  static const Color lightText = Color(0xFF6C6C6C);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color error = Color(0xFFB3261E);
 }

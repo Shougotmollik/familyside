@@ -1,5 +1,16 @@
 class RouterPath {
   static const String splashScreen = '/';
   static const String onBoardingScreen = '/onBoardingScreen';
-  static const String loginScreen = '/loginScreen';
+
+  // Family Auth Routes
+  static const String familyLoginScreen = '/familyLoginScreen';
+  static const String familySignUpScreen = '/familySignUpScreen';
+  static const String familyForgotPasswordScreen =
+      '/familyForgotPasswordScreen';
+  static const String familyVerifyOtpScreen = '/familyVerifyOtpScreen';
+  static const String familyResetPasswordScreen = '/familyResetPasswordScreen';
+  static const String familyPasswordResetSuccess = '/familyPasswordResetSuccess';
+  static const String familyChooseRoleScreen = '/familyChooseRoleScreen';
+  static const String familySignupOtpVerificationScreen = '/familySignupOtpVerificationScreen';
+  static const String familyChildInformationScreen = '/familyChildInformationScreen';
 }

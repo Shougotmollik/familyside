@@ -13,4 +13,7 @@ class RouterPath {
   static const String familyChooseRoleScreen = '/familyChooseRoleScreen';
   static const String familySignupOtpVerificationScreen = '/familySignupOtpVerificationScreen';
   static const String familyChildInformationScreen = '/familyChildInformationScreen';
+  static const String familyInterestScreen = '/familyInterestScreen';
+  static const String familyLocationInfoScreen = '/familyLocationInfoScreen';
+  static const String familyUploadImageScreen = '/familyUploadImageScreen';
 }

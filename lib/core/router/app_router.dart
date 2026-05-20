@@ -4,6 +4,9 @@ import 'package:familyside/view/family/auth/forgot/family_otp_verfication_screen
 import 'package:familyside/view/family/auth/forgot/family_password_reset_success.dart';
 import 'package:familyside/view/family/auth/forgot/family_reset_password_screen.dart';
 import 'package:familyside/view/family/auth/signup/child_infomation_screen.dart';
+import 'package:familyside/view/family/auth/signup/interest_screen.dart';
+import 'package:familyside/view/family/auth/signup/location_info_screen.dart';
+import 'package:familyside/view/family/auth/signup/family_upload_image_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_signup_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_choose_role_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_signup_otp_verfication.dart';
@@ -62,6 +65,18 @@ class AppRouter {
       GoRoute(
         path: RouterPath.familyChildInformationScreen,
         builder: (context, state) => const ChildInfomationScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyInterestScreen,
+        builder: (context, state) => const InterestScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyLocationInfoScreen,
+        builder: (context, state) => const LocationInfoScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyUploadImageScreen,
+        builder: (context, state) => const FamilyUploadImageScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

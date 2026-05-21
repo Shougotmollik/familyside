@@ -5,7 +5,7 @@ import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/view/family/auth/signup/widgets/interest_chip.dart';
-import 'package:familyside/view/family/auth/signup/widgets/search_bar_widget.dart';
+import 'package:familyside/view/widgets/search_bar_widget.dart';
 
 class InterestScreen extends StatefulWidget {
   const InterestScreen({super.key});

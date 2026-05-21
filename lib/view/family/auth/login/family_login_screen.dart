@@ -30,7 +30,9 @@ class _FamilyLoginScreenState extends State<FamilyLoginScreen> {
   }
 
   void _onSignIn() {
-    if (FormValidator.validateAndProceed(_formKey, () {})) {}
+    if (FormValidator.validateAndProceed(_formKey, () {
+      context.push(RouterPath.familyMainNavBarScreen);
+    })) {}
   }
 
   @override
@@ -212,7 +214,9 @@ class _FamilyLoginScreenState extends State<FamilyLoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SocialLoginButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.push(RouterPath.familyMainNavBarScreen);
+                      },
                       iconPath: 'assets/logo/apple.svg',
                     ),
                     SizedBox(width: 24.w),

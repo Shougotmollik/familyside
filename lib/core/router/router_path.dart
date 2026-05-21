@@ -17,4 +17,6 @@ class RouterPath {
   static const String familyLocationInfoScreen = '/familyLocationInfoScreen';
   static const String familyUploadImageScreen = '/familyUploadImageScreen';
   static const String familyMainNavBarScreen = '/familyMainNavBarScreen';
+  static const String familyNotificationScreen = '/familyNotificationScreen';
+  static const String familyRecommendationScreen = '/familyRecommendationScreen';
 }

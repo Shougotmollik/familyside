@@ -57,7 +57,7 @@ class _FamilyMainNavBarScreenState extends State<FamilyMainNavBarScreen> {
             decoration: const BoxDecoration(
               border: Border(
                 top: BorderSide(
-                  color: Color(0xFFE5E5E5),
+                  color: AppColors.navBorder,
                   width: 1,
                 ),
               ),
@@ -79,7 +79,8 @@ class _FamilyMainNavBarScreenState extends State<FamilyMainNavBarScreen> {
 
   Widget _buildNavItem(int index, String label, String iconPath) {
     final isSelected = _selectedIndex == index;
-    final color = isSelected ? AppColors.primaryLight : const Color(0xFF9EA3AE);
+    final color =
+        isSelected ? AppColors.primaryLight : AppColors.mutedIcon;
 
     return Expanded(
       child: GestureDetector(

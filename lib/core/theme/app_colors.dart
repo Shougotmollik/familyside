@@ -25,4 +25,15 @@ class AppColors {
   static const Color lightText = Color(0xFF6C6C6C);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color error = Color(0xFFB3261E);
+
+  // Borders, dividers, and muted UI
+  static const Color border = Color(0xFFF1F1F5);
+  static const Color divider = Color(0xFFE8E8EC);
+  static const Color mutedIcon = Color(0xFF9EA3AE);
+  static const Color navBorder = Color(0xFFE5E5E5);
+
+  // Profile screen
+  static const Color profileHeaderBackground = Color(0xFFFFF0F2);
+  static const Color progressTrack = Color(0xFFFFE5E8);
+  static const Color accentYellow = Color(0xFFFFD54F);
 }

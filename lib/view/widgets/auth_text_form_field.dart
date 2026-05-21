@@ -15,6 +15,9 @@ class AuthTextFormField extends StatefulWidget {
     this.prefixIcon,
     this.prefixIconPath,
     this.onFieldSubmitted,
+    this.readOnly = false,
+    this.maxLines = 1,
+    this.minLines,
   });
 
   final String hintText;
@@ -23,9 +26,12 @@ class AuthTextFormField extends StatefulWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final bool isPassword;
+  final bool readOnly;
   final Widget? prefixIcon;
   final String? prefixIconPath;
   final void Function(String)? onFieldSubmitted;
+  final int maxLines;
+  final int? minLines;
 
   @override
   State<AuthTextFormField> createState() => _AuthTextFormFieldState();
@@ -52,6 +58,9 @@ class _AuthTextFormFieldState extends State<AuthTextFormField> {
         keyboardType: widget.keyboardType,
         textInputAction: widget.textInputAction,
         obscureText: _obscureText,
+        readOnly: widget.readOnly,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         autocorrect: !widget.isPassword,
         enableSuggestions: !widget.isPassword,
@@ -68,7 +77,7 @@ class _AuthTextFormFieldState extends State<AuthTextFormField> {
           ),
 
           filled: true,
-          fillColor: AppColors.surface,
+          fillColor: widget.readOnly ? AppColors.border : AppColors.surface,
 
           contentPadding: EdgeInsets.symmetric(
             vertical: 14.h,

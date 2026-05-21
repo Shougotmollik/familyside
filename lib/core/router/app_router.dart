@@ -13,6 +13,11 @@ import 'package:familyside/view/family/auth/signup/family_signup_otp_verfication
 import 'package:familyside/view/family/family_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
 import 'package:familyside/view/family/notification/notification_screen.dart';
+import 'package:familyside/view/family/profile/family_change_password_screen.dart';
+import 'package:familyside/view/family/profile/family_edit_profile_screen.dart';
+import 'package:familyside/view/family/profile/contact_support_screen.dart';
+import 'package:familyside/view/family/profile/suggestion_screen.dart';
+import 'package:familyside/view/family/profile/update_child_information.dart';
 import 'package:familyside/view/onboarding/onboarding_screen.dart';
 import 'package:familyside/view/onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +99,26 @@ class AppRouter {
         builder: (context, state) => RecommendationScreen(
           config: state.extra as ListScreenConfig,
         ),
+      ),
+      GoRoute(
+        path: RouterPath.familyChangePasswordScreen,
+        builder: (context, state) => const FamilyChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyEditProfileScreen,
+        builder: (context, state) => const FamilyEditProfileScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyUpdateChildInformationScreen,
+        builder: (context, state) => const UpdateChildInformationScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyContactSupportScreen,
+        builder: (context, state) => const ContactSupportScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familySuggestionScreen,
+        builder: (context, state) => const SuggestionScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/utils/image_viewer.dart';
@@ -31,9 +30,6 @@ class GoogleMapLocation {
     required this.placeId,
   });
 }
-
-Color textColor = Color(0xffffffff);
-Color surfaceColor = Color(0xff181818);
 
 class GoogleMapScreen extends StatefulWidget {
   final LatLng? initialPosition;
@@ -284,45 +280,35 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C12.4142 1.25 12.75 1.58579 12.75 2V3.28169C16.9842 3.64113 20.3589 7.01581 20.7183 11.25H22C22.4142 11.25 22.75 11.5858 22.75 12C22.75 12.4142 22.4142 12.75 22 12.75H20.7183C20.3589 16.9842 16.9842 20.3589 12.75 20.7183V22C12.75 22.4142 12.4142 22.75 12 22.75C11.5858 22.75 11.25 22.4142 11.25 22V20.7183C7.01581 20.3589 3.64113 16.9842 3.28169 12.75H2C1.58579 12.75 1.25 12.4142 1.25 12C1.25 11.5858 1.58579 11.25 2 11.25H3.28169C3.64113 7.01581 7.01581 3.64113 11.25 3.28169V2C11.25 1.58579 11.5858 1.25 12 1.25ZM12 4.75C7.99594 4.75 4.75 7.99594 4.75 12C4.75 16.0041 7.99594 19.25 12 19.25C16.0041 19.25 19.25 16.0041 19.25 12C19.25 7.99594 16.0041 4.75 12 4.75ZM12 9.75C10.7574 9.75 9.75 10.7574 9.75 12C9.75 13.2426 10.7574 14.25 12 14.25C13.2426 14.25 14.25 13.2426 14.25 12C14.25 10.7574 13.2426 9.75 12 9.75ZM8.25 12C8.25 9.92893 9.92893 8.25 12 8.25C14.0711 8.25 15.75 9.92893 15.75 12C15.75 14.0711 14.0711 15.75 12 15.75C9.92893 15.75 8.25 14.0711 8.25 12Z" fill="#999999"/></svg>';
   }
 
-  Widget _blurBgWrapper({
+  Widget _solidBgWrapper({
     required Widget child,
     BorderRadius? borderRadius,
     double? height,
     double? width,
     EdgeInsetsGeometry? padding,
   }) {
-    return ClipRRect(
-      borderRadius: borderRadius ?? BorderRadius.circular(20.r),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          width: width,
-          height: height,
-          padding: padding ?? EdgeInsets.zero,
-          decoration: BoxDecoration(
-            color: AppColors.lightText.withValues(alpha: 0.1),
-            border: Border.all(
-              color: AppColors.lightText.withValues(alpha: 0.2),
-              width: 1.w,
-            ),
-            borderRadius: borderRadius ?? BorderRadius.circular(20.r),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0xFF242424).withValues(alpha: 0.15),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: const Offset(0, 3),
-              ),
-            ],
+    final theme = Theme.of(context);
+    return Container(
+      width: width,
+      height: height,
+      padding: padding ?? EdgeInsets.zero,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: borderRadius ?? BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-
-          child: child,
-        ),
+        ],
       ),
+      child: child,
     );
   }
 
   Widget _searchWidget() {
+    final theme = Theme.of(context);
     return Align(
       alignment: Alignment.topCenter,
       child: Padding(
@@ -334,12 +320,12 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
               onTap: () {
                 Navigator.of(context).pop();
               },
-              child: _blurBgWrapper(
+              child: _solidBgWrapper(
                 width: 36.w,
                 height: 36.w,
                 child: Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: textColor,
+                  color: theme.colorScheme.onSurface,
                   size: 14.w,
                 ),
               ),
@@ -357,7 +343,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                   ),
                 );
               },
-              child: _blurBgWrapper(
+              child: _solidBgWrapper(
                 width: 1.sw - 72.w - 36.w - 24.w,
                 height: 40.h,
                 borderRadius: BorderRadius.circular(24.r),
@@ -369,13 +355,13 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                       _searchIcon(),
                       width: 20.w,
                       height: 20.w,
-                      color: textColor.withValues(alpha: 0.6),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     SizedBox(width: 12.w),
                     Text(
                       'Search ...',
                       style: TextStyle(
-                        color: textColor.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 14.sp,
                       ),
                     ),
@@ -385,7 +371,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
             ),
             GestureDetector(
               onTap: _getCurrentLocation,
-              child: _blurBgWrapper(
+              child: _solidBgWrapper(
                 width: 36.w,
                 height: 36.w,
                 child: Center(
@@ -393,8 +379,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                       ? SizedBox(
                           width: 20.w,
                           height: 20.w,
-                          child: const CircularProgressIndicator(
-                            color: Colors.white,
+                          child: CircularProgressIndicator(
+                            color: theme.colorScheme.onSurface,
                             strokeWidth: 1,
                           ),
                         )
@@ -402,7 +388,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                           _gpsIcon(),
                           width: 20.w,
                           height: 20.w,
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                         ),
                 ),
               ),
@@ -487,7 +473,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 height: height,
                 width: (height * photo['width']) / photo['height'],
                 decoration: BoxDecoration(
-                  color: Color(0xff242424).withValues(alpha: 0.1),
+                  color: AppColors.lightText.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4.r),
                 ),
               );
@@ -499,13 +485,14 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   }
 
   Widget _selectedPositionDetailsWidget() {
+    final theme = Theme.of(context);
     return Align(
       alignment: Alignment.bottomCenter,
       child: SafeArea(
         top: false,
         child: Padding(
           padding: EdgeInsets.only(left: 12.w, right: 12.w, bottom: 12.h),
-          child: _blurBgWrapper(
+          child: _solidBgWrapper(
             width: double.infinity,
             borderRadius: BorderRadius.circular(16.r),
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 24.h),
@@ -520,7 +507,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                       child: Text(
                         '${_selectedPlaceDetails!['address_components'].map((e) => e['long_name']).join(', ')}',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -537,7 +524,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                         padding: EdgeInsets.only(top: 4.h),
                         child: Icon(
                           Icons.close,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                           size: 18.w,
                         ),
                       ),
@@ -564,15 +551,15 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                                   preLoad: 2,
                                   showNumber: true,
                                   images: [
-                                    ..._selectedPlaceDetails!['photos'].map((
-                                      item,
-                                    ) {
-                                      return CachedNetworkImageProvider(
-                                        _googleMapPhotoUrl(
-                                          item['photo_reference'],
-                                        ),
-                                      );
-                                    }).toList(),
+                                    ..._selectedPlaceDetails!['photos'].map(
+                                      (item,
+                                      ) {
+                                        return CachedNetworkImageProvider(
+                                          _googleMapPhotoUrl(
+                                            item['photo_reference'],
+                                          ),
+                                        );
+                                      }).toList(),
                                   ],
                                 );
                               },
@@ -599,14 +586,14 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                           vertical: 8.h,
                         ),
                         decoration: BoxDecoration(
-                          color: Color(0xff242424).withValues(alpha: 0.4),
+                          color: AppColors.lightText.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(24.r),
                         ),
                         child: Text(
                           'Cancel',
                           style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
                       ),
@@ -627,7 +614,6 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                             "selected location ${_selectedPlaceDetails!['place_id']} location name ===>${_selectedPlaceDetails!['address_components'].map((e) => e['long_name']).join(', ')}",
                           );
 
-                          // get back with address
                           Navigator.of(context).pop();
                         },
                         child: Container(
@@ -636,13 +622,13 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                             vertical: 8.h,
                           ),
                           decoration: BoxDecoration(
-                            color: Color(0xff242424).withValues(alpha: 0.4),
+                            color: AppColors.lightText.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.circular(24.r),
                           ),
                           child: Text(
                             'Select',
                             style: TextStyle(
-                              color: const Color.fromARGB(255, 110, 147, 250),
+                              color: theme.colorScheme.primary,
                               fontSize: 14.sp,
                             ),
                           ),
@@ -658,132 +644,6 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     );
   }
 
-  dynamic mapStyle = [
-    {
-      "elementType": "geometry",
-      "stylers": [
-        {"color": "#2b2f3a"},
-      ],
-    },
-    {
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#cfd3dc"},
-      ],
-    },
-    {
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {"color": "#2b2f3a"},
-      ],
-    },
-    {
-      "featureType": "administrative.locality",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#e0b07a"},
-      ],
-    },
-    {
-      "featureType": "poi",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#d6b48a"},
-      ],
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "geometry",
-      "stylers": [
-        {"color": "#2f4a45"},
-      ],
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#7fbfa3"},
-      ],
-    },
-    {
-      "featureType": "road",
-      "elementType": "geometry",
-      "stylers": [
-        {"color": "#3e4453"},
-      ],
-    },
-    {
-      "featureType": "road",
-      "elementType": "geometry.stroke",
-      "stylers": [
-        {"color": "#2a2f3a"},
-      ],
-    },
-    {
-      "featureType": "road",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#c1c7d3"},
-      ],
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry",
-      "stylers": [
-        {"color": "#5b556b"},
-      ],
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry.stroke",
-      "stylers": [
-        {"color": "#3a3646"},
-      ],
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#f0d6a8"},
-      ],
-    },
-    {
-      "featureType": "transit",
-      "elementType": "geometry",
-      "stylers": [
-        {"color": "#3b4152"},
-      ],
-    },
-    {
-      "featureType": "transit.station",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#e0b07a"},
-      ],
-    },
-    {
-      "featureType": "water",
-      "elementType": "geometry",
-      "stylers": [
-        {"color": "#1f334a"},
-      ],
-    },
-    {
-      "featureType": "water",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {"color": "#8fa1b5"},
-      ],
-    },
-    {
-      "featureType": "water",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {"color": "#1f334a"},
-      ],
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     Widget buildWidget = SizedBox(
@@ -792,7 +652,6 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       child: Stack(
         children: [
           GoogleMap(
-            style: jsonEncode(mapStyle),
             onTap: _handleTap,
             markers: markers,
             compassEnabled: true,
@@ -887,6 +746,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   }
 
   Widget _searchHistoryItemWidget(GoogleMapSearchModel item, int index) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
         widget.onSearchSelect?.call(item);
@@ -901,13 +761,13 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
             Icon(
               Icons.history,
               size: 20.w,
-              color: Colors.white.withValues(alpha: 0.5),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             Expanded(
               child: Text(
                 item.description,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1002,6 +862,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   }
 
   Widget _searchWidget() {
+    final theme = Theme.of(context);
     return SafeArea(
       bottom: false,
       child: Row(
@@ -1016,11 +877,11 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
               height: 36.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.1),
+                color: AppColors.lightText.withValues(alpha: 0.1),
               ),
               child: Icon(
                 Icons.arrow_back_ios_new_rounded,
-                color: textColor,
+                color: theme.colorScheme.onSurface,
                 size: 14.w,
               ),
             ),
@@ -1031,7 +892,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
               height: 40.h,
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: AppColors.lightText.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(24.r),
               ),
               child: Row(
@@ -1041,7 +902,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
                     _searchIcon(),
                     width: 20.w,
                     height: 20.w,
-                    color: textColor.withValues(alpha: 0.6),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
@@ -1051,10 +912,10 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
                       },
                       controller: _searchController,
                       focusNode: _searchFocusNode,
-                      style: TextStyle(color: textColor, fontSize: 14.sp),
+                      style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14.sp),
                       decoration: InputDecoration(
                         hintStyle: TextStyle(
-                          color: textColor.withValues(alpha: 0.6),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 13.sp,
                         ),
                         isDense: true,
@@ -1077,9 +938,9 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
               height: 36.w,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.1),
+                color: AppColors.lightText.withValues(alpha: 0.1),
               ),
-              child: Icon(Icons.close, color: textColor, size: 14.w),
+              child: Icon(Icons.close, color: theme.colorScheme.onSurface, size: 14.w),
             ),
           ),
         ],
@@ -1088,6 +949,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   }
 
   Widget _searchItemWidget(GoogleMapSearchModel item, int index) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () async {
         await _saveToHistory(item);
@@ -1102,7 +964,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
               ? null
               : Border(
                   bottom: BorderSide(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: AppColors.lightText.withValues(alpha: 0.3),
                     width: 1.w,
                   ),
                 ),
@@ -1115,7 +977,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
             Expanded(
               child: Text(
                 item.description,
-                style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14.sp),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1159,11 +1021,13 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: surfaceColor,
+        color: theme.colorScheme.surface,
         padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: SingleChildScrollView(
           child: Column(
@@ -1185,7 +1049,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
                       Text(
                         'History',
                         style: TextStyle(
-                          color: textColor,
+                          color: theme.colorScheme.onSurface,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1195,7 +1059,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
                         child: Text(
                           'Clear All',
                           style: TextStyle(
-                            color: Color.fromARGB(255, 133, 178, 245),
+                            color: theme.colorScheme.primary,
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                           ),

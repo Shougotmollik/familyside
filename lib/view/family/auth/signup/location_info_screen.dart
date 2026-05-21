@@ -1,3 +1,5 @@
+import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/env.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -28,7 +30,7 @@ class _LocationInfoScreenState extends State<LocationInfoScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => GoogleMapScreen(
-          apiKey: 'YOUR_API_KEY_HERE',
+          apiKey: EnvHandler.googleMapApiKey,
           onLocationSelect: (location) {
             setState(() {
               _selectedLocation = location;
@@ -45,86 +47,103 @@ class _LocationInfoScreenState extends State<LocationInfoScreen> {
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10.h),
-              const CustomAppBar(title: "Location"),
-              SizedBox(height: 30.h),
-              Text(
-                "Enter your location",
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.text,
-                  height: 1,
-                  fontSize: 22.sp,
-                ),
-              ),
-              SizedBox(height: 24.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: _openGoogleMap,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF3F3F3),
-                          borderRadius: BorderRadius.circular(10.r),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 10.h),
+                      const CustomAppBar(title: "Location"),
+                      SizedBox(height: 30.h),
+                      Text(
+                        "Enter your location",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.text,
+                          height: 1,
+                          fontSize: 22.sp,
                         ),
-                        child: TextField(
-                          controller: _locationController,
-                          enabled: false,
-                          decoration: InputDecoration(
-                            hintText: 'Enter your location',
-                            hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.lightText,
+                      ),
+                      SizedBox(height: 24.h),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3F3F3),
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: TextField(
+                                controller: _locationController,
+                                enabled: true,
+                                decoration: InputDecoration(
+                                  hintText: 'Enter your location',
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(color: AppColors.lightText),
+                                  prefixIcon: Icon(
+                                    Icons.search,
+                                    color: AppColors.lightText,
+                                    size: 24.sp,
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 14.h,
+                                  ),
+                                ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: AppColors.text),
+                              ),
                             ),
-                            prefixIcon: Icon(Icons.search, color: AppColors.lightText, size: 24.sp),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.symmetric(vertical: 14.h),
                           ),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.text,
+                          SizedBox(width: 12.w),
+                          GestureDetector(
+                            onTap: _openGoogleMap,
+                            child: Container(
+                              padding: EdgeInsets.all(12.w),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryLight,
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                              child: Icon(
+                                Icons.location_on,
+                                color: Colors.white,
+                                size: 24.sp,
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                      SizedBox(height: 60.h),
+                      Center(
+                        child: SvgPicture.asset(
+                          "assets/image/location_illstruction.svg",
+                          height: 300.h,
                         ),
                       ),
-                    ),
+                      SizedBox(height: 20.h),
+                    ],
                   ),
-                  SizedBox(width: 12.w),
-                  GestureDetector(
-                    onTap: _openGoogleMap,
-                    child: Container(
-                      padding: EdgeInsets.all(12.w),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Icon(Icons.location_on, color: Colors.white, size: 24.sp),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 60.h),
-              Center(
-                child: SvgPicture.asset(
-                  "assets/image/location_illstruction.svg",
-                  height: 300.h,
                 ),
               ),
-              const Spacer(),
-              CustomElevatedButton(
+            ),
+            Padding(
+              padding: EdgeInsets.all(20.w),
+              child: CustomElevatedButton(
                 onPressed: () {
-                  context.push('/familyUploadImageScreen');
+                  context.push(RouterPath.familyUploadImageScreen);
                 },
                 title: 'Continue',
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),
-              SizedBox(height: 20.h),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

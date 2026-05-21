@@ -10,6 +10,7 @@ import 'package:familyside/view/family/auth/signup/family_upload_image_screen.da
 import 'package:familyside/view/family/auth/signup/family_signup_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_choose_role_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_signup_otp_verfication.dart';
+import 'package:familyside/view/family/family_main_nav_bar_screen.dart';
 import 'package:familyside/view/onboarding/onboarding_screen.dart';
 import 'package:familyside/view/onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,10 @@ class AppRouter {
       GoRoute(
         path: RouterPath.familyUploadImageScreen,
         builder: (context, state) => const FamilyUploadImageScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyMainNavBarScreen,
+        builder: (context, state) => const FamilyMainNavBarScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

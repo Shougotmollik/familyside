@@ -131,7 +131,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
     );
   }
 
-Widget _buildKidsForm(ChildInfoState state) {
+  Widget _buildKidsForm(ChildInfoState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -181,9 +181,9 @@ Widget _buildKidsForm(ChildInfoState state) {
           SizedBox(height: 4.h),
           Text(
             'Add your children to continue',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.lightText,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
           ),
           SizedBox(height: 20.h),
           GestureDetector(
@@ -445,9 +445,7 @@ Widget _buildKidsForm(ChildInfoState state) {
           Expanded(
             flex: 1,
             child: GestureDetector(
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Skipped adding kids')),
-              ),
+              onTap: () => context.push(RouterPath.familyInterestScreen),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 decoration: BoxDecoration(

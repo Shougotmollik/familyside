@@ -184,7 +184,7 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
                   SizedBox(height: 12.h),
                   ...List.generate(_recommendedItems.length, (index) {
                     final item = _recommendedItems[index];
-                    return ItemCard(
+                    return EventCard(
                       imagePath: item.imagePath,
                       category: item.category,
                       date: item.date,
@@ -208,7 +208,7 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
                   SizedBox(height: 12.h),
                   ...List.generate(_eventsItems.length, (index) {
                     final item = _eventsItems[index];
-                    return ItemCard(
+                    return EventCard(
                       imagePath: item.imagePath,
                       category: item.category,
                       date: item.date,

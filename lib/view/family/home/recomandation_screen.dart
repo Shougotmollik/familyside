@@ -34,7 +34,7 @@ class RecommendationScreen extends StatelessWidget {
                 itemCount: config.items.length,
                 itemBuilder: (context, index) {
                   final item = config.items[index];
-                  return ItemCard(
+                  return EventCard(
                     imagePath: item.imagePath,
                     category: item.category,
                     date: item.date,

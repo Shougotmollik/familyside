@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 
-class ItemCard extends StatelessWidget {
+class EventCard extends StatelessWidget {
   final String imagePath;
   final String category;
   final String date;
@@ -13,7 +13,7 @@ class ItemCard extends StatelessWidget {
   final String tag;
   final VoidCallback? onTap;
 
-  const ItemCard({
+  const EventCard({
     super.key,
     required this.imagePath,
     required this.category,
@@ -159,7 +159,7 @@ class ItemCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primaryLight,
+                          color: AppColors.secondaryLight,
                         ),
                       ),
                     ],

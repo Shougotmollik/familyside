@@ -11,6 +11,10 @@ import 'package:familyside/view/family/auth/signup/family_signup_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_choose_role_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_signup_otp_verfication.dart';
 import 'package:familyside/view/family/family_main_nav_bar_screen.dart';
+import 'package:familyside/view/family/gift/gift_all_screen.dart';
+import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
+import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
+import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
 import 'package:familyside/view/family/notification/notification_screen.dart';
 import 'package:familyside/view/family/profile/family_change_password_screen.dart';
@@ -98,6 +102,24 @@ class AppRouter {
         path: RouterPath.familyRecommendationScreen,
         builder: (context, state) => RecommendationScreen(
           config: state.extra as ListScreenConfig,
+        ),
+      ),
+      GoRoute(
+        path: RouterPath.familyGiftAllScreen,
+        builder: (context, state) => GiftAllScreen(
+          config: state.extra as GiftAllScreenConfig,
+        ),
+      ),
+      GoRoute(
+        path: RouterPath.familyMyGiftListScreen,
+        builder: (context, state) => MyGiftListScreen(
+          config: state.extra as MyGiftListScreenConfig,
+        ),
+      ),
+      GoRoute(
+        path: RouterPath.familyGiftListDetailScreen,
+        builder: (context, state) => GiftListDetailScreen(
+          config: state.extra as GiftListDetailScreenConfig,
         ),
       ),
       GoRoute(

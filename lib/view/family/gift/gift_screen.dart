@@ -1,14 +1,19 @@
+import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
+import 'package:familyside/view/family/gift/gift_all_screen.dart';
+import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
+import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/gift/widgets/gift_card.dart';
+import 'package:familyside/view/family/gift/widgets/gift_filter_bottom_sheet.dart';
+import 'package:familyside/view/family/gift/widgets/gift_filter_result_model.dart';
+import 'package:familyside/view/family/gift/widgets/gift_flow.dart';
+import 'package:familyside/view/family/gift/widgets/gift_list_model.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:familyside/view/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:familyside/view/family/gift/widgets/gift_filter_result_model.dart';
-import 'package:familyside/view/family/gift/widgets/gift_flow.dart';
-import 'package:familyside/view/family/gift/widgets/gift_filter_bottom_sheet.dart';
-import 'package:familyside/view/family/gift/widgets/gift_list_model.dart';
+import 'package:go_router/go_router.dart';
 
 class GiftScreen extends StatefulWidget {
   const GiftScreen({super.key});
@@ -21,7 +26,8 @@ class _GiftScreenState extends State<GiftScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'All';
   GiftFilterResultModel? _currentFilters;
-  final Set<int> _bookmarkedIndices = {};
+  final Set<String> _bookmarkedGiftKeys = {};
+  final List<SavedGiftItemModel> _savedGiftsWithoutList = [];
   final List<GiftListModel> _giftLists = [];
 
   final List<String> _categories = const [
@@ -88,6 +94,68 @@ class _GiftScreenState extends State<GiftScreen> {
 
   void _openShareGiftCard(GiftItemModel item) {
     GiftFlow.showShareGiftCard(context, item);
+  }
+
+  void _openAllGiftsScreen() {
+    context.push(
+      RouterPath.familyGiftAllScreen,
+      extra: GiftAllScreenConfig(
+        title: 'All Gifts',
+        items: _giftItems,
+      ),
+    );
+  }
+
+  String _giftKey(GiftItemModel item) => '${item.imagePath}|${item.title}';
+
+  SavedGiftItemModel _toSavedGift(GiftItemModel item) {
+    return SavedGiftItemModel(
+      imagePath: item.imagePath,
+      title: item.title,
+      category: _selectedCategory == 'All' ? 'Activities' : _selectedCategory,
+      price: item.price,
+    );
+  }
+
+  void _toggleBookmark(GiftItemModel item) {
+    final key = _giftKey(item);
+    final wasBookmarked = _bookmarkedGiftKeys.contains(key);
+
+    setState(() {
+      if (wasBookmarked) {
+        _bookmarkedGiftKeys.remove(key);
+        _savedGiftsWithoutList.removeWhere(
+          (saved) => '${saved.imagePath}|${saved.title}' == key,
+        );
+      } else {
+        _bookmarkedGiftKeys.add(key);
+        _savedGiftsWithoutList.add(_toSavedGift(item));
+      }
+    });
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          wasBookmarked
+              ? 'Removed from saved gifts'
+              : 'Saved to My list',
+        ),
+      ),
+    );
+  }
+
+  void _openMyGiftListScreen() {
+    context.push(
+      RouterPath.familyMyGiftListScreen,
+      extra: MyGiftListScreenConfig(
+        giftLists: defaultGiftListSummaries,
+        savedGiftsWithoutList: [
+          ...defaultSavedGiftsWithoutList,
+          ..._savedGiftsWithoutList,
+        ],
+      ),
+    );
   }
 
   Future<void> _openFilterBottomSheet() async {
@@ -184,7 +252,7 @@ class _GiftScreenState extends State<GiftScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-          onTap: () {},
+          onTap: _openMyGiftListScreen,
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             decoration: BoxDecoration(
@@ -312,7 +380,7 @@ class _GiftScreenState extends State<GiftScreen> {
               ),
             ),
             GestureDetector(
-              onTap: () {},
+              onTap: _openAllGiftsScreen,
               child: Text(
                 'See All',
                 style: TextStyle(
@@ -333,18 +401,10 @@ class _GiftScreenState extends State<GiftScreen> {
             price: item.price,
             description: item.description,
             location: item.location,
-            isBookmarked: _bookmarkedIndices.contains(index),
+            isBookmarked: _bookmarkedGiftKeys.contains(_giftKey(item)),
             onAddToGiftList: () => _openAddToGiftList(item),
             onShareTap: () => _openShareGiftCard(item),
-            onBookmarkTap: () {
-              setState(() {
-                if (_bookmarkedIndices.contains(index)) {
-                  _bookmarkedIndices.remove(index);
-                } else {
-                  _bookmarkedIndices.add(index);
-                }
-              });
-            },
+            onBookmarkTap: () => _toggleBookmark(item),
           );
         }),
       ],

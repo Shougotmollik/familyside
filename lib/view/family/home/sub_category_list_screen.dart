@@ -58,7 +58,7 @@ class _SubCategoryListScreenState extends State<SubCategoryListScreen> {
                   itemCount: _items.length,
                   itemBuilder: (context, index) {
                     final item = _items[index];
-                    return ItemCard(
+                    return EventCard(
                       imagePath: item.imagePath,
                       category: item.category,
                       date: item.date,

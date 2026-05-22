@@ -1,6 +1,7 @@
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/create_gift_card_preview.dart';
+import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -63,25 +64,19 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
     );
   }
 
-  void _onDownload() {
+  void _onCancel() {
+    Navigator.pop(context);
+  }
+
+  void _onCreate() {
     if (!_formKey.currentState!.validate()) return;
     Navigator.pop(context, _buildResult());
   }
 
-  void _onShare() {
-    if (!_formKey.currentState!.validate()) return;
-    final data = _buildResult();
-    final shareCallback = widget.onSharePressed;
-    Navigator.pop(context, data);
-    if (shareCallback != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        shareCallback(widget.giftItem);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
@@ -163,21 +158,20 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
               Row(
                 children: [
                   Expanded(
-                    child: _ActionButton(
-                      label: 'Download',
-                      backgroundColor: AppColors.primaryLight,
-                      textColor: Colors.white,
-                      onTap: _onDownload,
+                    child: CustomElevatedButton(
+                      onPressed: _onCancel,
+                      title: 'Cancel',
+                      color: colors.primary.withValues(alpha: 0.1),
+                      textColor: colors.primary,
                     ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
-                    child: _ActionButton(
-                      label: 'Share',
-                      backgroundColor:
-                          AppColors.primaryLight.withValues(alpha: 0.1),
-                      textColor: AppColors.primaryLight,
-                      onTap: _onShare,
+                    child: CustomElevatedButton(
+                      onPressed: _onCreate,
+                      title: 'Create',
+                      color: colors.primary,
+                      textColor: colors.onPrimary,
                     ),
                   ),
                 ],
@@ -271,39 +265,3 @@ class _LabeledTextField extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final Color backgroundColor;
-  final Color textColor;
-  final VoidCallback onTap;
-
-  const _ActionButton({
-    required this.label,
-    required this.backgroundColor,
-    required this.textColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 14.h),
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 15.sp,
-            fontWeight: FontWeight.w600,
-            color: textColor,
-          ),
-        ),
-      ),
-    );
-  }
-}

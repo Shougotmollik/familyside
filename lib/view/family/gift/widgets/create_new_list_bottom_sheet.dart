@@ -5,7 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CreateNewListBottomSheet extends StatefulWidget {
-  const CreateNewListBottomSheet({super.key});
+  final String title;
+  final String submitLabel;
+  final String? initialName;
+  final String? initialOccasion;
+
+  const CreateNewListBottomSheet({
+    super.key,
+    this.title = 'Create new list',
+    this.submitLabel = 'Submit',
+    this.initialName,
+    this.initialOccasion,
+  });
 
   @override
   State<CreateNewListBottomSheet> createState() =>
@@ -14,8 +25,8 @@ class CreateNewListBottomSheet extends StatefulWidget {
 
 class _CreateNewListBottomSheetState extends State<CreateNewListBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  String _selectedOccasion = 'Birthday';
+  late final TextEditingController _nameController;
+  late String _selectedOccasion;
 
   static const _occasions = [
     'Birthday',
@@ -24,6 +35,13 @@ class _CreateNewListBottomSheetState extends State<CreateNewListBottomSheet> {
     'General',
     'Anniversary',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.initialName ?? '');
+    _selectedOccasion = widget.initialOccasion ?? 'Birthday';
+  }
 
   @override
   void dispose() {
@@ -69,7 +87,7 @@ class _CreateNewListBottomSheetState extends State<CreateNewListBottomSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Create new list',
+                    widget.title,
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -185,7 +203,7 @@ class _CreateNewListBottomSheetState extends State<CreateNewListBottomSheet> {
               SizedBox(height: 32.h),
               CustomElevatedButton(
                 onPressed: _submit,
-                title: 'Submit',
+                title: widget.submitLabel,
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),

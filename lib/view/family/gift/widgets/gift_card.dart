@@ -1,6 +1,8 @@
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+
 class GiftCard extends StatelessWidget {
   final String imagePath;
   final String title;
@@ -91,8 +93,8 @@ class _GiftImage extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
           child: Image.asset(
             imagePath,
-            width: 120.w,
-            height: 130.h,
+            width: 140.w,
+            height: 140.h,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Container(
@@ -113,17 +115,36 @@ class _GiftImage extends StatelessWidget {
           left: 8.w,
           child: GestureDetector(
             onTap: onBookmarkTap,
+            behavior: HitTestBehavior.opaque,
             child: Container(
               height: 28.w,
               width: 28.w,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: isBookmarked
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.primary,
                 shape: BoxShape.circle,
+                border: isBookmarked
+                    ? Border.all(color: AppColors.surface, width: 1.5)
+                    : null,
               ),
-              child: Icon(
-                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: AppColors.primaryLight,
-                size: 16.sp,
+              child: Center(
+                child: isBookmarked
+                    ? Icon(
+                        Icons.check,
+                        size: 16.sp,
+                        color: AppColors.surface,
+                      )
+                    : SvgPicture.asset(
+                        'assets/icon/gift_icon.svg',
+                        height: 16.h,
+                        width: 16.w,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.surface,
+                          BlendMode.srcIn,
+                        ),
+                        fit: BoxFit.contain,
+                      ),
               ),
             ),
           ),
@@ -176,7 +197,7 @@ class _GiftCardContent extends StatelessWidget {
               style: TextStyle(
                 fontSize: 15.sp,
                 fontWeight: FontWeight.w700,
-                color: AppColors.primaryLight,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
           ],
@@ -194,22 +215,21 @@ class _GiftCardContent extends StatelessWidget {
           ),
         ),
         SizedBox(height: 8.h),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-          decoration: BoxDecoration(
-            color: AppColors.secondaryLight.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(6.r),
-          ),
-          child: Text(
-            location,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 10.sp,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xFF6C7278),
+        Row(
+          spacing: 2.w,
+          children: [
+            SvgPicture.asset("assets/icon/location_land.svg"),
+            Text(
+              location,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                color: AppColors.lightText
+              ),
             ),
-          ),
+          ],
         ),
         SizedBox(height: 10.h),
         Row(
@@ -230,7 +250,7 @@ class _GiftCardContent extends StatelessWidget {
                       Icon(Icons.add, color: Colors.white, size: 14.sp),
                       SizedBox(width: 4.w),
                       Text(
-                        'Gift list',
+                        'Add to Gift list',
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w600,
@@ -253,7 +273,7 @@ class _GiftCardContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Icon(
-                  Icons.layers_outlined,
+                  Icons.bookmark_outline,
                   color: AppColors.primaryLight,
                   size: 20.sp,
                 ),

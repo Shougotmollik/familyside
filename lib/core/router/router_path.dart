@@ -28,4 +28,6 @@ class RouterPath {
       '/familyUpdateChildInformationScreen';
   static const String familyContactSupportScreen = '/familyContactSupportScreen';
   static const String familySuggestionScreen = '/familySuggestionScreen';
+  static const String familyExplorerMapScreen = '/familyExplorerMapScreen';
+  static const String familySubCategoryListScreen = '/familySubCategoryListScreen';
 }

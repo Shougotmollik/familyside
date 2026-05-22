@@ -6,10 +6,12 @@ import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:familyside/view/widgets/search_bar_widget.dart';
-import 'package:familyside/view/widgets/item_card.dart';
+import 'package:familyside/view/widgets/event_card.dart';
 import 'package:familyside/view/widgets/sub_category_card.dart';
+import 'package:familyside/view/family/explorer/models/explorer_data.dart';
+import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
-import 'package:familyside/view/family/home/sub_category_list_screen.dart';
+import 'package:familyside/view/family/home/sub_category_list_screen_config.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 
 class RecommendedItemModel {
@@ -137,6 +139,26 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
     super.dispose();
   }
 
+  void _openMapScreen() {
+    final List<RecommendedItemModel> items;
+    if (_selectedCategory == 'All') {
+      items = [..._recommendedItems, ..._eventsItems];
+    } else {
+      items = [
+        ..._recommendedItems.where((i) => i.category == _selectedCategory),
+        ..._eventsItems.where((i) => i.category == _selectedCategory),
+      ];
+    }
+
+    context.push(
+      RouterPath.familyExplorerMapScreen,
+      extra: ExplorerMapScreenConfig(
+        items: ExplorerData.toMapItems(items),
+        initialCategory: _selectedCategory,
+      ),
+    );
+  }
+
   void _openFilterBottomSheet() async {
     final result = await showModalBottomSheet<FilterResultModel>(
       context: context,
@@ -236,12 +258,9 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
                       title: sub.title,
                       subtitle: sub.subtitle,
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                SubCategoryListScreen(title: sub.title),
-                          ),
+                        context.push(
+                          RouterPath.familySubCategoryListScreen,
+                          extra: SubCategoryListScreenConfig(title: sub.title),
                         );
                       },
                     );
@@ -282,6 +301,7 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
           borderRadius: 8.r,
           iconWidth: 24.w,
           iconHeight: 24.h,
+          onTap: _openMapScreen,
         ),
       ],
     );

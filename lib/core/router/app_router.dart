@@ -15,7 +15,11 @@ import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
 import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
+import 'package:familyside/view/family/explorer/explorer_map_screen.dart';
+import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
+import 'package:familyside/view/family/home/sub_category_list_screen.dart';
+import 'package:familyside/view/family/home/sub_category_list_screen_config.dart';
 import 'package:familyside/view/family/notification/notification_screen.dart';
 import 'package:familyside/view/family/profile/family_change_password_screen.dart';
 import 'package:familyside/view/family/profile/family_edit_profile_screen.dart';
@@ -141,6 +145,21 @@ class AppRouter {
       GoRoute(
         path: RouterPath.familySuggestionScreen,
         builder: (context, state) => const SuggestionScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familyExplorerMapScreen,
+        builder: (context, state) {
+          final config = state.extra as ExplorerMapScreenConfig?;
+          return ExplorerMapScreen(
+            config: config ?? ExplorerMapScreenConfig.defaults(),
+          );
+        },
+      ),
+      GoRoute(
+        path: RouterPath.familySubCategoryListScreen,
+        builder: (context, state) => SubCategoryListScreen(
+          config: state.extra as SubCategoryListScreenConfig,
+        ),
       ),
     ],
     errorBuilder: (context, state) =>

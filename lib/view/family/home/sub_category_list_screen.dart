@@ -1,17 +1,23 @@
+import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/view/family/explorer/models/explorer_data.dart';
+import 'package:familyside/view/family/explorer/models/explorer_map_item.dart';
+import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
+import 'package:familyside/view/family/home/family_home_screen.dart';
+import 'package:familyside/view/family/home/sub_category_list_screen_config.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:familyside/view/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
-import 'package:familyside/view/widgets/item_card.dart';
-import 'package:familyside/view/family/home/family_home_screen.dart';
+import 'package:familyside/view/widgets/event_card.dart';
 import 'package:familyside/view/widgets/category_filter_bottom_sheet.dart';
+import 'package:go_router/go_router.dart';
 
 class SubCategoryListScreen extends StatefulWidget {
-  final String title;
+  final SubCategoryListScreenConfig config;
 
-  const SubCategoryListScreen({super.key, required this.title});
+  const SubCategoryListScreen({super.key, required this.config});
 
   @override
   State<SubCategoryListScreen> createState() => _SubCategoryListScreenState();
@@ -20,6 +26,8 @@ class SubCategoryListScreen extends StatefulWidget {
 class _SubCategoryListScreenState extends State<SubCategoryListScreen> {
   final TextEditingController searchController = TextEditingController();
   CategoryFilterResultModel? _currentFilters;
+
+  List<RecommendedItemModel> get _items => widget.config.items;
 
   void _openFilterBottomSheet() async {
     final result = await showModalBottomSheet<CategoryFilterResultModel>(
@@ -39,6 +47,25 @@ class _SubCategoryListScreenState extends State<SubCategoryListScreen> {
     }
   }
 
+  void _openMapScreen() {
+    context.push(
+      RouterPath.familyExplorerMapScreen,
+      extra: ExplorerMapScreenConfig(
+        items: ExplorerData.toMapItems(
+          widget.config.items,
+          type: ExplorerItemType.activity,
+        ),
+        initialCategory: 'All',
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +76,7 @@ class _SubCategoryListScreenState extends State<SubCategoryListScreen> {
           child: Column(
             children: [
               SizedBox(height: 10.h),
-              CustomAppBar(title: widget.title),
+              CustomAppBar(title: widget.config.title),
               SizedBox(height: 24.h),
               _buildSearchSection(),
               SizedBox(height: 24.h),
@@ -84,12 +111,12 @@ class _SubCategoryListScreenState extends State<SubCategoryListScreen> {
         Expanded(
           child: SearchBarWidget(
             controller: searchController,
-            hintText: "Search...",
+            hintText: 'Search...',
           ),
         ),
         SizedBox(width: 12.w),
         CustomIconButton(
-          assetPath: "assets/logo/filter.svg",
+          assetPath: 'assets/logo/filter.svg',
           containerHeight: 48.h,
           containerWidth: 48.w,
           borderRadius: 8.r,
@@ -99,47 +126,15 @@ class _SubCategoryListScreenState extends State<SubCategoryListScreen> {
         ),
         SizedBox(width: 12.w),
         CustomIconButton(
-          assetPath: "assets/logo/location.svg",
+          assetPath: 'assets/logo/location.svg',
           containerHeight: 48.h,
           containerWidth: 48.w,
           borderRadius: 8.r,
           iconWidth: 24.w,
           iconHeight: 24.h,
+          onTap: _openMapScreen,
         ),
       ],
     );
   }
 }
-
-final List<RecommendedItemModel> _items = const [
-  RecommendedItemModel(
-    imagePath: "assets/image/onboarding 1.jpg",
-    category: "Health",
-    date: "25 Jun",
-    title: "Little Stars Pediatric Clinic",
-    price: "20",
-    distance: "0.05 km",
-    ageRange: "Age: 0-20 years",
-    tag: "Recommended",
-  ),
-  RecommendedItemModel(
-    imagePath: "assets/image/onboarding 2.jpg",
-    category: "Health",
-    date: "25 Jun",
-    title: "Little Stars Pediatric Clinic",
-    price: "20",
-    distance: "0.05 km",
-    ageRange: "Age: 0-20 years",
-    tag: "Recommended",
-  ),
-  RecommendedItemModel(
-    imagePath: "assets/image/onboarding 3.jpg",
-    category: "Health",
-    date: "25 Jun",
-    title: "Little Stars Pediatric Clinic",
-    price: "20",
-    distance: "0.05 km",
-    ageRange: "Age: 0-20 years",
-    tag: "Recommended",
-  ),
-];

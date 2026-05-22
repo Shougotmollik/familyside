@@ -1,4 +1,5 @@
 import 'package:familyside/view/service_provider/analytics/sp_analytics_screen.dart';
+import 'package:familyside/view/service_provider/create_section/sp_create_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -17,7 +18,7 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
   final List<Widget> _screens = const [
     _DashboardScreen(),
     _AppointmentsScreen(),
-    _ServicesScreen(),
+    SpCreateScreen(),
     SpAnalyticsScreen(),
     _SpProfileScreen(),
   ];

@@ -20,6 +20,9 @@ import 'package:familyside/view/service_provider/auth/forgot/sp_password_reset_s
 import 'package:familyside/view/service_provider/auth/signup/sp_signup_otp_verification_screen.dart';
 import 'package:familyside/view/service_provider/auth/signup/sp_upload_image_screen.dart';
 import 'package:familyside/view/service_provider/auth/signup/sp_profile_setup_screen.dart';
+import 'package:familyside/view/service_provider/create_section/create_activity_screen.dart';
+import 'package:familyside/view/service_provider/create_section/create_event_screen.dart';
+import 'package:familyside/view/service_provider/create_section/create_gift_screen.dart';
 import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
@@ -147,6 +150,18 @@ class AppRouter {
         builder: (context, state) => const SpProfileSetupScreen(),
       ),
       GoRoute(
+        path: RouterPath.spCreateActivityScreen,
+        builder: (context, state) => const CreateActivityScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spCreateEventScreen,
+        builder: (context, state) => const CreateEventScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spCreateGiftScreen,
+        builder: (context, state) => const CreateGiftScreen(),
+      ),
+      GoRoute(
         path: RouterPath.spMainNavBarScreen,
         builder: (context, state) => const SpMainNavBarScreen(),
       ),
@@ -156,21 +171,18 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyRecommendationScreen,
-        builder: (context, state) => RecommendationScreen(
-          config: state.extra as ListScreenConfig,
-        ),
+        builder: (context, state) =>
+            RecommendationScreen(config: state.extra as ListScreenConfig),
       ),
       GoRoute(
         path: RouterPath.familyGiftAllScreen,
-        builder: (context, state) => GiftAllScreen(
-          config: state.extra as GiftAllScreenConfig,
-        ),
+        builder: (context, state) =>
+            GiftAllScreen(config: state.extra as GiftAllScreenConfig),
       ),
       GoRoute(
         path: RouterPath.familyMyGiftListScreen,
-        builder: (context, state) => MyGiftListScreen(
-          config: state.extra as MyGiftListScreenConfig,
-        ),
+        builder: (context, state) =>
+            MyGiftListScreen(config: state.extra as MyGiftListScreenConfig),
       ),
       GoRoute(
         path: RouterPath.familyGiftListDetailScreen,

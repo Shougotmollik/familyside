@@ -39,5 +39,7 @@ class RouterPath {
   static const String spResetPasswordScreen = '/spResetPasswordScreen';
   static const String spPasswordResetSuccess = '/spPasswordResetSuccess';
   static const String spSignupOtpVerificationScreen = '/spSignupOtpVerificationScreen';
+  static const String spUploadImageScreen = '/spUploadImageScreen';
+  static const String spProfileSetupScreen = '/spProfileSetupScreen';
   static const String spMainNavBarScreen = '/spMainNavBarScreen';
 }

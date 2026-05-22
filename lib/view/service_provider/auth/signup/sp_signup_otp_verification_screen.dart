@@ -28,7 +28,7 @@ class _SpSignupOtpVerificationScreenState
   }
 
   void _onVerify() {
-    context.push(RouterPath.spMainNavBarScreen);
+    context.push(RouterPath.spProfileSetupScreen);
   }
 
   @override

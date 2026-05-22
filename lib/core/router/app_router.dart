@@ -18,6 +18,8 @@ import 'package:familyside/view/service_provider/auth/forgot/sp_otp_verification
 import 'package:familyside/view/service_provider/auth/forgot/sp_reset_password_screen.dart';
 import 'package:familyside/view/service_provider/auth/forgot/sp_password_reset_success.dart';
 import 'package:familyside/view/service_provider/auth/signup/sp_signup_otp_verification_screen.dart';
+import 'package:familyside/view/service_provider/auth/signup/sp_upload_image_screen.dart';
+import 'package:familyside/view/service_provider/auth/signup/sp_profile_setup_screen.dart';
 import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
@@ -135,6 +137,14 @@ class AppRouter {
       GoRoute(
         path: RouterPath.spSignupOtpVerificationScreen,
         builder: (context, state) => const SpSignupOtpVerificationScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spUploadImageScreen,
+        builder: (context, state) => const SpUploadImageScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spProfileSetupScreen,
+        builder: (context, state) => const SpProfileSetupScreen(),
       ),
       GoRoute(
         path: RouterPath.spMainNavBarScreen,

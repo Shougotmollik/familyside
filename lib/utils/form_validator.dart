@@ -35,12 +35,12 @@ class FormValidator {
     if (value.length < 8) {
       return 'Password must be at least 8 characters';
     }
-    if (!RegExp(r'[A-Z]').hasMatch(value) || !RegExp(r'[a-z]').hasMatch(value)) {
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
       return 'Include uppercase and lowercase letters';
     }
-    if (!RegExp(r'[!@#$%&*]').hasMatch(value)) {
-      return 'Include at least one special character';
-    }
+    // if (!RegExp(r'[!@#$%&*]').hasMatch(value)) {
+    //   return 'Include at least one special character';
+    // }
     if (!RegExp(r'[0-9]').hasMatch(value)) {
       return 'Include at least one number';
     }

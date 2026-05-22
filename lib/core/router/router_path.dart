@@ -30,4 +30,14 @@ class RouterPath {
   static const String familySuggestionScreen = '/familySuggestionScreen';
   static const String familyExplorerMapScreen = '/familyExplorerMapScreen';
   static const String familySubCategoryListScreen = '/familySubCategoryListScreen';
+
+  // Service Provider Auth Routes
+  static const String spLoginScreen = '/spLoginScreen';
+  static const String spSignUpScreen = '/spSignUpScreen';
+  static const String spForgotPasswordScreen = '/spForgotPasswordScreen';
+  static const String spVerifyOtpScreen = '/spVerifyOtpScreen';
+  static const String spResetPasswordScreen = '/spResetPasswordScreen';
+  static const String spPasswordResetSuccess = '/spPasswordResetSuccess';
+  static const String spSignupOtpVerificationScreen = '/spSignupOtpVerificationScreen';
+  static const String spMainNavBarScreen = '/spMainNavBarScreen';
 }

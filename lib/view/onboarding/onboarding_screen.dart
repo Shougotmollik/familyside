@@ -134,8 +134,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 width: double.infinity,
                 height: 56.h,
                 child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+                    onPressed: () {
+                    context.push(RouterPath.spLoginScreen);
                   },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.white24, width: 1.5),

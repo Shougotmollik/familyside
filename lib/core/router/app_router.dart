@@ -11,6 +11,14 @@ import 'package:familyside/view/family/auth/signup/family_signup_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_choose_role_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_signup_otp_verfication.dart';
 import 'package:familyside/view/family/family_main_nav_bar_screen.dart';
+import 'package:familyside/view/service_provider/auth/login/sp_login_screen.dart';
+import 'package:familyside/view/service_provider/auth/signup/sp_signup_screen.dart';
+import 'package:familyside/view/service_provider/auth/forgot/sp_forgot_password_screen.dart';
+import 'package:familyside/view/service_provider/auth/forgot/sp_otp_verification_screen.dart';
+import 'package:familyside/view/service_provider/auth/forgot/sp_reset_password_screen.dart';
+import 'package:familyside/view/service_provider/auth/forgot/sp_password_reset_success.dart';
+import 'package:familyside/view/service_provider/auth/signup/sp_signup_otp_verification_screen.dart';
+import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
 import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
@@ -97,6 +105,40 @@ class AppRouter {
       GoRoute(
         path: RouterPath.familyMainNavBarScreen,
         builder: (context, state) => const FamilyMainNavBarScreen(),
+      ),
+
+      // Service Provider Auth Routes
+      GoRoute(
+        path: RouterPath.spLoginScreen,
+        builder: (context, state) => const SpLoginScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spSignUpScreen,
+        builder: (context, state) => const SpSignupScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spForgotPasswordScreen,
+        builder: (context, state) => const SpForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spVerifyOtpScreen,
+        builder: (context, state) => const SpOtpVerificationScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spResetPasswordScreen,
+        builder: (context, state) => const SpResetPasswordScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spPasswordResetSuccess,
+        builder: (context, state) => const SpPasswordResetSuccessScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spSignupOtpVerificationScreen,
+        builder: (context, state) => const SpSignupOtpVerificationScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spMainNavBarScreen,
+        builder: (context, state) => const SpMainNavBarScreen(),
       ),
       GoRoute(
         path: RouterPath.familyNotificationScreen,

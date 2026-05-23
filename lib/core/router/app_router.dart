@@ -23,6 +23,13 @@ import 'package:familyside/view/service_provider/auth/signup/sp_profile_setup_sc
 import 'package:familyside/view/service_provider/create_section/create_activity_screen.dart';
 import 'package:familyside/view/service_provider/create_section/create_event_screen.dart';
 import 'package:familyside/view/service_provider/create_section/create_gift_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_change_password_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_edit_profile_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_privacy_policy_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_contact_support_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_suggestion_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_subscription_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_payment_screen.dart';
 import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
@@ -160,6 +167,40 @@ class AppRouter {
       GoRoute(
         path: RouterPath.spCreateGiftScreen,
         builder: (context, state) => const CreateGiftScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spChangePasswordScreen,
+        builder: (context, state) => const SpChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spEditProfileScreen,
+        builder: (context, state) => const SpEditProfileScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spPrivacyPolicyScreen,
+        builder: (context, state) => const SpPrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spContactSupportScreen,
+        builder: (context, state) => const SpContactSupportScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spSuggestionScreen,
+        builder: (context, state) => const SpSuggestionScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spSubscriptionScreen,
+        builder: (context, state) => const SpSubscriptionScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spPaymentScreen,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return SpPaymentScreen(
+            planName: extra['plan'] as String? ?? '',
+            price: extra['price'] as String? ?? '\$0',
+          );
+        },
       ),
       GoRoute(
         path: RouterPath.spMainNavBarScreen,

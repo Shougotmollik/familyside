@@ -53,5 +53,12 @@ class RouterPath {
   static const String spCreateActivityScreen = '/spCreateActivityScreen';
   static const String spCreateEventScreen = '/spCreateEventScreen';
   static const String spCreateGiftScreen = '/spCreateGiftScreen';
+  static const String spChangePasswordScreen = '/spChangePasswordScreen';
+  static const String spEditProfileScreen = '/spEditProfileScreen';
+  static const String spPrivacyPolicyScreen = '/spPrivacyPolicyScreen';
+  static const String spContactSupportScreen = '/spContactSupportScreen';
+  static const String spSuggestionScreen = '/spSuggestionScreen';
+  static const String spSubscriptionScreen = '/spSubscriptionScreen';
+  static const String spPaymentScreen = '/spPaymentScreen';
   static const String spMainNavBarScreen = '/spMainNavBarScreen';
 }

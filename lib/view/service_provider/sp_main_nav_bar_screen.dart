@@ -2,6 +2,7 @@ import 'package:familyside/view/service_provider/analytics/sp_analytics_screen.d
 import 'package:familyside/view/service_provider/create_section/sp_create_screen.dart';
 import 'package:familyside/view/service_provider/home/sp_home_screen.dart';
 import 'package:familyside/view/service_provider/manage/sp_manage_screen.dart';
+import 'package:familyside/view/service_provider/profile/sp_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -22,7 +23,7 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
     SpManageScreen(),
     SpCreateScreen(),
     SpAnalyticsScreen(),
-    _SpProfileScreen(),
+    SpProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -115,18 +116,6 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _SpProfileScreen extends StatelessWidget {
-  const _SpProfileScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: const Center(child: Text('Profile - Placeholder')),
     );
   }
 }

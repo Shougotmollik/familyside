@@ -122,7 +122,7 @@ class SpEventCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primaryLight,
+                          color: AppColors.secondaryLight,
                         ),
                       ),
                     ],

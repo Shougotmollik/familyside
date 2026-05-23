@@ -1,6 +1,7 @@
 import 'package:familyside/view/service_provider/analytics/sp_analytics_screen.dart';
 import 'package:familyside/view/service_provider/create_section/sp_create_screen.dart';
 import 'package:familyside/view/service_provider/home/sp_home_screen.dart';
+import 'package:familyside/view/service_provider/manage/sp_manage_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -18,7 +19,7 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
 
   final List<Widget> _screens = const [
     SpHomeScreen(),
-    _AppointmentsScreen(),
+    SpManageScreen(),
     SpCreateScreen(),
     SpAnalyticsScreen(),
     _SpProfileScreen(),
@@ -114,18 +115,6 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AppointmentsScreen extends StatelessWidget {
-  const _AppointmentsScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Appointments')),
-      body: const Center(child: Text('Appointments - Placeholder')),
     );
   }
 }

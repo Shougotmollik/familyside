@@ -120,31 +120,20 @@ class _GiftImage extends StatelessWidget {
               height: 28.w,
               width: 28.w,
               decoration: BoxDecoration(
-                color: isBookmarked
-                    ? Theme.of(context).colorScheme.secondary
-                    : Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary,
                 shape: BoxShape.circle,
-                border: isBookmarked
-                    ? Border.all(color: AppColors.surface, width: 1.5)
-                    : null,
               ),
               child: Center(
-                child: isBookmarked
-                    ? Icon(
-                        Icons.check,
-                        size: 16.sp,
-                        color: AppColors.surface,
-                      )
-                    : SvgPicture.asset(
-                        'assets/icon/gift_icon.svg',
-                        height: 16.h,
-                        width: 16.w,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.surface,
-                          BlendMode.srcIn,
-                        ),
-                        fit: BoxFit.contain,
-                      ),
+                child: SvgPicture.asset(
+                  'assets/icon/gift_icon.svg',
+                  height: 16.h,
+                  width: 16.w,
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.surface,
+                    BlendMode.srcIn,
+                  ),
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
           ),
@@ -226,7 +215,7 @@ class _GiftCardContent extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 12.sp,
                 fontWeight: FontWeight.w400,
-                color: AppColors.lightText
+                color: AppColors.lightText,
               ),
             ),
           ],

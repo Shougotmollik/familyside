@@ -72,7 +72,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         zoom: 14.4746,
       );
 
-      _handleTap(widget.initialPosition!);
+      if (widget.canSelectLocation) {
+        _handleTap(widget.initialPosition!);
+      }
     } else {
       _initialPosition = CameraPosition(target: _kGooglePlex, zoom: 14.4746);
     }
@@ -330,7 +332,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 ),
               ),
             ),
-            GestureDetector(
+            Expanded(
+              child: GestureDetector(
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -344,7 +347,6 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 );
               },
               child: _solidBgWrapper(
-                width: 1.sw - 72.w - 36.w - 24.w,
                 height: 40.h,
                 borderRadius: BorderRadius.circular(24.r),
                 padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -369,6 +371,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 ),
               ),
             ),
+              ),
             GestureDetector(
               onTap: _getCurrentLocation,
               child: _solidBgWrapper(
@@ -652,7 +655,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       child: Stack(
         children: [
           GoogleMap(
-            onTap: _handleTap,
+            onTap: widget.canSelectLocation ? _handleTap : null,
             markers: markers,
             compassEnabled: true,
             buildingsEnabled: true,
@@ -664,8 +667,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
               _controller.complete(controller);
             },
           ),
-          _searchWidget(),
-          if (_selectedPlaceDetails != null) _selectedPositionDetailsWidget(),
+          if (widget.canSelectLocation) _searchWidget(),
+          if (widget.canSelectLocation && _selectedPlaceDetails != null)
+            _selectedPositionDetailsWidget(),
         ],
       ),
     );

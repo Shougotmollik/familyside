@@ -33,7 +33,10 @@ class _ExplorerScreenState extends State<ExplorerScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: ExplorerTabBar.tabs.length, vsync: this);
+    _tabController = TabController(
+      length: ExplorerTabBar.tabs.length,
+      vsync: this,
+    );
   }
 
   @override
@@ -71,9 +74,9 @@ class _ExplorerScreenState extends State<ExplorerScreen>
       onListCreated: (list) => setState(() => _giftLists.add(list)),
     );
     if (result != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Added to ${result.list.name}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Added to ${result.list.name}')));
     }
   }
 
@@ -136,7 +139,8 @@ class _ExplorerScreenState extends State<ExplorerScreen>
                       });
                     },
                     onAddToGiftList: _openAddToGiftList,
-                    onShareTap: (item) => GiftFlow.showShareGiftCard(context, item),
+                    onShareTap: (item) =>
+                        GiftFlow.showShareGiftCard(context, item),
                   ),
                 ],
               ),
@@ -149,10 +153,7 @@ class _ExplorerScreenState extends State<ExplorerScreen>
 }
 
 class _ExplorerListTab extends StatelessWidget {
-  const _ExplorerListTab({
-    required this.items,
-    required this.itemBuilder,
-  });
+  const _ExplorerListTab({required this.items, required this.itemBuilder});
 
   final List<RecommendedItemModel> items;
   final Widget Function(RecommendedItemModel item) itemBuilder;

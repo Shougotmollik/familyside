@@ -378,7 +378,12 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CustomIconButton(assetPath: "assets/logo/save.svg"),
+        CustomIconButton(
+          assetPath: "assets/logo/save.svg",
+          onTap: () {
+            context.push(RouterPath.familySavedScreen);
+          },
+        ),
         SizedBox(width: 8.w),
         Stack(
           clipBehavior: Clip.none,

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/google_map.dart';
@@ -44,8 +48,11 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   ];
   final List<String> _tags = ['Toddler', 'Indoor', 'Ongoing', 'Free', 'Paid'];
 
-  String _openingDays = '10:00 AM to 09:00 PM';
-  String _openingHours = '10:00 AM to 09:00 PM';
+  final List<String> _allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  List<String> _selectedOpeningDays = [];
+  TimeOfDay? _openingStartTime;
+  TimeOfDay? _openingEndTime;
+  final List<File> _selectedPhotos = [];
 
   @override
   void dispose() {
@@ -58,6 +65,102 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     _instagramController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickOpeningDays() async {
+    List<String> tempSelected = List.from(_selectedOpeningDays);
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Select Opening Days'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: _allDays.map((day) {
+                return CheckboxListTile(
+                  title: Text(day),
+                  value: tempSelected.contains(day),
+                  onChanged: (checked) {
+                    setDialogState(() {
+                      checked == true
+                          ? tempSelected.add(day)
+                          : tempSelected.remove(day);
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (!mounted) return;
+                setState(() => _selectedOpeningDays = List.from(tempSelected));
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Done'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickOpeningHours() async {
+    final start = await showTimePicker(
+      context: context,
+      initialTime: _openingStartTime ?? const TimeOfDay(hour: 9, minute: 0),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.primaryLight,
+            onPrimary: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (start == null) return;
+    if (!mounted) return;
+    final end = await showTimePicker(
+      context: context,
+      initialTime: _openingEndTime ?? const TimeOfDay(hour: 17, minute: 0),
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: AppColors.primaryLight,
+            onPrimary: Colors.white,
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (end == null) return;
+    setState(() {
+      _openingStartTime = start;
+      _openingEndTime = end;
+    });
+  }
+
+  void _pickPhotos() {
+    showImagePickerOptions(context, (source) async {
+      if (source == ImageSource.camera) {
+        final file = await pickSingleImage(
+          context: context,
+          source: ImageSource.camera,
+        );
+        if (file != null) {
+          setState(() => _selectedPhotos.add(file));
+        }
+      } else {
+        final files = await pickImageFromGallery(context: context);
+        if (files != null) {
+          setState(() => _selectedPhotos.addAll(files));
+        }
+      }
+    });
   }
 
   @override
@@ -177,7 +280,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     // Email
                     const SpFormLabel('Email'),
                     AuthTextFormField(
-                      hintText: 'Enter phone number',
+                      hintText: 'Enter your email address',
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -185,19 +288,20 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     // Instagram
                     const SpFormLabel('Instagram Link'),
                     AuthTextFormField(
-                      hintText: 'Enter phone number',
+                      hintText: 'Enter instagram link',
                       controller: _instagramController,
                     ),
 
                     // Opening Days & Hours
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SpFormLabel('Opening Days'),
-                              _buildTimeField(_openingDays, () {}),
+                              _buildOpeningDaysField(),
                             ],
                           ),
                         ),
@@ -207,7 +311,12 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SpFormLabel('Opening Hours'),
-                              _buildTimeField(_openingHours, () {}),
+                              _buildTimeField(
+                                _openingStartTime == null
+                                    ? 'Select hours'
+                                    : '${_openingStartTime!.format(context)} - ${_openingEndTime!.format(context)}',
+                                _pickOpeningHours,
+                              ),
                             ],
                           ),
                         ),
@@ -233,7 +342,11 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                       ),
                     ),
                     SizedBox(height: 8.h),
-                    const SpPhotoUploadBox(),
+                    SpPhotoUploadBox(
+                      onTap: _pickPhotos,
+                      previewFile:
+                          _selectedPhotos.isNotEmpty ? _selectedPhotos.first : null,
+                    ),
                     SizedBox(height: 16.h),
 
                     // Description
@@ -282,6 +395,60 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             fontSize: 11.sp,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildOpeningDaysField() {
+    return GestureDetector(
+      onTap: _pickOpeningDays,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(
+            color: AppColors.lightText.withValues(alpha: 0.3),
+            width: 1.w,
+          ),
+        ),
+        child: _selectedOpeningDays.isEmpty
+            ? Text(
+                'Select days',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.lightText,
+                  fontSize: 11.sp,
+                ),
+              )
+            : Wrap(
+                spacing: 4.w,
+                runSpacing: 4.h,
+                children: _allDays.map((day) {
+                  final isSelected = _selectedOpeningDays.contains(day);
+                  return Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 4.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.primaryLight
+                          : AppColors.primaryLight.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Text(
+                      day,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color:
+                            isSelected ? Colors.white : AppColors.primaryLight,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11.sp,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
       ),
     );
   }

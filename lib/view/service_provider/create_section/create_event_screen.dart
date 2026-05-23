@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/google_map.dart';
@@ -31,6 +35,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   List<String> _selectedTags = [];
 
   final List<String> _tags = ['Toddler', 'Indoor', 'Ongoing', 'Free', 'Paid'];
+
+  final List<File> _selectedPhotos = [];
 
   @override
   void dispose() {
@@ -88,6 +94,25 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         _timeController.text = picked.format(context);
       });
     }
+  }
+
+  void _pickPhotos() {
+    showImagePickerOptions(context, (source) async {
+      if (source == ImageSource.camera) {
+        final file = await pickSingleImage(
+          context: context,
+          source: ImageSource.camera,
+        );
+        if (file != null) {
+          setState(() => _selectedPhotos.add(file));
+        }
+      } else {
+        final files = await pickImageFromGallery(context: context);
+        if (files != null) {
+          setState(() => _selectedPhotos.addAll(files));
+        }
+      }
+    });
   }
 
   @override
@@ -233,7 +258,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       ),
                     ),
                     SizedBox(height: 8.h),
-                    const SpPhotoUploadBox(),
+                    SpPhotoUploadBox(
+                      onTap: _pickPhotos,
+                      previewFile:
+                          _selectedPhotos.isNotEmpty ? _selectedPhotos.first : null,
+                    ),
                     SizedBox(height: 16.h),
 
                     // Description
@@ -249,7 +278,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     SpFormButtons(
                       onCancel: () => Navigator.of(context).maybePop(),
                       onSubmit: () {},
-                      submitLabel: 'Submit activity',
+                      submitLabel: 'Submit event',
                     ),
                     SizedBox(height: 24.h),
                   ],

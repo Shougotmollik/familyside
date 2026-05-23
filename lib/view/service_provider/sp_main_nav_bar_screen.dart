@@ -1,5 +1,6 @@
 import 'package:familyside/view/service_provider/analytics/sp_analytics_screen.dart';
 import 'package:familyside/view/service_provider/create_section/sp_create_screen.dart';
+import 'package:familyside/view/service_provider/home/sp_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -16,7 +17,7 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = const [
-    _DashboardScreen(),
+    SpHomeScreen(),
     _AppointmentsScreen(),
     SpCreateScreen(),
     SpAnalyticsScreen(),
@@ -56,7 +57,7 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
             child: Row(
               children: [
                 _buildNavItem(0, 'Home', "assets/icon/Home.svg"),
-                _buildNavItem(1, 'Activity', "assets/icon/hugeicons_work.svg"),
+                _buildNavItem(1, 'Manage', "assets/icon/hugeicons_work.svg"),
                 _buildNavItem(2, 'Create', "assets/icon/add-outline.svg"),
                 _buildNavItem(
                   3,
@@ -117,18 +118,6 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
   }
 }
 
-class _DashboardScreen extends StatelessWidget {
-  const _DashboardScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
-      body: const Center(child: Text('Dashboard - Placeholder')),
-    );
-  }
-}
-
 class _AppointmentsScreen extends StatelessWidget {
   const _AppointmentsScreen();
 
@@ -137,30 +126,6 @@ class _AppointmentsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Appointments')),
       body: const Center(child: Text('Appointments - Placeholder')),
-    );
-  }
-}
-
-class _ServicesScreen extends StatelessWidget {
-  const _ServicesScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Services')),
-      body: const Center(child: Text('Services - Placeholder')),
-    );
-  }
-}
-
-class _MessagesScreen extends StatelessWidget {
-  const _MessagesScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
-      body: const Center(child: Text('Messages - Placeholder')),
     );
   }
 }

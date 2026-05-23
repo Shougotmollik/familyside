@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_form_label.dart';
@@ -26,12 +30,33 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
 
   final List<String> _tags = ['Toddler', 'Indoor', 'Ongoing', 'Free', 'Paid'];
 
+  final List<File> _selectedPhotos = [];
+
   @override
   void dispose() {
     _nameController.dispose();
     _amountController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  void _pickPhotos() {
+    showImagePickerOptions(context, (source) async {
+      if (source == ImageSource.camera) {
+        final file = await pickSingleImage(
+          context: context,
+          source: ImageSource.camera,
+        );
+        if (file != null) {
+          setState(() => _selectedPhotos.add(file));
+        }
+      } else {
+        final files = await pickImageFromGallery(context: context);
+        if (files != null) {
+          setState(() => _selectedPhotos.addAll(files));
+        }
+      }
+    });
   }
 
   @override
@@ -138,13 +163,17 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
                       ),
                     ),
                     SizedBox(height: 8.h),
-                    const SpPhotoUploadBox(),
+                    SpPhotoUploadBox(
+                      onTap: _pickPhotos,
+                      previewFile:
+                          _selectedPhotos.isNotEmpty ? _selectedPhotos.first : null,
+                    ),
                     SizedBox(height: 16.h),
 
                     SpFormButtons(
                       onCancel: () => Navigator.of(context).maybePop(),
                       onSubmit: () {},
-                      submitLabel: 'Submit activity',
+                      submitLabel: 'Submit gift',
                     ),
                     SizedBox(height: 24.h),
                   ],

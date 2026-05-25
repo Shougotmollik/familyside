@@ -1,3 +1,4 @@
+import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/auth/forgot/family_forgot_password_screen.dart';
 import 'package:familyside/view/family/auth/login/family_login_screen.dart';
 import 'package:familyside/view/family/auth/forgot/family_otp_verfication_screen.dart';
@@ -32,6 +33,7 @@ import 'package:familyside/view/service_provider/profile/sp_subscription_screen.
 import 'package:familyside/view/service_provider/profile/sp_payment_screen.dart';
 import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
+import 'package:familyside/view/family/gift/gift_details_screen.dart';
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
 import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
@@ -235,6 +237,11 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: RouterPath.familyGiftDetailsScreen,
+        builder: (context, state) =>
+            GiftDetailsScreen(item: state.extra as GiftItemModel),
+      ),
+      GoRoute(
         path: RouterPath.familyChangePasswordScreen,
         builder: (context, state) => const FamilyChangePasswordScreen(),
       ),
@@ -265,9 +272,8 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyActivityDetailsScreen,
-        builder: (context, state) => ActivityDetailsScreen(
-          config: state.extra as ActivityDetailsConfig,
-        ),
+        builder: (context, state) =>
+            ActivityDetailsScreen(config: state.extra as ActivityDetailsConfig),
       ),
       GoRoute(
         path: RouterPath.familyWriteReviewScreen,

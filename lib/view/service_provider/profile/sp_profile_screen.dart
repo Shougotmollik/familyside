@@ -22,7 +22,7 @@ class SpProfileScreen extends StatelessWidget {
     ),
     _SettingItem(
       title: 'Subscription',
-      iconPath: 'assets/icon/star.svg',
+      iconPath: 'assets/icon/subscriptions.svg',
       routePath: RouterPath.spSubscriptionScreen,
     ),
     _SettingItem(
@@ -66,6 +66,8 @@ class SpProfileScreen extends StatelessWidget {
                     _ContributeSection(),
                     SizedBox(height: 16.h),
                     _GeneralSettingsSection(settings: _settings),
+                    SizedBox(height: 16.h),
+                    _LogoutSection(),
                   ],
                 ),
               ),
@@ -271,10 +273,7 @@ class _ContributeSection extends StatelessWidget {
                 onTap: () => context.push(RouterPath.spCreateActivityScreen),
               ),
               SizedBox(width: 8.w),
-              _ContributeButton(
-                label: 'Leave Review',
-                onTap: () {},
-              ),
+              _ContributeButton(label: 'Leave Review', onTap: () {}),
             ],
           ),
         ],
@@ -414,6 +413,139 @@ class _SettingTile extends StatelessWidget {
                 color: AppColors.mutedIcon,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LogoutSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _showLogoutDialog(context),
+          borderRadius: BorderRadius.circular(16.r),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            child: Row(
+              children: [
+                Icon(Icons.logout, size: 22.sp, color: AppColors.error),
+                SizedBox(width: 12.w),
+                Text(
+                  'Log Out',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.error,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: AppColors.surfaceLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.r),
+        ),
+        insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
+        child: Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.logout, size: 48.sp, color: AppColors.error),
+              SizedBox(height: 16.h),
+              Text(
+                'Log Out',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Are you sure you want to log out?',
+                style: TextStyle(fontSize: 14.sp, color: AppColors.lightText),
+              ),
+              SizedBox(height: 32.h),
+              Row(
+                children: [
+                  Expanded(
+                    child: _DialogButton(
+                      label: 'Cancel',
+                      onTap: () => Navigator.of(ctx).pop(),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: _DialogButton(
+                      label: 'Log Out',
+                      isDestructive: true,
+                      onTap: () {
+                        Navigator.of(ctx).pop();
+                        context.go(RouterPath.onBoardingScreen);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DialogButton extends StatelessWidget {
+  const _DialogButton({
+    required this.label,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+  final String label;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDestructive ? AppColors.error : AppColors.surface,
+          borderRadius: BorderRadius.circular(8.r),
+          border: isDestructive ? null : Border.all(color: AppColors.border),
+        ),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 15.h),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: isDestructive ? Colors.white : AppColors.text,
+              ),
+            ),
           ),
         ),
       ),

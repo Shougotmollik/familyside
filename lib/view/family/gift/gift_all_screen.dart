@@ -1,4 +1,5 @@
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/gift_card.dart';
 import 'package:familyside/view/family/gift/widgets/gift_flow.dart';
@@ -6,6 +7,7 @@ import 'package:familyside/view/family/gift/widgets/gift_list_model.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class GiftAllScreenConfig {
   final String title;
@@ -71,6 +73,10 @@ class _GiftAllScreenState extends State<GiftAllScreen> {
                     description: item.description,
                     location: item.location,
                     isBookmarked: _bookmarkedIndices.contains(index),
+                    onTap: () => context.push(
+                      RouterPath.familyGiftDetailsScreen,
+                      extra: item,
+                    ),
                     onAddToGiftList: () => _openAddToGiftList(item),
                     onShareTap: () => _openShareGiftCard(item),
                     onBookmarkTap: () {

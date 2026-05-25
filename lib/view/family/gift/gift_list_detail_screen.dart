@@ -1,3 +1,5 @@
+import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/gift_flow.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_cards.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
@@ -5,6 +7,7 @@ import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class GiftListDetailScreen extends StatefulWidget {
   final GiftListDetailScreenConfig config;
@@ -117,6 +120,16 @@ class _GiftListDetailScreenState extends State<GiftListDetailScreen> {
                       final item = _items[index];
                       return GiftListItemCard(
                         item: item,
+                        onTap: () => context.push(
+                          RouterPath.familyGiftDetailsScreen,
+                          extra: GiftItemModel(
+                            imagePath: item.imagePath,
+                            title: item.title,
+                            price: item.price,
+                            description: '',
+                            location: 'Adventure Play Center',
+                          ),
+                        ),
                         onDelete: () => _removeItem(index),
                       );
                     }),

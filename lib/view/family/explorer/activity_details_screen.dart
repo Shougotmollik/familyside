@@ -567,81 +567,90 @@ class _ActivityDetailsScreenState extends State<ActivityDetailsScreen> {
   // Gift chip
 
   Widget _buildGiftChip(GiftItemModel gift) {
-    return Container(
-      width: 140.w,
-      margin: EdgeInsets.only(right: 12.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-                child: Image.asset(
-                  gift.imagePath,
-                  width: 140.w,
-                  height: 90.h,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+    return GestureDetector(
+      onTap: () =>
+          context.push(RouterPath.familyGiftDetailsScreen, extra: gift),
+      child: Container(
+        width: 140.w,
+        margin: EdgeInsets.only(right: 12.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(12.r),
+                  ),
+                  child: Image.asset(
+                    gift.imagePath,
                     width: 140.w,
                     height: 90.h,
-                    color: Colors.grey.shade200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 140.w,
+                      height: 90.h,
+                      color: Colors.grey.shade200,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 6.h,
-                left: 6.w,
-                child: Container(
-                  padding: EdgeInsets.all(5.w),
-                  decoration: const BoxDecoration(
-                    color: AppColors.primaryLight,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.bookmark, color: Colors.white, size: 12.sp),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  gift.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.text,
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  gift.price,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primaryLight,
+                Positioned(
+                  top: 6.h,
+                  left: 6.w,
+                  child: Container(
+                    padding: EdgeInsets.all(5.w),
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryLight,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.bookmark,
+                      color: Colors.white,
+                      size: 12.sp,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.all(8.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    gift.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.text,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    gift.price,
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primaryLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   // Review card
-
   Widget _buildReviewCard(_ReviewModel review) {
     return Container(
       margin: EdgeInsets.only(bottom: 14.h),

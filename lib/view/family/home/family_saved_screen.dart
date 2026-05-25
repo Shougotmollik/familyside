@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/explorer/widgets/activity_card.dart';
 import 'package:familyside/view/widgets/event_card.dart';
 import 'package:familyside/view/family/gift/widgets/gift_card.dart';
-import 'package:familyside/view/family/home/family_home_screen.dart'; // RecommendedItemModel
-import 'package:familyside/model/gift_item_model.dart'; // GiftItemModel if needed
+import 'package:familyside/view/family/home/family_home_screen.dart';
 
 class FamilySavedScreen extends StatefulWidget {
   const FamilySavedScreen({super.key});
@@ -353,6 +354,16 @@ class _FamilySavedScreenState extends State<FamilySavedScreen>
                       description: item['description'],
                       location: item['location'],
                       isBookmarked: true,
+                      onTap: () => context.push(
+                        RouterPath.familyGiftDetailsScreen,
+                        extra: GiftItemModel(
+                          imagePath: item['imagePath'],
+                          title: item['title'],
+                          price: item['price'],
+                          description: item['description'],
+                          location: item['location'],
+                        ),
+                      ),
                       onAddToGiftList: () {},
                       onShareTap: () {},
                       onBookmarkTap: () {},

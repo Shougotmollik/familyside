@@ -43,24 +43,21 @@ class _GiftScreenState extends State<GiftScreen> {
       imagePath: 'assets/image/onboarding 1.jpg',
       title: '1 Month Activity Pass',
       price: '45',
-      description:
-          'Gift a month of fun activities at Green Meadows...',
+      description: 'Gift a month of fun activities at Green Meadows...',
       location: 'Green meadows ark',
     ),
     GiftItemModel(
       imagePath: 'assets/image/onboarding 2.jpg',
       title: '1 Month Activity Pass',
       price: '45',
-      description:
-          'Gift a month of fun activities at Green Meadows...',
+      description: 'Gift a month of fun activities at Green Meadows...',
       location: 'Green meadows ark',
     ),
     GiftItemModel(
       imagePath: 'assets/image/onboarding 3.jpg',
       title: '1 Month Activity Pass',
       price: '45',
-      description:
-          'Gift a month of fun activities at Green Meadows...',
+      description: 'Gift a month of fun activities at Green Meadows...',
       location: 'Green meadows ark',
     ),
   ];
@@ -84,11 +81,9 @@ class _GiftScreenState extends State<GiftScreen> {
       onListCreated: (list) => setState(() => _giftLists.add(list)),
     );
     if (result != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Added to ${result.list.name}'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Added to ${result.list.name}')));
     }
   }
 
@@ -99,10 +94,7 @@ class _GiftScreenState extends State<GiftScreen> {
   void _openAllGiftsScreen() {
     context.push(
       RouterPath.familyGiftAllScreen,
-      extra: GiftAllScreenConfig(
-        title: 'All Gifts',
-        items: _giftItems,
-      ),
+      extra: GiftAllScreenConfig(title: 'All Gifts', items: _giftItems),
     );
   }
 
@@ -137,9 +129,7 @@ class _GiftScreenState extends State<GiftScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          wasBookmarked
-              ? 'Removed from saved gifts'
-              : 'Saved to My list',
+          wasBookmarked ? 'Removed from saved gifts' : 'Saved to My list',
         ),
       ),
     );
@@ -257,7 +247,7 @@ class _GiftScreenState extends State<GiftScreen> {
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: AppColors.secondaryLight,
-              borderRadius: BorderRadius.circular(20.r),
+              borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(
               'My list',
@@ -277,7 +267,7 @@ class _GiftScreenState extends State<GiftScreen> {
             width: 36.w,
             decoration: BoxDecoration(
               color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(10.r),
+              borderRadius: BorderRadius.circular(8.r),
             ),
             child: Icon(Icons.add, color: Colors.white, size: 22.sp),
           ),
@@ -351,8 +341,9 @@ class _GiftScreenState extends State<GiftScreen> {
                     style: TextStyle(
                       color: isSelected ? Colors.white : AppColors.primaryLight,
                       fontSize: 14.sp,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                 ),
@@ -402,6 +393,8 @@ class _GiftScreenState extends State<GiftScreen> {
             description: item.description,
             location: item.location,
             isBookmarked: _bookmarkedGiftKeys.contains(_giftKey(item)),
+            onTap: () =>
+                context.push(RouterPath.familyGiftDetailsScreen, extra: item),
             onAddToGiftList: () => _openAddToGiftList(item),
             onShareTap: () => _openShareGiftCard(item),
             onBookmarkTap: () => _toggleBookmark(item),

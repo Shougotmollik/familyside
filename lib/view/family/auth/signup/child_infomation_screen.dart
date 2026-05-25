@@ -393,7 +393,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                   CustomDropdown(
                     hintText: 'boy',
                     value: _selectedGender,
-                    items: const ['boy', 'girl', 'other'],
+                    items: const ['boy', 'girl'],
                     onChanged: (value) {
                       setState(() => _selectedGender = value);
                     },

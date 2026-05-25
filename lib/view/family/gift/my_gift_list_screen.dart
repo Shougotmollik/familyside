@@ -1,4 +1,5 @@
 import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/gift_flow.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_cards.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
@@ -130,7 +131,21 @@ class _MyGiftListScreenState extends State<MyGiftListScreen> {
                       badgeLabel:
                           '${_savedGiftsWithoutList.length} list items',
                       cards: _savedGiftsWithoutList
-                          .map((item) => SavedGiftCard(item: item))
+                          .map(
+                            (item) => SavedGiftCard(
+                              item: item,
+                              onTap: () => context.push(
+                                RouterPath.familyGiftDetailsScreen,
+                                extra: GiftItemModel(
+                                  imagePath: item.imagePath,
+                                  title: item.title,
+                                  price: item.price,
+                                  description: '',
+                                  location: 'Adventure Play Center',
+                                ),
+                              ),
+                            ),
+                          )
                           .toList(),
                     ),
                     SizedBox(height: 24.h),

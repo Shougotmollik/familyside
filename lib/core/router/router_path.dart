@@ -27,6 +27,7 @@ class RouterPath {
   static const String familyMyGiftListScreen = '/familyMyGiftListScreen';
   static const String familyGiftListDetailScreen =
       '/familyGiftListDetailScreen';
+  static const String familyGiftDetailsScreen = '/familyGiftDetailsScreen';
   static const String familyChangePasswordScreen =
       '/familyChangePasswordScreen';
   static const String familyEditProfileScreen = '/familyEditProfileScreen';

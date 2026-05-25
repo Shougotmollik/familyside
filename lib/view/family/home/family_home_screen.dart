@@ -335,7 +335,7 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
                 "Welcome back Shahid",
                 style: TextStyle(
                   fontSize: 17.sp,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: const Color(0xFF1D1B20),
                 ),
               ),

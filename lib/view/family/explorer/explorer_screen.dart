@@ -197,6 +197,10 @@ class _ExplorerGiftsTab extends StatelessWidget {
           description: item.description,
           location: item.location,
           isBookmarked: bookmarkedIndices.contains(index),
+          onTap: () => context.push(
+            RouterPath.familyGiftDetailsScreen,
+            extra: item,
+          ),
           onAddToGiftList: () => onAddToGiftList(item),
           onShareTap: () => onShareTap(item),
           onBookmarkTap: () => onBookmarkTap(index),

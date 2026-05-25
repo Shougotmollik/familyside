@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 
+enum SpCardType { activity, event, gift }
+
 class SpManageCard extends StatelessWidget {
   const SpManageCard({
     super.key,
@@ -10,11 +12,13 @@ class SpManageCard extends StatelessWidget {
     required this.category,
     required this.title,
     required this.price,
-    required this.distance,
-    required this.ageRange,
+    required this.type,
+    this.distance,
+    this.ageRange,
     this.description,
     this.location,
-    this.isGift = false,
+    this.tag,
+    this.date,
     this.onEdit,
     this.onDelete,
   });
@@ -23,11 +27,13 @@ class SpManageCard extends StatelessWidget {
   final String category;
   final String title;
   final String price;
-  final String distance;
-  final String ageRange;
+  final SpCardType type;
+  final String? distance;
+  final String? ageRange;
   final String? description;
   final String? location;
-  final bool isGift;
+  final String? tag;
+  final String? date;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
@@ -55,15 +61,15 @@ class SpManageCard extends StatelessWidget {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10.r),
+                borderRadius: BorderRadius.circular(12.r),
                 child: Image.asset(
                   imagePath,
-                  width: 120.w,
-                  height: isGift ? 120.h : 110.h,
+                  width: type == SpCardType.gift ? 120.w : 140.w,
+                  height: type == SpCardType.gift ? 120.h : 120.h,
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => Container(
-                    width: 120.w,
-                    height: isGift ? 120.h : 110.h,
+                    width: type == SpCardType.gift ? 120.w : 140.w,
+                    height: type == SpCardType.gift ? 120.h : 120.h,
                     color: Colors.grey.shade200,
                     child: Icon(
                       Icons.image_outlined,
@@ -73,30 +79,129 @@ class SpManageCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                top: 7.h,
-                left: 7.w,
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isGift ? 6.w : 7.w,
-                    vertical: 3.h,
+              if (type == SpCardType.activity) ...[
+                Positioned(
+                  top: 7.h,
+                  left: 7.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6.w,
+                      vertical: 3.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        color: AppColors.primaryLight,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: isGift ? AppColors.primaryLight : Colors.white,
-                    borderRadius: BorderRadius.circular(20.r),
+                ),
+                Positioned(
+                  top: 7.h,
+                  right: 7.w,
+                  child: Container(
+                    padding: EdgeInsets.all(4.w),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        'assets/icon/activity_icon.svg',
+                        width: 12.w,
+                        height: 12.h,
+                      ),
+                    ),
                   ),
-                  child: isGift
-                      ? Icon(Icons.bookmark, color: Colors.white, size: 14.sp)
-                      : Text(
-                          category,
+                ),
+              ] else if (type == SpCardType.event) ...[
+                Positioned(
+                  top: 7.h,
+                  left: 7.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6.w,
+                      vertical: 3.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        color: AppColors.primaryLight,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 7.h,
+                  right: 7.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6.w,
+                      vertical: 2.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.calendar_month_outlined,
+                          color: Colors.white,
+                          size: 10.sp,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          date ?? '',
                           style: TextStyle(
-                            color: AppColors.primaryLight,
+                            color: Colors.white,
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ] else if (type == SpCardType.gift) ...[
+                Positioned(
+                  top: 7.h,
+                  left: 7.w,
+                  child: Container(
+                    height: 28.w,
+                    width: 28.w,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        'assets/icon/gift_icon.svg',
+                        height: 16.h,
+                        width: 16.w,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
           SizedBox(width: 12.w),
@@ -133,38 +238,40 @@ class SpManageCard extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 5.h),
-                // Description (gift) or distance+age (activity/event)
-                if (isGift && description != null) ...[
-                  Text(
-                    description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: AppColors.lightText,
+                // Content based on type
+                if (type == SpCardType.gift) ...[
+                  if (description != null) ...[
+                    Text(
+                      description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.lightText,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        color: AppColors.grey,
-                        size: 12.sp,
-                      ),
-                      SizedBox(width: 3.w),
-                      Expanded(
-                        child: Text(
-                          location ?? '',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            color: AppColors.grey,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                    SizedBox(height: 4.h),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: AppColors.grey,
+                          size: 12.sp,
                         ),
-                      ),
-                    ],
-                  ),
+                        SizedBox(width: 3.w),
+                        Expanded(
+                          child: Text(
+                            location ?? '',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColors.grey,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ] else ...[
                   Row(
                     children: [
@@ -175,7 +282,7 @@ class SpManageCard extends StatelessWidget {
                       ),
                       SizedBox(width: 3.w),
                       Text(
-                        distance,
+                        distance ?? '',
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: AppColors.grey,
@@ -190,7 +297,7 @@ class SpManageCard extends StatelessWidget {
                       SizedBox(width: 3.w),
                       Expanded(
                         child: Text(
-                          ageRange,
+                          ageRange ?? '',
                           style: TextStyle(
                             fontSize: 12.sp,
                             color: AppColors.grey,
@@ -200,6 +307,27 @@ class SpManageCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (tag != null) ...[
+                    SizedBox(height: 10.h),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 4.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0E8E1),
+                        borderRadius: BorderRadius.circular(6.r),
+                      ),
+                      child: Text(
+                        tag!,
+                        style: TextStyle(
+                          color: const Color(0xFF6C7278),
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
                 SizedBox(height: 10.h),
                 // Edit + Delete row

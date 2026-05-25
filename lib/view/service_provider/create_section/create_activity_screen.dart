@@ -32,10 +32,11 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   final _emailController = TextEditingController();
   final _instagramController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _tagSearchController = TextEditingController();
 
   String? _selectedCategory;
-  List<String> _selectedSubCategories = [];
-  List<String> _selectedTags = [];
+  final List<String> _selectedSubCategories = [];
+  final List<String> _selectedTags = [];
 
   final List<String> _subCategories = [
     'AI',
@@ -48,7 +49,21 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   ];
   final List<String> _tags = ['Toddler', 'Indoor', 'Ongoing', 'Free', 'Paid'];
 
-  final List<String> _allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  List<String> get _filteredTags {
+    final query = _tagSearchController.text.trim().toLowerCase();
+    if (query.isEmpty) return _tags;
+    return _tags.where((t) => t.toLowerCase().contains(query)).toList();
+  }
+
+  final List<String> _allDays = [
+    'Mon',
+    'Tue',
+    'Wed',
+    'Thu',
+    'Fri',
+    'Sat',
+    'Sun',
+  ];
   List<String> _selectedOpeningDays = [];
   TimeOfDay? _openingStartTime;
   TimeOfDay? _openingEndTime;
@@ -64,6 +79,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     _emailController.dispose();
     _instagramController.dispose();
     _descriptionController.dispose();
+    _tagSearchController.dispose();
     super.dispose();
   }
 
@@ -242,14 +258,97 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     // Tag
                     const SpFormLabel('Tag'),
                     SizedBox(height: 8.h),
-                    SpTagSelector(
-                      tags: _tags,
-                      selectedTags: _selectedTags,
-                      onToggle: (tag) => setState(() {
-                        _selectedTags.contains(tag)
-                            ? _selectedTags.remove(tag)
-                            : _selectedTags.add(tag);
-                      }),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      padding: EdgeInsets.all(12.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Search bar
+                          SizedBox(
+                            height: 40.h,
+                            child: TextField(
+                              controller: _tagSearchController,
+                              onChanged: (_) => setState(() {}),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.text,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Search or add tags...',
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: AppColors.lightText,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.surface,
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  size: 20.sp,
+                                  color: AppColors.lightText,
+                                ),
+                                suffixIcon: _tagSearchController.text.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(
+                                            () => _tagSearchController.clear(),
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.close,
+                                          size: 18.sp,
+                                          color: AppColors.lightText,
+                                        ),
+                                      )
+                                    : null,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 10.h,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                    color: AppColors.lightText.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    width: 1.w,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                    color: AppColors.lightText.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    width: 1.w,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                    color: AppColors.primaryLight,
+                                    width: 1.w,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+
+                          // Content area
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 250),
+                            alignment: Alignment.topCenter,
+                            child: _tagSearchController.text.trim().isNotEmpty
+                                ? _buildSearchResults()
+                                : _buildDefaultTags(),
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 16.h),
 
@@ -301,7 +400,10 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SpFormLabel('Opening Days'),
-                              _buildOpeningDaysField(),
+                              SizedBox(
+                                height: 44.h,
+                                child: _buildOpeningDaysField(),
+                              ),
                             ],
                           ),
                         ),
@@ -311,11 +413,14 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SpFormLabel('Opening Hours'),
-                              _buildTimeField(
-                                _openingStartTime == null
-                                    ? 'Select hours'
-                                    : '${_openingStartTime!.format(context)} - ${_openingEndTime!.format(context)}',
-                                _pickOpeningHours,
+                              SizedBox(
+                                height: 44.h,
+                                child: _buildTimeField(
+                                  _openingStartTime == null
+                                      ? 'Select hours'
+                                      : '${_openingStartTime!.format(context)} - ${_openingEndTime!.format(context)}',
+                                  _pickOpeningHours,
+                                ),
                               ),
                             ],
                           ),
@@ -344,8 +449,9 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     SizedBox(height: 8.h),
                     SpPhotoUploadBox(
                       onTap: _pickPhotos,
-                      previewFile:
-                          _selectedPhotos.isNotEmpty ? _selectedPhotos.first : null,
+                      previewFile: _selectedPhotos.isNotEmpty
+                          ? _selectedPhotos.first
+                          : null,
                     ),
                     SizedBox(height: 16.h),
 
@@ -375,27 +481,146 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
     );
   }
 
-  Widget _buildTimeField(String value, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10.r),
-          border: Border.all(
-            color: AppColors.lightText.withValues(alpha: 0.3),
-            width: 1.w,
-          ),
-        ),
-        child: Text(
-          value,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+  Widget _buildDefaultTags() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Popular predefined tags
+        Text(
+          'Popular tags',
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w600,
             color: AppColors.lightText,
-            fontSize: 11.sp,
           ),
         ),
-      ),
+        SizedBox(height: 8.h),
+        SpTagSelector(
+          tags: _tags,
+          selectedTags: _selectedTags,
+          onToggle: (tag) => setState(() {
+            _selectedTags.contains(tag)
+                ? _selectedTags.remove(tag)
+                : _selectedTags.add(tag);
+          }),
+        ),
+        // Selected tags section
+        if (_selectedTags.isNotEmpty) ...[
+          SizedBox(height: 10.h),
+          Row(
+            children: [
+              Icon(
+                Icons.check_circle,
+                size: 14.sp,
+                color: AppColors.primaryLight,
+              ),
+              SizedBox(width: 4.w),
+              Text(
+                '${_selectedTags.length} selected',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.primaryLight,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSearchResults() {
+    final query = _tagSearchController.text.trim();
+    if (_filteredTags.isEmpty) {
+      return GestureDetector(
+        onTap: () {
+          if (query.isNotEmpty && !_tags.contains(query)) {
+            setState(() {
+              _tags.add(query);
+              _selectedTags.add(query);
+              _tagSearchController.clear();
+            });
+          }
+        },
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            color: AppColors.primaryLight.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: AppColors.primaryLight.withValues(alpha: 0.2),
+              width: 1.w,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+                child: Icon(Icons.add, size: 14.sp, color: Colors.white),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(fontSize: 13.sp, color: AppColors.text),
+                    children: [
+                      TextSpan(
+                        text: 'Create "',
+                        style: TextStyle(color: AppColors.lightText),
+                      ),
+                      TextSpan(
+                        text: query,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryLight,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '"',
+                        style: TextStyle(color: AppColors.lightText),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 14.sp,
+                color: AppColors.lightText,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Suggestions',
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.lightText,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        SpTagSelector(
+          tags: _filteredTags,
+          selectedTags: _selectedTags,
+          onToggle: (tag) => setState(() {
+            _selectedTags.contains(tag)
+                ? _selectedTags.remove(tag)
+                : _selectedTags.add(tag);
+          }),
+        ),
+      ],
     );
   }
 
@@ -404,7 +629,8 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
       onTap: _pickOpeningDays,
       child: Container(
         width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+        height: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10.r),
@@ -413,42 +639,78 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
             width: 1.w,
           ),
         ),
-        child: _selectedOpeningDays.isEmpty
-            ? Text(
-                'Select days',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.lightText,
-                  fontSize: 11.sp,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: _selectedOpeningDays.isEmpty
+              ? Text(
+                  'Select days',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.lightText,
+                    fontSize: 11.sp,
+                  ),
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Wrap(
+                    spacing: 4.w,
+                    runSpacing: 4.h,
+                    children: _allDays.map((day) {
+                      final isSelected = _selectedOpeningDays.contains(day);
+                      return Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.primaryLight
+                              : AppColors.primaryLight.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Text(
+                          day,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.primaryLight,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11.sp,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              )
-            : Wrap(
-                spacing: 4.w,
-                runSpacing: 4.h,
-                children: _allDays.map((day) {
-                  final isSelected = _selectedOpeningDays.contains(day);
-                  return Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primaryLight
-                          : AppColors.primaryLight.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Text(
-                      day,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color:
-                            isSelected ? Colors.white : AppColors.primaryLight,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 11.sp,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeField(String value, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(
+            color: AppColors.lightText.withValues(alpha: 0.3),
+            width: 1.w,
+          ),
+        ),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            value,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.lightText,
+              fontSize: 11.sp,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -273,7 +273,10 @@ class _ContributeSection extends StatelessWidget {
                 onTap: () => context.push(RouterPath.spCreateActivityScreen),
               ),
               SizedBox(width: 8.w),
-              _ContributeButton(label: 'Leave Review', onTap: () {}),
+              _ContributeButton(
+                label: 'Leave Review',
+                onTap: () => context.push(RouterPath.familyWriteReviewScreen),
+              ),
             ],
           ),
         ],

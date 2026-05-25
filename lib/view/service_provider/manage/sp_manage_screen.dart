@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/family/explorer/widgets/explorer_tab_bar.dart';
-import 'package:familyside/view/service_provider/manage/widgets/sp_manage_card.dart';
+import 'package:familyside/view/service_provider/manage/widgets/sp_manage_card.dart'
+    show SpCardType, SpManageCard;
 import 'package:familyside/view/service_provider/manage/widgets/sp_edit_bottom_sheet.dart';
 import 'package:familyside/view/service_provider/manage/widgets/sp_delete_confirm_sheet.dart';
 
@@ -13,6 +14,8 @@ class _ActivityItem {
   final String price;
   final String distance;
   final String ageRange;
+  final String date;
+  final String tag;
 
   const _ActivityItem({
     required this.imagePath,
@@ -21,6 +24,30 @@ class _ActivityItem {
     required this.price,
     required this.distance,
     required this.ageRange,
+    required this.date,
+    required this.tag,
+  });
+}
+
+class _EventItem {
+  final String imagePath;
+  final String category;
+  final String title;
+  final String price;
+  final String distance;
+  final String ageRange;
+  final String date;
+  final String tag;
+
+  const _EventItem({
+    required this.imagePath,
+    required this.category,
+    required this.title,
+    required this.price,
+    required this.distance,
+    required this.ageRange,
+    required this.date,
+    required this.tag,
   });
 }
 
@@ -59,6 +86,8 @@ class _SpManageScreenState extends State<SpManageScreen>
       price: '20',
       distance: '0.05 km',
       ageRange: 'Age: 0-20 years',
+      date: '25 Jun',
+      tag: 'Recommended',
     ),
     const _ActivityItem(
       imagePath: 'assets/image/doctor.jpg',
@@ -67,6 +96,8 @@ class _SpManageScreenState extends State<SpManageScreen>
       price: '20',
       distance: '0.05 km',
       ageRange: 'Age: 0-20 years',
+      date: '25 Jun',
+      tag: 'Recommended',
     ),
     const _ActivityItem(
       imagePath: 'assets/image/doctor.jpg',
@@ -75,6 +106,8 @@ class _SpManageScreenState extends State<SpManageScreen>
       price: '20',
       distance: '0.05 km',
       ageRange: 'Age: 0-20 years',
+      date: '25 Jun',
+      tag: 'Recommended',
     ),
     const _ActivityItem(
       imagePath: 'assets/image/doctor.jpg',
@@ -83,41 +116,51 @@ class _SpManageScreenState extends State<SpManageScreen>
       price: '20',
       distance: '0.05 km',
       ageRange: 'Age: 0-20 years',
+      date: '25 Jun',
+      tag: 'Recommended',
     ),
   ];
 
-  final List<_ActivityItem> _events = [
-    const _ActivityItem(
+  final List<_EventItem> _events = [
+    const _EventItem(
       imagePath: 'assets/image/doctor.jpg',
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
+      category: 'Events',
+      title: 'Summer Kids Festival',
+      price: '15',
+      distance: '1.2 km',
+      ageRange: 'Age: 3-12 years',
+      date: '12 Jul',
+      tag: 'Recommended',
     ),
-    const _ActivityItem(
+    const _EventItem(
       imagePath: 'assets/image/doctor.jpg',
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
+      category: 'Outdoor',
+      title: 'Green Meadows Park Day',
+      price: '10',
+      distance: '2.1 km',
+      ageRange: 'Age: 5-15 years',
+      date: '18 Aug',
+      tag: 'Recommended',
     ),
-    const _ActivityItem(
+    const _EventItem(
       imagePath: 'assets/image/doctor.jpg',
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
+      category: 'Events',
+      title: 'Summer Kids Festival',
+      price: '15',
+      distance: '1.2 km',
+      ageRange: 'Age: 3-12 years',
+      date: '12 Jul',
+      tag: 'Recommended',
     ),
-    const _ActivityItem(
+    const _EventItem(
       imagePath: 'assets/image/doctor.jpg',
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
+      category: 'Outdoor',
+      title: 'Green Meadows Park Day',
+      price: '10',
+      distance: '2.1 km',
+      ageRange: 'Age: 5-15 years',
+      date: '18 Aug',
+      tag: 'Recommended',
     ),
   ];
 
@@ -275,6 +318,9 @@ class _SpManageScreenState extends State<SpManageScreen>
           price: item.price,
           distance: item.distance,
           ageRange: item.ageRange,
+          date: item.date,
+          tag: item.tag,
+          type: SpCardType.activity,
           onEdit: () => _openEdit(item.title, 'Activity'),
           onDelete: () => _openDelete(() {
             setState(() => _activities.removeAt(i));
@@ -297,6 +343,9 @@ class _SpManageScreenState extends State<SpManageScreen>
           price: item.price,
           distance: item.distance,
           ageRange: item.ageRange,
+          date: item.date,
+          tag: item.tag,
+          type: SpCardType.event,
           onEdit: () => _openEdit(item.title, 'Event'),
           onDelete: () => _openDelete(() {
             setState(() => _events.removeAt(i));
@@ -317,11 +366,9 @@ class _SpManageScreenState extends State<SpManageScreen>
           category: 'Gift',
           title: item.title,
           price: item.price,
-          distance: '',
-          ageRange: '',
           description: item.description,
           location: item.location,
-          isGift: true,
+          type: SpCardType.gift,
           onEdit: () => _openEdit(item.title, 'Gift'),
           onDelete: () => _openDelete(() {
             setState(() => _gifts.removeAt(i));

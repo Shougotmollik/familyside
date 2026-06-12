@@ -15,8 +15,11 @@ class LocalStorage {
       _localStorageIsProfileCompleted();
   static _localStorageUserEmail user_email = _localStorageUserEmail();
   static _localStorageUserName user_name = _localStorageUserName();
+  static _localStorageIsEmailVerified is_email_verified =
+      _localStorageIsEmailVerified();
 
   static _localStorageCookie cookie = _localStorageCookie();
+  static _localStorageOnboarding onboarding = _localStorageOnboarding();
   static Future<bool> clear() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     return localStorage.clear();
@@ -163,5 +166,33 @@ class _localStorageUserName {
   Future<String?> get() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     return localStorage.getString(_localStorageUserName.key);
+  }
+}
+
+class _localStorageIsEmailVerified {
+  static const String key = 'is_email_verified';
+
+  Future<bool> set(bool value) async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return localStorage.setBool(_localStorageIsEmailVerified.key, value);
+  }
+
+  Future<bool?> get() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return localStorage.getBool(_localStorageIsEmailVerified.key);
+  }
+}
+
+class _localStorageOnboarding {
+  static const String key = 'onboarding';
+
+  Future<bool> set(bool value) async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return localStorage.setBool(_localStorageOnboarding.key, value);
+  }
+
+  Future<bool?> get() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    return localStorage.getBool(_localStorageOnboarding.key);
   }
 }

@@ -1,4 +1,6 @@
+import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -8,15 +10,17 @@ import 'package:familyside/utils/form_validator.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 
-class FamilyResetPasswordScreen extends StatefulWidget {
-  const FamilyResetPasswordScreen({super.key});
+class FamilyResetPasswordScreen extends ConsumerStatefulWidget {
+  final String? email;
+  final String? otp;
+  const FamilyResetPasswordScreen({super.key, this.email, this.otp});
 
   @override
-  State<FamilyResetPasswordScreen> createState() =>
+  ConsumerState<FamilyResetPasswordScreen> createState() =>
       _FamilyResetPasswordScreenState();
 }
 
-class _FamilyResetPasswordScreenState extends State<FamilyResetPasswordScreen> {
+class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -28,10 +32,19 @@ class _FamilyResetPasswordScreenState extends State<FamilyResetPasswordScreen> {
     super.dispose();
   }
 
-  void _onReset() {
-    FormValidator.validateAndProceed(_formKey, () {
+  Future<void> _onReset() async {
+    if (!FormValidator.validateAndProceed(_formKey, () {})) return;
+    if (widget.email == null || widget.otp == null) return;
+
+    final success = await ref.read(authProvider.notifier).resetPassword(
+      email: widget.email!,
+      otp: widget.otp!,
+      password: _passwordController.text,
+    );
+
+    if (success && mounted) {
       context.pushReplacement(RouterPath.familyPasswordResetSuccess);
-    });
+    }
   }
 
   @override
@@ -132,6 +145,7 @@ class _FamilyResetPasswordScreenState extends State<FamilyResetPasswordScreen> {
                   title: "Reset Password",
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
+                  isLoading: ref.watch(authProvider).isLoading,
                 ),
                 SizedBox(height: 24.h),
               ],

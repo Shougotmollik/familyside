@@ -1,4 +1,7 @@
+import 'package:familyside/model/interest.dart';
+import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -7,36 +10,44 @@ import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/view/family/auth/signup/widgets/interest_chip.dart';
 import 'package:familyside/view/widgets/search_bar_widget.dart';
 
-class InterestScreen extends StatefulWidget {
+class InterestScreen extends ConsumerStatefulWidget {
   const InterestScreen({super.key});
 
   @override
-  State<InterestScreen> createState() => _InterestScreenState();
+  ConsumerState<InterestScreen> createState() => _InterestScreenState();
 }
 
-class _InterestScreenState extends State<InterestScreen> {
+class _InterestScreenState extends ConsumerState<InterestScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  final List<String> _allInterests = [
-    'Education',
-    'Music',
-    'Sports',
-    'Dance',
-    'Outdoor Play',
-    'Coding',
-    'Others'
-  ];
+  List<Interest> _allInterests = [];
+  final Set<int> _selectedInterestIds = {};
+  bool _isLoading = true;
 
-  final Set<String> _selectedInterests = {'Education'};
+  @override
+  void initState() {
+    super.initState();
+    _loadInterests();
+  }
 
-  List<String> get _filteredInterests {
+  Future<void> _loadInterests() async {
+    final interests = await ref.read(onboardingProvider.notifier).getInterests();
+    if (mounted) {
+      setState(() {
+        _allInterests = interests;
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<Interest> get _filteredInterests {
     if (_searchQuery.isEmpty) {
       return _allInterests;
     }
     return _allInterests
         .where((interest) =>
-            interest.toLowerCase().contains(_searchQuery.toLowerCase()))
+            interest.name.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
   }
 
@@ -58,14 +69,23 @@ class _InterestScreenState extends State<InterestScreen> {
     });
   }
 
-  void _toggleInterest(String interest) {
+  void _toggleInterest(int id) {
     setState(() {
-      if (_selectedInterests.contains(interest)) {
-        _selectedInterests.remove(interest);
+      if (_selectedInterestIds.contains(id)) {
+        _selectedInterestIds.remove(id);
       } else {
-        _selectedInterests.add(interest);
+        _selectedInterestIds.add(id);
       }
     });
+  }
+
+  Future<void> _onContinue() async {
+    await ref.read(onboardingProvider.notifier).postInterests(
+      interests: _selectedInterestIds.toList(),
+    );
+    if (mounted) {
+      context.push('/familyLocationInfoScreen');
+    }
   }
 
   @override
@@ -99,33 +119,33 @@ class _InterestScreenState extends State<InterestScreen> {
               ),
               SizedBox(height: 24.h),
               Expanded(
-                child: _filteredInterests.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No results found',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.lightText,
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _filteredInterests.isEmpty
+                        ? Center(
+                            child: Text(
+                              _searchQuery.isEmpty ? 'No interests available' : 'No results found',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.lightText,
+                              ),
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            child: Wrap(
+                              spacing: 12.w,
+                              runSpacing: 12.h,
+                              children: _filteredInterests.map((interest) {
+                                return InterestChip(
+                                  label: interest.name,
+                                  isSelected: _selectedInterestIds.contains(interest.id),
+                                  onTap: () => _toggleInterest(interest.id),
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
-                      )
-                    : SingleChildScrollView(
-                        child: Wrap(
-                          spacing: 12.w,
-                          runSpacing: 12.h,
-                          children: _filteredInterests.map((interest) {
-                            return InterestChip(
-                              label: interest,
-                              isSelected: _selectedInterests.contains(interest),
-                              onTap: () => _toggleInterest(interest),
-                            );
-                          }).toList(),
-                        ),
-                      ),
               ),
               CustomElevatedButton(
-                onPressed: () {
-                  context.push('/familyLocationInfoScreen');  
-                },
+                onPressed: _onContinue,
                 title: 'Continue',
                 color: AppColors.primaryLight,
                 textColor: Colors.white,

@@ -1,24 +1,27 @@
 import 'dart:io';
+import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-class FamilyUploadImageScreen extends StatefulWidget {
+class FamilyUploadImageScreen extends ConsumerStatefulWidget {
   const FamilyUploadImageScreen({super.key});
 
   @override
-  State<FamilyUploadImageScreen> createState() =>
+  ConsumerState<FamilyUploadImageScreen> createState() =>
       _FamilyUploadImageScreenState();
 }
 
-class _FamilyUploadImageScreenState extends State<FamilyUploadImageScreen> {
+class _FamilyUploadImageScreenState extends ConsumerState<FamilyUploadImageScreen> {
   File? _pickedImage;
+  bool _isUploading = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final file = await pickSingleImage(context: context, source: source);
@@ -26,6 +29,15 @@ class _FamilyUploadImageScreenState extends State<FamilyUploadImageScreen> {
       setState(() {
         _pickedImage = file;
       });
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_pickedImage == null) return;
+    setState(() => _isUploading = true);
+    await ref.read(onboardingProvider.notifier).profileImage(image: _pickedImage!);
+    if (mounted) {
+      context.pushReplacement(RouterPath.familyMainNavBarScreen);
     }
   }
 
@@ -142,17 +154,16 @@ class _FamilyUploadImageScreenState extends State<FamilyUploadImageScreen> {
               ),
               const Spacer(flex: 2),
               CustomElevatedButton(
-                onPressed: () {
-                  context.push(RouterPath.familyMainNavBarScreen);
-                },
+                onPressed: _uploadImage,
                 title: 'Add Picture',
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
+                isLoading: _isUploading,
               ),
               SizedBox(height: 16.h),
               CustomElevatedButton(
                 onPressed: () {
-                  context.push(RouterPath.familyMainNavBarScreen);
+                  context.pushReplacement(RouterPath.familyMainNavBarScreen);
                 },
                 title: 'Skip',
                 color: Colors.transparent,

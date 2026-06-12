@@ -1,20 +1,30 @@
+import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:familyside/view/widgets/role_selection_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
 
-class FamilyChooseRoleScreen extends StatefulWidget {
+class FamilyChooseRoleScreen extends ConsumerStatefulWidget {
   const FamilyChooseRoleScreen({super.key});
 
   @override
-  State<FamilyChooseRoleScreen> createState() => _FamilyChooseRoleScreenState();
+  ConsumerState<FamilyChooseRoleScreen> createState() => _FamilyChooseRoleScreenState();
 }
 
-class _FamilyChooseRoleScreenState extends State<FamilyChooseRoleScreen> {
+class _FamilyChooseRoleScreenState extends ConsumerState<FamilyChooseRoleScreen> {
   String _selectedRole = 'Mother';
+
+  Future<void> _onRoleSelected(String role) async {
+    setState(() => _selectedRole = role);
+    await ref.read(onboardingProvider.notifier).setRole(role: role);
+    if (mounted) {
+      context.push(RouterPath.familyChildInformationScreen);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,36 +70,21 @@ class _FamilyChooseRoleScreenState extends State<FamilyChooseRoleScreen> {
                 title: 'Mother',
                 icon: 'assets/logo/mother.svg',
                 isSelected: _selectedRole == 'Mother',
-                onTap: () {
-                  setState(() {
-                    _selectedRole = 'Mother';
-                  });
-                  context.push(RouterPath.familyChildInformationScreen);
-                },
+                onTap: () => _onRoleSelected('Mother'),
               ),
               SizedBox(height: 16.h),
               RoleSelectionButton(
                 title: 'Father',
                 icon: 'assets/logo/father.svg',
                 isSelected: _selectedRole == 'Father',
-                onTap: () {
-                  setState(() {
-                    _selectedRole = 'Father';
-                  });
-                  context.push(RouterPath.familyChildInformationScreen);
-                },
+                onTap: () => _onRoleSelected('Father'),
               ),
               SizedBox(height: 16.h),
               RoleSelectionButton(
                 title: 'Relative',
                 icon: 'assets/logo/relative.svg',
                 isSelected: _selectedRole == 'Relative',
-                onTap: () {
-                  setState(() {
-                    _selectedRole = 'Relative';
-                  });
-                  context.push(RouterPath.familyChildInformationScreen);
-                },
+                onTap: () => _onRoleSelected('Relative'),
               ),
               SizedBox(height: 24.h),
             ],

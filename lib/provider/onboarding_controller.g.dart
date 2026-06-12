@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_provider.dart';
+part of 'onboarding_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,32 +9,33 @@ part of 'auth_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Auth)
-final authProvider = AuthProvider._();
+@ProviderFor(Onboarding)
+final onboardingProvider = OnboardingProvider._();
 
-final class AuthProvider extends $AsyncNotifierProvider<Auth, bool> {
-  AuthProvider._()
+final class OnboardingProvider
+    extends $AsyncNotifierProvider<Onboarding, bool> {
+  OnboardingProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'authProvider',
+        name: r'onboardingProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$authHash();
+  String debugGetCreateSourceHash() => _$onboardingHash();
 
   @$internal
   @override
-  Auth create() => Auth();
+  Onboarding create() => Onboarding();
 }
 
-String _$authHash() => r'b0663098e7a497a2c20592daa1b2af4d393717b1';
+String _$onboardingHash() => r'a241feae9c5559da3ec43c162c7eb02327648140';
 
-abstract class _$Auth extends $AsyncNotifier<bool> {
+abstract class _$Onboarding extends $AsyncNotifier<bool> {
   FutureOr<bool> build();
   @$mustCallSuper
   @override

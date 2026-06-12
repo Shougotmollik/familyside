@@ -1,4 +1,6 @@
+import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -7,18 +9,20 @@ import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 
-class FamilyOtpVerificationScreen extends StatefulWidget {
-  const FamilyOtpVerificationScreen({super.key});
+class FamilyOtpVerificationScreen extends ConsumerStatefulWidget {
+  final String? email;
+  const FamilyOtpVerificationScreen({super.key, this.email});
 
   @override
-  State<FamilyOtpVerificationScreen> createState() =>
+  ConsumerState<FamilyOtpVerificationScreen> createState() =>
       _FamilyOtpVerificationScreenState();
 }
 
 class _FamilyOtpVerificationScreenState
-    extends State<FamilyOtpVerificationScreen> {
+    extends ConsumerState<FamilyOtpVerificationScreen> {
   final _pinController = TextEditingController();
   final _focusNode = FocusNode();
+  bool _isResending = false;
 
   @override
   void dispose() {
@@ -27,8 +31,28 @@ class _FamilyOtpVerificationScreenState
     super.dispose();
   }
 
-  void _onVerify() {
-    context.push(RouterPath.familyResetPasswordScreen);
+  Future<void> _onResend() async {
+    if (_isResending || widget.email == null) return;
+    setState(() => _isResending = true);
+    await ref.read(authProvider.notifier).resendOTP(email: widget.email!);
+    if (mounted) setState(() => _isResending = false);
+  }
+
+  Future<void> _onVerify() async {
+    final email = widget.email;
+    if (email == null) return;
+
+    final success = await ref.read(authProvider.notifier).verifyForgotPasswordOTP(
+      email: email,
+      otp: _pinController.text,
+    );
+
+    if (success && mounted) {
+      context.push(
+        RouterPath.familyResetPasswordScreen,
+        extra: {"email": email, "otp": _pinController.text},
+      );
+    }
   }
 
   @override
@@ -128,13 +152,13 @@ class _FamilyOtpVerificationScreenState
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      // Resend OTP
-                    },
+                    onTap: _onResend,
                     child: Text(
-                      "Resend",
+                      _isResending ? "Sending..." : "Resend",
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.primary,
+                        color: _isResending
+                            ? AppColors.lightText
+                            : theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14.sp,
                       ),
@@ -148,6 +172,7 @@ class _FamilyOtpVerificationScreenState
                 title: "Verify",
                 color: theme.colorScheme.primary,
                 textColor: theme.colorScheme.onPrimary,
+                isLoading: ref.watch(authProvider).isLoading,
               ),
               SizedBox(height: 24.h),
             ],

@@ -1,3 +1,5 @@
+import 'package:familyside/model/child_info.dart' as model;
+import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -332,8 +334,6 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Widget _buildKidForm(ChildInfoState state) {
-    final isEditing = state.editingKidIndex != null;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -626,10 +626,17 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
     );
   }
 
-  void _handleContinue(ChildInfoState state) {
+  Future<void> _handleContinue(ChildInfoState state) async {
     if (state.isExpecting) {
       if (state.selectedDueDate != null) {
-        context.push(RouterPath.familyInterestScreen);
+        await ref.read(onboardingProvider.notifier).childInfo(
+          model.ChildInfo(
+            isExpecting: true,
+            children: [],
+            expectedDueDate: state.selectedDueDate!.toIso8601String(),
+          ),
+        );
+        if (mounted) context.push(RouterPath.familyInterestScreen);
       } else {
         ScaffoldMessenger.of(
           context,
@@ -643,7 +650,20 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
           ),
         );
       } else {
-        context.push(RouterPath.familyInterestScreen);
+        final children = state.kids
+            .map((k) => model.Child(
+                  name: k.name,
+                  dob: k.dob?.toIso8601String() ?? '',
+                  gender: k.gender ?? '',
+                ))
+            .toList();
+        await ref.read(onboardingProvider.notifier).childInfo(
+          model.ChildInfo(
+            isExpecting: false,
+            children: children,
+          ),
+        );
+        if (mounted) context.push(RouterPath.familyInterestScreen);
       }
     }
   }

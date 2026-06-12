@@ -1,22 +1,25 @@
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/env.dart';
+import 'package:familyside/provider/onboarding_controller.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/google_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LocationInfoScreen extends StatefulWidget {
+class LocationInfoScreen extends ConsumerStatefulWidget {
   const LocationInfoScreen({super.key});
 
   @override
-  State<LocationInfoScreen> createState() => _LocationInfoScreenState();
+  ConsumerState<LocationInfoScreen> createState() => _LocationInfoScreenState();
 }
 
-class _LocationInfoScreenState extends State<LocationInfoScreen> {
+class _LocationInfoScreenState extends ConsumerState<LocationInfoScreen> {
   final TextEditingController _locationController = TextEditingController();
   GoogleMapLocation? _selectedLocation;
 
@@ -40,6 +43,21 @@ class _LocationInfoScreenState extends State<LocationInfoScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onContinue() async {
+    if (_selectedLocation == null) {
+      AppSnackbar.show(message: 'Please select your location');
+      return;
+    }
+    await ref.read(onboardingProvider.notifier).setLocation(
+      locationName: _selectedLocation!.name,
+      lat: _selectedLocation!.position.latitude,
+      lng: _selectedLocation!.position.longitude,
+    );
+    if (mounted) {
+      context.push(RouterPath.familyUploadImageScreen);
+    }
   }
 
   @override
@@ -135,9 +153,7 @@ class _LocationInfoScreenState extends State<LocationInfoScreen> {
             Padding(
               padding: EdgeInsets.all(20.w),
               child: CustomElevatedButton(
-                onPressed: () {
-                  context.push(RouterPath.familyUploadImageScreen);
-                },
+                onPressed: _onContinue,
                 title: 'Continue',
                 color: AppColors.primaryLight,
                 textColor: Colors.white,

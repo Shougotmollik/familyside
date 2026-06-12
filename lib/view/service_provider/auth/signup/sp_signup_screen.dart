@@ -1,4 +1,6 @@
+import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -9,14 +11,14 @@ import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/view/widgets/social_login_button.dart';
 
-class SpSignupScreen extends StatefulWidget {
+class SpSignupScreen extends ConsumerStatefulWidget {
   const SpSignupScreen({super.key});
 
   @override
-  State<SpSignupScreen> createState() => _SpSignupScreenState();
+  ConsumerState<SpSignupScreen> createState() => _SpSignupScreenState();
 }
 
-class _SpSignupScreenState extends State<SpSignupScreen> {
+class _SpSignupScreenState extends ConsumerState<SpSignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -32,10 +34,22 @@ class _SpSignupScreenState extends State<SpSignupScreen> {
     super.dispose();
   }
 
-  void _onSignUp() {
-    FormValidator.validateAndProceed(_formKey, () {
-      context.push(RouterPath.spSignupOtpVerificationScreen);
-    });
+  Future<void> _onSignUp() async {
+    if (!FormValidator.validateAndProceed(_formKey, () {})) return;
+
+    final result = await ref.read(authProvider.notifier).signup(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+      userType: 'provider',
+    );
+
+    if (result != null && mounted) {
+      context.push(
+        RouterPath.spSignupOtpVerificationScreen,
+        extra: result['email'],
+      );
+    }
   }
 
   @override
@@ -169,6 +183,7 @@ class _SpSignupScreenState extends State<SpSignupScreen> {
                   title: "Sign Up",
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
+                  isLoading: ref.watch(authProvider).isLoading,
                 ),
                 SizedBox(height: 20.h),
                 Row(

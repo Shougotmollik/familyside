@@ -85,11 +85,19 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyVerifyOtpScreen,
-        builder: (context, state) => const FamilyOtpVerificationScreen(),
+        builder: (context, state) => FamilyOtpVerificationScreen(
+          email: state.extra as String?,
+        ),
       ),
       GoRoute(
         path: RouterPath.familyResetPasswordScreen,
-        builder: (context, state) => const FamilyResetPasswordScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return FamilyResetPasswordScreen(
+            email: extra?['email'] as String?,
+            otp: extra?['otp'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: RouterPath.familyPasswordResetSuccess,
@@ -101,7 +109,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familySignupOtpVerificationScreen,
-        builder: (context, state) => const FamilySignupOtpVerificationScreen(),
+        builder: (context, state) => FamilySignupOtpVerificationScreen(
+          email: state.extra as String?,
+        ),
       ),
       GoRoute(
         path: RouterPath.familyChildInformationScreen,
@@ -139,11 +149,19 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.spVerifyOtpScreen,
-        builder: (context, state) => const SpOtpVerificationScreen(),
+        builder: (context, state) => SpOtpVerificationScreen(
+          email: state.extra as String?,
+        ),
       ),
       GoRoute(
         path: RouterPath.spResetPasswordScreen,
-        builder: (context, state) => const SpResetPasswordScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return SpResetPasswordScreen(
+            email: extra?['email'] as String?,
+            otp: extra?['otp'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: RouterPath.spPasswordResetSuccess,
@@ -151,7 +169,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.spSignupOtpVerificationScreen,
-        builder: (context, state) => const SpSignupOtpVerificationScreen(),
+        builder: (context, state) => SpSignupOtpVerificationScreen(
+          email: state.extra as String?,
+        ),
       ),
       GoRoute(
         path: RouterPath.spUploadImageScreen,

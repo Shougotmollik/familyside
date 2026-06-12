@@ -1,4 +1,6 @@
+import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -7,14 +9,14 @@ import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 
-class SpProfileSetupScreen extends StatefulWidget {
+class SpProfileSetupScreen extends ConsumerStatefulWidget {
   const SpProfileSetupScreen({super.key});
 
   @override
-  State<SpProfileSetupScreen> createState() => _SpProfileSetupScreenState();
+  ConsumerState<SpProfileSetupScreen> createState() => _SpProfileSetupScreenState();
 }
 
-class _SpProfileSetupScreenState extends State<SpProfileSetupScreen> {
+class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
   // Each entry: { 'platform': String?, 'link': TextEditingController }
   final List<Map<String, dynamic>> _socialEntries = [];
 
@@ -59,8 +61,22 @@ class _SpProfileSetupScreenState extends State<SpProfileSetupScreen> {
     });
   }
 
-  void _onContinue() {
-    context.push(RouterPath.spUploadImageScreen);
+  Future<void> _onContinue() async {
+    final links = _socialEntries
+        .where((e) => e['platform'] != null)
+        .map((e) => SocialLink(
+              platform: e['platform'] as String,
+              url: (e['link'] as TextEditingController).text,
+            ))
+        .toList();
+
+    if (links.isNotEmpty) {
+      await ref.read(onboardingProvider.notifier).socialLinks(links);
+    }
+
+    if (mounted) {
+      context.push(RouterPath.spUploadImageScreen);
+    }
   }
 
   @override

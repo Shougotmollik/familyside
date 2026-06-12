@@ -1,4 +1,6 @@
+import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -8,15 +10,15 @@ import 'package:familyside/utils/form_validator.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 
-class FamilyForgotPasswordScreen extends StatefulWidget {
+class FamilyForgotPasswordScreen extends ConsumerStatefulWidget {
   const FamilyForgotPasswordScreen({super.key});
 
   @override
-  State<FamilyForgotPasswordScreen> createState() =>
+  ConsumerState<FamilyForgotPasswordScreen> createState() =>
       _ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<FamilyForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
 
@@ -26,10 +28,19 @@ class _ForgotPasswordScreenState extends State<FamilyForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _onSend() {
-    FormValidator.validateAndProceed(_formKey, () {
-      context.push(RouterPath.familyVerifyOtpScreen);
-    });
+  Future<void> _onSend() async {
+    if (!FormValidator.validateAndProceed(_formKey, () {})) return;
+
+    await ref.read(authProvider.notifier).forgotPassword(
+      email: _emailController.text.trim(),
+    );
+
+    if (mounted && ref.read(authProvider).value == true) {
+      context.push(
+        RouterPath.familyVerifyOtpScreen,
+        extra: _emailController.text.trim(),
+      );
+    }
   }
 
   @override
@@ -105,6 +116,7 @@ class _ForgotPasswordScreenState extends State<FamilyForgotPasswordScreen> {
                   title: "Send OTP",
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
+                  isLoading: ref.watch(authProvider).isLoading,
                 ),
                 SizedBox(height: 24.h),
               ],

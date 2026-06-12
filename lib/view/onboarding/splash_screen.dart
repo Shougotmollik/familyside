@@ -1,4 +1,5 @@
 import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/services/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -21,7 +22,20 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _moveToNextScreen() async {
     await Future.delayed(const Duration(milliseconds: 2500));
     if (!mounted) return;
-    context.go(RouterPath.onBoardingScreen);
+
+    final accessToken = await LocalStorage.access_token.get();
+    if (accessToken != null) {
+      final role = await LocalStorage.role.get();
+
+      switch (role) {
+        case 'provider':
+          context.go(RouterPath.spMainNavBarScreen);
+        default:
+          context.go(RouterPath.familyMainNavBarScreen);
+      }
+    } else {
+      context.go(RouterPath.onBoardingScreen);
+    }
   }
 
   @override

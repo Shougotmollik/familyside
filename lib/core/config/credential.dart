@@ -1,0 +1,13 @@
+class AppCredentials {
+  AppCredentials._();
+
+  // static const String domain = "http://72.61.20.73";
+  static const String domain = "http://10.10.12.60:8015";
+
+  static String fixurl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    // avoid double slashes
+    if (path.startsWith('http')) return path;
+    return '$domain$path';
+  }
+}

@@ -1,5 +1,7 @@
+import 'package:familyside/provider/auth_provider.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -9,35 +11,41 @@ import 'package:familyside/utils/form_validator.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/social_login_button.dart';
 
-class FamilyLoginScreen extends StatefulWidget {
-  const FamilyLoginScreen({super.key});
+class FamilyLoginScreen extends ConsumerWidget {
+  FamilyLoginScreen({super.key});
 
-  @override
-  State<FamilyLoginScreen> createState() => _FamilyLoginScreenState();
-}
-
-class _FamilyLoginScreenState extends State<FamilyLoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _rememberMe = false;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _rememberMe = ValueNotifier<bool>(false);
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
+  Future<void> _onSignIn(WidgetRef ref, BuildContext context) async {
+    if (!FormValidator.validateAndProceed(_formKey, () {})) return;
 
-  void _onSignIn() {
-    if (FormValidator.validateAndProceed(_formKey, () {
-      context.push(RouterPath.familyMainNavBarScreen);
-    })) {}
+    await ref
+        .read(authProvider.notifier)
+        .login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+
+    ref.listen(authProvider, (prev, next) {
+      next.whenOrNull(
+        data: (authenticated) {
+          if (authenticated && prev?.value != true) {
+            context.pushReplacement(RouterPath.familyMainNavBarScreen);
+          }
+        },
+      );
+    });
+
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -110,77 +118,75 @@ class _FamilyLoginScreenState extends State<FamilyLoginScreen> {
                     color: AppColors.lightText,
                     size: 22.sp,
                   ),
-                  onFieldSubmitted: (_) => _onSignIn(),
-                  validator: FormValidator.validatePassword,
+                  onFieldSubmitted: (_) => _onSignIn(ref, context),
                 ),
                 SizedBox(height: 8.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+                ValueListenableBuilder<bool>(
+                  valueListenable: _rememberMe,
+                  builder: (context, rememberMe, _) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          height: 24.w,
-                          width: 24.w,
-                          child: Checkbox(
-                            value: _rememberMe,
-                            activeColor: const Color(0xFF3B82F6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.r),
+                        Row(
+                          children: [
+                            SizedBox(
+                              height: 24.w,
+                              width: 24.w,
+                              child: Checkbox(
+                                value: rememberMe,
+                                activeColor: AppColors.primaryLight,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                                side: BorderSide(
+                                  color: AppColors.lightText.withOpacity(0.5),
+                                ),
+                                onChanged: (value) =>
+                                    _rememberMe.value = value ?? false,
+                              ),
                             ),
-                            side: BorderSide(
-                              color: AppColors.lightText.withOpacity(0.5),
+                            SizedBox(width: 8.w),
+                            GestureDetector(
+                              onTap: () => _rememberMe.value = !rememberMe,
+                              child: Text(
+                                "Remember me",
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.text,
+                                  fontSize: 14.sp,
+                                ),
+                              ),
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _rememberMe = value ?? false;
-                              });
-                            },
-                          ),
+                          ],
                         ),
-                        SizedBox(width: 8.w),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _rememberMe = !_rememberMe;
-                            });
+                        TextButton(
+                          onPressed: () {
+                            context.push(RouterPath.familyForgotPasswordScreen);
                           },
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                           child: Text(
-                            "Remember me",
+                            "Forgot Password?",
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.text,
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w500,
                               fontSize: 14.sp,
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        context.push(RouterPath.familyForgotPasswordScreen);
-                      },
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        "Forgot Password?",
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
                 SizedBox(height: 60.h),
                 CustomElevatedButton(
-                  onPressed: _onSignIn,
+                  onPressed: () => _onSignIn(ref, context),
                   title: "Sign In",
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
+                  isLoading: authState.isLoading,
                 ),
 
                 SizedBox(height: 20.h),

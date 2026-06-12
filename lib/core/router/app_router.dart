@@ -73,7 +73,7 @@ class AppRouter {
       // Family Auth Routes
       GoRoute(
         path: RouterPath.familyLoginScreen,
-        builder: (context, state) => const FamilyLoginScreen(),
+        builder: (context, state) => FamilyLoginScreen(),
       ),
       GoRoute(
         path: RouterPath.familySignUpScreen,
@@ -127,7 +127,7 @@ class AppRouter {
       // Service Provider Auth Routes
       GoRoute(
         path: RouterPath.spLoginScreen,
-        builder: (context, state) => const SpLoginScreen(),
+        builder: (context, state) => SpLoginScreen(),
       ),
       GoRoute(
         path: RouterPath.spSignUpScreen,

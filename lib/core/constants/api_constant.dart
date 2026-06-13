@@ -26,4 +26,5 @@ class ApiConstants {
   // service provider
   static const String providerHome = "$apiVersion/provider/home/feed";
   static const String providerHeader = "$apiVersion/provider/home/header";
+  static const String providerManage = "$apiVersion/provider/manage/items";
 }

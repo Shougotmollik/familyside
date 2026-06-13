@@ -62,7 +62,7 @@ class SpManageCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.r),
-                child: Image.asset(
+                child: Image.network(
                   imagePath,
                   width: type == SpCardType.gift ? 120.w : 140.w,
                   height: type == SpCardType.gift ? 120.h : 120.h,
@@ -165,7 +165,7 @@ class SpManageCard extends StatelessWidget {
                         ),
                         SizedBox(width: 4.w),
                         Text(
-                          date ?? '',
+                          date != null ? date!.replaceAll(',', '').split(' ').take(2).join(' ') : '',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10.sp,

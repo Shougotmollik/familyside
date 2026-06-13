@@ -31,7 +31,7 @@ class ProviderFeedItem {
       price: (json['price'] as num).toDouble(),
       distanceKm: (json['distance_km'] as num).toDouble(),
       ageRange: json['age_range'],
-      dateLabel: json['date_label'],
+      dateLabel: json['date_label'] ?? 'N/A',
     );
   }
 }

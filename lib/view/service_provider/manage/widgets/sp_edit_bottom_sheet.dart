@@ -88,7 +88,7 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
     super.dispose();
   }
 
-  // ── Pickers ────────────────────────────────────────────────────────────────
+  // Pickers
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -210,8 +210,6 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
     });
   }
 
-  // ── Build ──────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -251,7 +249,7 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
             ),
             SizedBox(height: 20.h),
 
-            // ── Fields per type ──────────────────────────────────────────────
+            // Fields per type
             if (widget.type == 'Activity') ..._buildActivityFields(),
             if (widget.type == 'Event') ..._buildEventFields(),
             if (widget.type == 'Gift') ..._buildGiftFields(),
@@ -265,7 +263,7 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
     );
   }
 
-  // ── Activity fields ────────────────────────────────────────────────────────
+  // Activity fields
 
   List<Widget> _buildActivityFields() => [
     _label('Activity Name'),
@@ -375,7 +373,7 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
     ),
   ];
 
-  // ── Event fields ───────────────────────────────────────────────────────────
+  //Event fields
 
   List<Widget> _buildEventFields() => [
     _label('Event Name'),
@@ -465,7 +463,7 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
     ),
   ];
 
-  // ── Gift fields ────────────────────────────────────────────────────────────
+  // Gift fields
 
   List<Widget> _buildGiftFields() => [
     _label('Gift Name'),
@@ -515,7 +513,7 @@ class _SpEditBottomSheetState extends State<SpEditBottomSheet> {
     const SpPhotoUploadBox(),
   ];
 
-  // ── Shared helpers ─────────────────────────────────────────────────────────
+  // Shared helpers
 
   Widget _buildButtons() {
     return Row(

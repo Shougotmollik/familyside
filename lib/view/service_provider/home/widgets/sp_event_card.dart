@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SpEventCard extends StatelessWidget {
   const SpEventCard({
@@ -53,17 +55,26 @@ class SpEventCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: Image.asset(
-                    imagePath,
+                  child: CachedNetworkImage(
+                    imageUrl: imagePath,
                     width: 120.w,
                     height: 110.h,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Container(
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: Colors.grey.shade300,
+                      highlightColor: Colors.grey.shade100,
+                      child: Container(
+                        width: 120.w,
+                        height: 110.h,
+                        color: Colors.white,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
                       width: 120.w,
                       height: 110.h,
                       color: Colors.grey.shade200,
                       child: Icon(
-                        Icons.image_outlined,
+                        Icons.image_not_supported_outlined,
                         color: Colors.grey,
                         size: 28.sp,
                       ),

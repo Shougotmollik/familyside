@@ -22,4 +22,8 @@ class ApiConstants {
   static const String profileImage = "$apiVersion/onboarding/profile-image";
   static const String socialLinks =
       "$apiVersion/onboarding/business/social-links";
+
+  // service provider
+  static const String providerHome = "$apiVersion/provider/home/feed";
+  static const String providerHeader = "$apiVersion/provider/home/header";
 }

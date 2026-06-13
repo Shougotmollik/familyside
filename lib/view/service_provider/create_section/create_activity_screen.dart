@@ -1,13 +1,16 @@
+import 'package:familyside/utils/app_snackbar.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/model/interest.dart';
+import 'package:familyside/provider/service_provider/sp_create_provider.dart';
 import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
-import 'package:familyside/view/widgets/google_map.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_form_label.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_tag_selector.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_photo_upload_box.dart';
@@ -15,16 +18,29 @@ import 'package:familyside/view/service_provider/create_section/widgets/sp_categ
 import 'package:familyside/view/service_provider/create_section/widgets/sp_form_buttons.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_location_bar.dart';
 
-class CreateActivityScreen extends StatefulWidget {
+final categoriesProvider = FutureProvider<List<Interest>>((ref) async {
+  return ref.read(spCreateProvider.notifier).getCategories();
+});
+
+final subCategoriesProvider = FutureProvider.family<List<Interest>, String>((
+  ref,
+  categoryId,
+) async {
+  return ref
+      .read(spCreateProvider.notifier)
+      .getSubCategories(categoryId: categoryId);
+});
+
+class CreateActivityScreen extends ConsumerStatefulWidget {
   const CreateActivityScreen({super.key});
 
   @override
-  State<CreateActivityScreen> createState() => _CreateActivityScreenState();
+  ConsumerState<CreateActivityScreen> createState() =>
+      _CreateActivityScreenState();
 }
 
-class _CreateActivityScreenState extends State<CreateActivityScreen> {
+class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
   final _locationController = TextEditingController();
-  GoogleMapLocation? _selectedLocation;
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _websiteController = TextEditingController();
@@ -34,19 +50,10 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
   final _descriptionController = TextEditingController();
   final _tagSearchController = TextEditingController();
 
-  String? _selectedCategory;
+  Interest? _selectedCategoryInterest;
   final List<String> _selectedSubCategories = [];
   final List<String> _selectedTags = [];
 
-  final List<String> _subCategories = [
-    'AI',
-    'Health',
-    'Schools',
-    'Events',
-    'Outdoor',
-    'Sports',
-    'Arts',
-  ];
   final List<String> _tags = ['Toddler', 'Indoor', 'Ongoing', 'Free', 'Paid'];
 
   List<String> get _filteredTags {
@@ -221,8 +228,7 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                     // Location search bar
                     SpLocationBar(
                       controller: _locationController,
-                      onLocationSelected: (loc) =>
-                          setState(() => _selectedLocation = loc),
+                      onLocationSelected: (loc) => {},
                     ),
                     SizedBox(height: 16.h),
 
@@ -235,25 +241,55 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
                     // Category
                     const SpFormLabel('Category'),
-                    SpCategoryDropdown(
-                      value: _selectedCategory,
-                      onChanged: (v) => setState(() => _selectedCategory = v),
-                    ),
+                    ref
+                        .watch(categoriesProvider)
+                        .when(
+                          loading: () => const SizedBox(
+                            height: 50,
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (err, _) => Text('Error: $err'),
+                          data: (categories) => SpCategoryDropdown(
+                            value: _selectedCategoryInterest?.name,
+                            items: categories.map((e) => e.name).toList(),
+                            onChanged: (v) => setState(() {
+                              _selectedCategoryInterest = categories.firstWhere(
+                                (e) => e.name == v,
+                              );
+                              _selectedSubCategories.clear();
+                            }),
+                          ),
+                        ),
                     SizedBox(height: 4.h),
 
                     // Sub-category
-                    const SpFormLabel('Sub-category'),
-                    SizedBox(height: 8.h),
-                    SpTagSelector(
-                      tags: _subCategories,
-                      selectedTags: _selectedSubCategories,
-                      onToggle: (tag) => setState(() {
-                        _selectedSubCategories.contains(tag)
-                            ? _selectedSubCategories.remove(tag)
-                            : _selectedSubCategories.add(tag);
-                      }),
-                    ),
-                    SizedBox(height: 16.h),
+                    if (_selectedCategoryInterest != null) ...[
+                      const SpFormLabel('Sub-category'),
+                      SizedBox(height: 8.h),
+                      ref
+                          .watch(
+                            subCategoriesProvider(
+                              _selectedCategoryInterest!.id.toString(),
+                            ),
+                          )
+                          .when(
+                            loading: () => const SizedBox(
+                              height: 50,
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+                            error: (err, _) => Text('Error: $err'),
+                            data: (subCategories) => SpTagSelector(
+                              tags: subCategories.map((e) => e.name).toList(),
+                              selectedTags: _selectedSubCategories,
+                              onToggle: (tag) => setState(() {
+                                _selectedSubCategories.contains(tag)
+                                    ? _selectedSubCategories.remove(tag)
+                                    : _selectedSubCategories.add(tag);
+                              }),
+                            ),
+                          ),
+                      SizedBox(height: 16.h),
+                    ],
 
                     // Tag
                     const SpFormLabel('Tag'),
@@ -467,7 +503,50 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
 
                     SpFormButtons(
                       onCancel: () => Navigator.of(context).maybePop(),
-                      onSubmit: () {},
+                      onSubmit: () async {
+                        if (_selectedCategoryInterest == null) {
+                          AppSnackbar.show(
+                            message: 'Please select a category',
+                            type: SnackType.warning,
+                          );
+                          return;
+                        }
+
+                        final success = await ref
+                            .read(spCreateProvider.notifier)
+                            .createActivity(
+                              name: _nameController.text,
+                              location: _locationController.text,
+                              categoryId: _selectedCategoryInterest!.id,
+                              price: _priceController.text,
+                              websiteLink: _websiteController.text,
+                              whatsappNumber: _whatsappController.text,
+                              emailAddress: _emailController.text,
+                              instagramLink: _instagramController.text,
+                              openingDays: _selectedOpeningDays.join(','),
+                              openingHours:
+                                  '${_openingStartTime?.format(context) ?? ''} - ${_openingEndTime?.format(context) ?? ''}',
+                              description: _descriptionController.text,
+                              subCategories: _selectedSubCategories,
+                              tags: _selectedTags,
+                              image: _selectedPhotos.isNotEmpty
+                                  ? _selectedPhotos.first
+                                  : null,
+                            );
+
+                        if (success && mounted) {
+                          AppSnackbar.show(
+                            message: 'Activity created successfully',
+                            type: SnackType.success,
+                          );
+                          Navigator.of(context).pop();
+                        } else if (mounted) {
+                          AppSnackbar.show(
+                            message: 'Failed to create activity',
+                            type: SnackType.error,
+                          );
+                        }
+                      },
                       submitLabel: 'Submit activity',
                     ),
                     SizedBox(height: 24.h),
@@ -669,13 +748,14 @@ class _CreateActivityScreenState extends State<CreateActivityScreen> {
                         ),
                         child: Text(
                           day,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isSelected
-                                ? Colors.white
-                                : AppColors.primaryLight,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11.sp,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: isSelected
+                                    ? Colors.white
+                                    : AppColors.primaryLight,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 11.sp,
+                              ),
                         ),
                       );
                     }).toList(),

@@ -27,4 +27,9 @@ class ApiConstants {
   static const String providerHome = "$apiVersion/provider/home/feed";
   static const String providerHeader = "$apiVersion/provider/home/header";
   static const String providerManage = "$apiVersion/provider/manage/items";
+  static const String getCatergoties = "$apiVersion/provider/categories/active";
+  static String subCategories({required int categoryId}) =>
+      "$apiVersion/provider/categories/$categoryId/sub-categories";
+
+  static const String createActivity = "$apiVersion/provider/create/activity";
 }

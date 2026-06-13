@@ -85,15 +85,17 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
               SizedBox(height: 24.h),
               Expanded(
                 child: SingleChildScrollView(
-                  child: state.isExpecting
-                      ? _buildExpectingForm()
-                      : _buildKidsForm(state),
+                  child: Column(
+                    children: [
+                      _buildExpectingForm(),
+                      SizedBox(height: 24.h),
+                      _buildKidsForm(state),
+                    ],
+                  ),
                 ),
               ),
-              if (!state.isExpecting) ...[
-                _buildBottomButtons(state),
-                SizedBox(height: 16.h),
-              ],
+              _buildBottomButtons(state),
+              SizedBox(height: 16.h),
               CustomElevatedButton(
                 onPressed: () => _handleContinue(state),
                 title: 'Continue',
@@ -627,44 +629,30 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Future<void> _handleContinue(ChildInfoState state) async {
-    if (state.isExpecting) {
-      if (state.selectedDueDate != null) {
-        await ref.read(onboardingProvider.notifier).childInfo(
-          model.ChildInfo(
-            isExpecting: true,
-            children: [],
-            expectedDueDate: state.selectedDueDate!.toIso8601String(),
-          ),
-        );
-        if (mounted) context.push(RouterPath.familyInterestScreen);
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Please select due date')));
-      }
-    } else {
-      if (state.showForm) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please save or cancel the current form'),
-          ),
-        );
-      } else {
-        final children = state.kids
-            .map((k) => model.Child(
-                  name: k.name,
-                  dob: k.dob?.toIso8601String() ?? '',
-                  gender: k.gender ?? '',
-                ))
-            .toList();
-        await ref.read(onboardingProvider.notifier).childInfo(
-          model.ChildInfo(
-            isExpecting: false,
-            children: children,
-          ),
-        );
-        if (mounted) context.push(RouterPath.familyInterestScreen);
-      }
+    if (state.showForm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please save or cancel the current form'),
+        ),
+      );
+      return;
     }
+
+    final children = state.kids
+        .map((k) => model.Child(
+              name: k.name,
+              dob: k.dob?.toIso8601String() ?? '',
+              gender: k.gender ?? '',
+            ))
+        .toList();
+
+    await ref.read(onboardingProvider.notifier).childInfo(
+      model.ChildInfo(
+        isExpecting: state.isExpecting,
+        children: children,
+        expectedDueDate: state.selectedDueDate?.toIso8601String(),
+      ),
+    );
+    if (mounted) context.push(RouterPath.familyInterestScreen);
   }
 }

@@ -20,6 +20,8 @@ class CustomHttpResult {
     this.error,
     required this.ok,
   });
+
+  String? operator [](String other) {}
 }
 
 enum _HttpMethod { post, put, patch, delete }

@@ -99,6 +99,7 @@ class Auth extends _$Auth {
         _safeState(
           AsyncError(response.error ?? 'Invalid signup', StackTrace.current),
         );
+        AppSnackbar.show(message: response.error?.toString() ?? 'Invalid signup');
         return null;
       }
     } catch (e) {
@@ -165,6 +166,31 @@ class Auth extends _$Auth {
     try {
       final response = await CustomHttp.post(
         endpoint: ApiConstants.resendOtp,
+        body: {"email": email},
+        need_auth: false,
+      );
+
+      if (!response.ok) {
+        AppSnackbar.show(
+          message: response.error?.toString() ?? 'Failed to resend OTP',
+        );
+        return false;
+      }
+
+      AppSnackbar.show(message: 'OTP resent successfully');
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      AppSnackbar.show(message: 'Something went wrong. Please try again.');
+      return false;
+    }
+  }
+
+  // resent otp forgot password
+  Future<bool> resendOtpForgotPassword({required String email}) async {
+    try {
+      final response = await CustomHttp.post(
+        endpoint: ApiConstants.resendOtpForgotPassword,
         body: {"email": email},
         need_auth: false,
       );
@@ -259,35 +285,25 @@ class Auth extends _$Auth {
   // reset password
   Future<bool> resetPassword({
     required String email,
-    required String otp,
     required String password,
   }) async {
-    _safeState(const AsyncLoading());
     try {
       final response = await CustomHttp.post(
         endpoint: ApiConstants.resetPassword,
-        body: {"email": email, "otp": otp, "password": password},
+        body: {"email": email, "new_password": password},
         need_auth: false,
       );
 
       if (!response.ok) {
-        _safeState(
-          AsyncError(
-            response.error ?? 'Invalid reset password',
-            StackTrace.current,
-          ),
-        );
         AppSnackbar.show(
           message: response.error?.toString() ?? 'Invalid reset password',
         );
         return false;
       }
 
-      _safeState(const AsyncData(true));
       return true;
     } catch (e) {
       debugPrint(e.toString());
-      _safeState(AsyncError(e, StackTrace.current));
       AppSnackbar.show(message: 'Something went wrong. Please try again.');
       return false;
     }
@@ -331,6 +347,20 @@ class Auth extends _$Auth {
       debugPrint(e.toString());
       _safeState(AsyncError(e, StackTrace.current));
       debugPrint('Failed to refresh token: $e');
+      return false;
+    }
+  }
+
+  // logout
+  Future<bool> logout() async {
+    _safeState(const AsyncLoading());
+    try {
+      await LocalStorage.clear();
+      _safeState(const AsyncData(false));
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      _safeState(const AsyncData(false));
       return false;
     }
   }

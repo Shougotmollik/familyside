@@ -38,7 +38,6 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
 
     final success = await ref.read(authProvider.notifier).resetPassword(
       email: widget.email!,
-      otp: widget.otp!,
       password: _passwordController.text,
     );
 

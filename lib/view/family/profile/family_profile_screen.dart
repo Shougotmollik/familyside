@@ -1,12 +1,14 @@
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/provider/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/view/family/profile/widgets/profile_stat_card.dart';
 import 'package:familyside/view/family/profile/widgets/profile_svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class FamilyProfileScreen extends StatelessWidget {
+class FamilyProfileScreen extends ConsumerWidget {
   const FamilyProfileScreen({super.key});
 
   static const List<_ProfileSettingItem> _settings = [
@@ -43,7 +45,7 @@ class FamilyProfileScreen extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.profileHeaderBackground,
       body: Column(
@@ -65,7 +67,7 @@ class FamilyProfileScreen extends StatelessWidget {
                     SizedBox(height: 24.h),
                     _GeneralSettingsSection(settings: _settings),
                     SizedBox(height: 16.h),
-                    _LogoutSection(),
+                    const _LogoutSection(),
                   ],
                 ),
               ),
@@ -375,9 +377,11 @@ class _ProfileSettingItem {
   });
 }
 
-class _LogoutSection extends StatelessWidget {
+class _LogoutSection extends ConsumerWidget {
+  const _LogoutSection();
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
@@ -388,7 +392,7 @@ class _LogoutSection extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => _showLogoutDialog(context),
+          onTap: () => _showLogoutDialog(context, ref),
           borderRadius: BorderRadius.circular(16.r),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -415,7 +419,7 @@ class _LogoutSection extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -466,9 +470,12 @@ class _LogoutSection extends StatelessWidget {
                     child: _DialogButton(
                       label: 'Log Out',
                       isDestructive: true,
-                      onTap: () {
+                      onTap: () async {
                         Navigator.of(ctx).pop();
-                        context.go(RouterPath.onBoardingScreen);
+                        await ref.read(authProvider.notifier).logout();
+                        if (context.mounted) {
+                          context.go(RouterPath.onBoardingScreen);
+                        }
                       },
                     ),
                   ),

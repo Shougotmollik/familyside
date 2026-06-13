@@ -34,7 +34,7 @@ class _SpOtpVerificationScreenState
   Future<void> _onResend() async {
     if (_isResending || widget.email == null) return;
     setState(() => _isResending = true);
-    await ref.read(authProvider.notifier).resendOTP(email: widget.email!);
+    await ref.read(authProvider.notifier).resendOtpForgotPassword(email: widget.email!);
     if (mounted) setState(() => _isResending = false);
   }
 

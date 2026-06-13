@@ -38,7 +38,6 @@ class _SpResetPasswordScreenState extends ConsumerState<SpResetPasswordScreen> {
 
     final success = await ref.read(authProvider.notifier).resetPassword(
       email: widget.email!,
-      otp: widget.otp!,
       password: _passwordController.text,
     );
 

@@ -23,7 +23,7 @@ class ChildInfo {
 
   Map<String, dynamic> toJson() {
     return {
-      "is_expecting": isExpecting,
+      "is_expecting": expectedDueDate != null ? true : false,
       "children": children.map((e) => e.toJson()).toList(),
       "expected_due_date": expectedDueDate,
     };

@@ -9,6 +9,8 @@ class ApiConstants {
   static const String resetPassword = "$apiVersion/auth/reset-password";
   static const String changePassword = "$apiVersion/auth/change-password";
   static const String resendOtp = "$apiVersion/auth/resend-otp";
+  static const String resendOtpForgotPassword =
+      "$apiVersion/auth/resend-password-reset-otp";
   static const String refreshToken = "$apiVersion/auth/refresh";
 
   // onboarding

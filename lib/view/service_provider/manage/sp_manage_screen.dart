@@ -38,12 +38,19 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
     super.dispose();
   }
 
-  void _openEdit(String name, String type) {
+  void _openEdit(int id, String name, String type) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => SpEditBottomSheet(initialName: name, type: type),
+      builder: (_) => SpEditBottomSheet(
+        id: id,
+        initialName: name,
+        type: type,
+        onUpdated: () {
+          ref.invalidate(manageItemsProvider(type));
+        },
+      ),
     );
   }
 
@@ -60,7 +67,6 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(manageItemsProvider(type));
-        // Wait for the future to complete so the indicator stays visible while loading
         await ref.read(manageItemsProvider(type).future);
       },
       child: asyncItems.when(
@@ -131,7 +137,7 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
                 type: type == 'activity'
                     ? SpCardType.activity
                     : (type == 'event' ? SpCardType.event : SpCardType.gift),
-                onEdit: () => _openEdit(item.name, type),
+                onEdit: () => _openEdit(item.id, item.name, type),
                 onDelete: () => _openDelete(() {}),
               );
             },

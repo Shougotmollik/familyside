@@ -27,6 +27,8 @@ class ApiConstants {
   static const String providerHome = "$apiVersion/provider/home/feed";
   static const String providerHeader = "$apiVersion/provider/home/header";
   static const String providerManage = "$apiVersion/provider/manage/items";
+  static String getProviderMangeItems({required int id}) =>
+      "$apiVersion/provider/manage/items/$id";
   static const String getCatergoties = "$apiVersion/provider/categories/active";
   static String subCategories({required int categoryId}) =>
       "$apiVersion/provider/categories/$categoryId/sub-categories";
@@ -34,4 +36,11 @@ class ApiConstants {
   static const String createActivity = "$apiVersion/provider/create/activity";
   static const String createEvent = "$apiVersion/provider/create/event";
   static const String createGift = "$apiVersion/provider/create/gift";
+
+  static String updateActivity({required int id}) =>
+      "$apiVersion/provider/manage/items/$id";
+  static String updateEvent({required int id}) =>
+      "$apiVersion/provider/manage/items/$id";
+  static String updateGift({required int id}) =>
+      "$apiVersion/provider/manage/items/$id";
 }

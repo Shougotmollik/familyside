@@ -33,7 +33,7 @@ final class SpManageProviderProvider
   SpManageProvider create() => SpManageProvider();
 }
 
-String _$spManageProviderHash() => r'a762363364564ff2de6e30e3484f2ce5c215cdbf';
+String _$spManageProviderHash() => r'59e545e04046e404f28495b662eff8ebd3ca7e01';
 
 abstract class _$SpManageProvider extends $AsyncNotifier<AsyncValue<void>> {
   FutureOr<AsyncValue<void>> build();

@@ -33,7 +33,7 @@ final class SpAnalyticsProvider
   SpAnalytics create() => SpAnalytics();
 }
 
-String _$spAnalyticsHash() => r'bf28dc159bc0e3e8ba06741e3444642cba9969ea';
+String _$spAnalyticsHash() => r'4d7b6c7b2b6d4ed4f4442c3d104ad520d88c919f';
 
 abstract class _$SpAnalytics extends $AsyncNotifier<List<Analytics>> {
   FutureOr<List<Analytics>> build();

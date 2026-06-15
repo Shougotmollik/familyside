@@ -45,4 +45,9 @@ class ApiConstants {
       "$apiVersion/provider/manage/items/$id";
 
   static const String analytics = "$apiVersion/provider/analytics";
+
+  static const String providerProfile =
+      "$apiVersion/provider/profile/dashboard";
+  static const String providerProfileUpdate =
+      "$apiVersion/provider/profile/update";
 }

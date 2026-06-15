@@ -8,6 +8,7 @@ class AppCredentials {
     if (path == null || path.isEmpty) return '';
     // avoid double slashes
     if (path.startsWith('http')) return path;
-    return '$domain$path';
+    if (path.startsWith('/')) return '$domain$path';
+    return '$domain/$path';
   }
 }

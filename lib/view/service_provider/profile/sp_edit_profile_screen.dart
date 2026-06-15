@@ -1,5 +1,10 @@
 import 'dart:io';
+import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/provider/service_provider/sp_profile_provider.dart';
+import 'package:familyside/services/local_storage.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,28 +15,40 @@ import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 
-class SpEditProfileScreen extends StatefulWidget {
+class SpEditProfileScreen extends ConsumerStatefulWidget {
   const SpEditProfileScreen({super.key});
 
   @override
-  State<SpEditProfileScreen> createState() => _SpEditProfileScreenState();
+  ConsumerState<SpEditProfileScreen> createState() =>
+      _SpEditProfileScreenState();
 }
 
-class _SpEditProfileScreenState extends State<SpEditProfileScreen> {
+class _SpEditProfileScreenState extends ConsumerState<SpEditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController(text: 'Shahid');
-  final _emailCtrl = TextEditingController(text: 'shahid@example.com');
-  final _phoneCtrl = TextEditingController(text: '+880 1234 567890');
-  final _businessCtrl = TextEditingController(text: 'Little Stars Clinic');
-  final _locationCtrl = TextEditingController(text: 'Dhaka, Bangladesh');
+  final _nameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+
+  final _locationCtrl = TextEditingController();
   File? _pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profile = ref.read(spProfileProvider).value;
+      if (profile != null) {
+        _nameCtrl.text = profile.name ?? '';
+        _locationCtrl.text = profile.location ?? '';
+      }
+      final email = await LocalStorage.user_email.get();
+      _emailCtrl.text = email ?? '';
+    });
+  }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
-    _phoneCtrl.dispose();
-    _businessCtrl.dispose();
     _locationCtrl.dispose();
     super.dispose();
   }
@@ -41,8 +58,37 @@ class _SpEditProfileScreenState extends State<SpEditProfileScreen> {
     if (file != null) setState(() => _pickedImage = file);
   }
 
+  // update method
+  Future<void> _updateProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final success = await ref
+        .read(spProfileProvider.notifier)
+        .updateProfile(
+          image: _pickedImage,
+          name: _nameCtrl.text.trim(),
+          location: _locationCtrl.text.trim(),
+        );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.show(
+        message: 'Profile updated successfully',
+        type: SnackType.success,
+      );
+      if (context.mounted) context.pop();
+    } else {
+      AppSnackbar.show(
+        message: 'Failed to update profile',
+        type: SnackType.error,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(spProfileProvider);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -78,30 +124,30 @@ class _SpEditProfileScreenState extends State<SpEditProfileScreen> {
                         validator: FormValidator.validateEmail,
                       ),
                       SizedBox(height: 16.h),
-                      _label('Phone Number'),
-                      SizedBox(height: 8.h),
-                      AuthTextFormField(
-                        hintText: 'Enter phone number',
-                        controller: _phoneCtrl,
-                        keyboardType: TextInputType.phone,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      SizedBox(height: 16.h),
-                      _label('Business Name'),
-                      SizedBox(height: 8.h),
-                      AuthTextFormField(
-                        hintText: 'Enter business name',
-                        controller: _businessCtrl,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      SizedBox(height: 16.h),
                       _label('Location'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
                         hintText: 'Enter location',
                         controller: _locationCtrl,
-                        textInputAction: TextInputAction.done,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
                       ),
+                      SizedBox(height: 16.h),
+                      // _label('Business Name'),
+                      // SizedBox(height: 8.h),
+                      // AuthTextFormField(
+                      //   hintText: 'Enter business name',
+                      //   controller: _businessCtrl,
+                      //   textInputAction: TextInputAction.next,
+                      // ),
+                      // SizedBox(height: 16.h),
+                      // _label('Location'),
+                      // SizedBox(height: 8.h),
+                      // AuthTextFormField(
+                      //   hintText: 'Enter location',
+                      //   controller: _locationCtrl,
+                      //   textInputAction: TextInputAction.done,
+                      // ),
                     ],
                   ),
                 ),
@@ -110,13 +156,11 @@ class _SpEditProfileScreenState extends State<SpEditProfileScreen> {
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
-                onPressed: () => FormValidator.validateAndProceed(
-                  _formKey,
-                  () => context.pop(),
-                ),
+                onPressed: state.isLoading ? () {} : _updateProfile,
                 title: 'Update',
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
+                isLoading: state.isLoading,
               ),
             ),
           ],
@@ -127,6 +171,7 @@ class _SpEditProfileScreenState extends State<SpEditProfileScreen> {
 
   Widget _buildAvatar() {
     const double size = 110;
+    final profile = ref.watch(spProfileProvider).value;
     return SizedBox(
       width: size.w,
       height: size.w,
@@ -140,12 +185,19 @@ class _SpEditProfileScreenState extends State<SpEditProfileScreen> {
                     height: size.w,
                     fit: BoxFit.cover,
                   )
-                : Image.asset(
-                    'assets/image/demo_image.jpg',
-                    width: size.w,
-                    height: size.w,
-                    fit: BoxFit.cover,
-                  ),
+                : (profile?.imageUrl != null && profile!.imageUrl!.isNotEmpty
+                    ? Image.network(
+                        AppCredentials.fixurl(profile.imageUrl!),
+                        width: size.w,
+                        height: size.w,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.asset(
+                        'assets/image/demo_image.jpg',
+                        width: size.w,
+                        height: size.w,
+                        fit: BoxFit.cover,
+                      )),
           ),
           Positioned(
             bottom: 0,

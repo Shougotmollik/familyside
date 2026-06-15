@@ -1,3 +1,6 @@
+import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/model/provider_profile_data.dart';
+import 'package:familyside/provider/service_provider/sp_profile_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,43 +49,55 @@ class SpProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(spProfileProvider);
+
     return Scaffold(
       backgroundColor: AppColors.profileHeaderBackground,
-      body: Column(
-        children: [
-          const _SpProfileHeader(),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-              ),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SpStatsRow(),
-                    SizedBox(height: 16.h),
-                    _ContributeSection(),
-                    SizedBox(height: 16.h),
-                    _GeneralSettingsSection(settings: _settings),
-                    SizedBox(height: 16.h),
-                    _LogoutSection(),
-                  ],
+      body: profileAsync.when(
+        data: (profile) => Column(
+          children: [
+            _SpProfileHeader(profile: profile),
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceLight,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(24.r),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SpStatsRow(stats: profile?.stats),
+                      SizedBox(height: 16.h),
+                      _ContributeSection(),
+                      SizedBox(height: 16.h),
+                      _GeneralSettingsSection(settings: _settings),
+                      SizedBox(height: 16.h),
+                      _LogoutSection(),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        error: (err, stack) {
+          debugPrint('Error: $err');
+          return const Center(child: Text('Error loading profile'));
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }
 }
 
 class _SpProfileHeader extends StatelessWidget {
-  const _SpProfileHeader();
+  const _SpProfileHeader({this.profile});
+  final ProviderProfileData? profile;
 
   @override
   Widget build(BuildContext context) {
@@ -96,15 +111,20 @@ class _SpProfileHeader extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 28.h),
           child: Column(
             children: [
-              _AvatarWithBadge(theme: theme),
+              _AvatarWithBadge(theme: theme, imageUrl: profile?.imageUrl),
               SizedBox(height: 12.h),
               Text(
-                'You are among the most active\nfamilies in your area',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+                profile?.name ?? 'Loading...',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
                   color: AppColors.text,
-                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                profile?.location ?? '',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.lightText,
                 ),
               ),
               SizedBox(height: 16.h),
@@ -114,7 +134,8 @@ class _SpProfileHeader extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
                       child: LinearProgressIndicator(
-                        value: 0.6,
+                        value: (profile?.stats?.progressPercentage ?? 0)
+                            .toDouble(),
                         minHeight: 8.h,
                         backgroundColor: AppColors.progressTrack,
                         color: AppColors.primaryLight,
@@ -123,7 +144,7 @@ class _SpProfileHeader extends StatelessWidget {
                   ),
                   SizedBox(width: 12.w),
                   Text(
-                    'Top 9%',
+                    '${((profile?.stats?.progressPercentage ?? 0) * 100).toInt()}%',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryLight,
@@ -140,8 +161,9 @@ class _SpProfileHeader extends StatelessWidget {
 }
 
 class _AvatarWithBadge extends StatelessWidget {
-  const _AvatarWithBadge({required this.theme});
+  const _AvatarWithBadge({required this.theme, this.imageUrl});
   final ThemeData theme;
+  final String? imageUrl;
 
   static const double _size = 120;
 
@@ -155,18 +177,23 @@ class _AvatarWithBadge extends StatelessWidget {
         alignment: Alignment.topCenter,
         children: [
           ClipOval(
-            child: Image.asset(
-              'assets/image/demo_image.jpg',
-              width: _size.w,
-              height: _size.w,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
-                width: _size.w,
-                height: _size.w,
-                color: AppColors.border,
-                child: Icon(Icons.person, color: AppColors.grey, size: 36.sp),
-              ),
-            ),
+            child: imageUrl != null && imageUrl!.isNotEmpty
+                ? Image.network(
+                    AppCredentials.fixurl(imageUrl!),
+                    width: _size.w,
+                    height: _size.w,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    width: _size.w,
+                    height: _size.w,
+                    color: AppColors.border,
+                    child: Icon(
+                      Icons.person,
+                      color: AppColors.grey,
+                      size: 36.sp,
+                    ),
+                  ),
           ),
           Positioned(
             bottom: 0,
@@ -208,6 +235,9 @@ class _AvatarWithBadge extends StatelessWidget {
 }
 
 class _SpStatsRow extends StatelessWidget {
+  const _SpStatsRow({this.stats});
+  final dynamic stats;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -218,22 +248,22 @@ class _SpStatsRow extends StatelessWidget {
           ProfileStatCard(
             iconPath: 'assets/icon/star.svg',
             label: 'Reviews',
-            value: '32',
+            value: (stats?.reviewsCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: 'assets/icon/activity.svg',
             label: 'Activities',
-            value: '12',
+            value: (stats?.activitiesCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: 'assets/icon/invited_family.svg',
             label: 'Invited Family',
-            value: '12',
+            value: (stats?.invitedFamilyCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: 'assets/icon/wrapped-gift.svg',
             label: 'Gifts Shared',
-            value: '12',
+            value: (stats?.giftsSharedCount ?? 0).toString(),
           ),
         ],
       ),

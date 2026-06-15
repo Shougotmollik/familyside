@@ -33,4 +33,5 @@ class ApiConstants {
 
   static const String createActivity = "$apiVersion/provider/create/activity";
   static const String createEvent = "$apiVersion/provider/create/event";
+  static const String createGift = "$apiVersion/provider/create/gift";
 }

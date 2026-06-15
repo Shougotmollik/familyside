@@ -1,34 +1,49 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/model/interest.dart';
+import 'package:familyside/provider/service_provider/sp_create_provider.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/utils/image_picker.dart';
-import 'package:familyside/view/widgets/auth_text_form_field.dart';
-import 'package:familyside/view/widgets/custom_app_bar.dart';
-import 'package:familyside/view/service_provider/create_section/widgets/sp_form_label.dart';
-import 'package:familyside/view/service_provider/create_section/widgets/sp_tag_selector.dart';
-import 'package:familyside/view/service_provider/create_section/widgets/sp_photo_upload_box.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_category_dropdown.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_form_buttons.dart';
+import 'package:familyside/view/service_provider/create_section/widgets/sp_form_label.dart';
+import 'package:familyside/view/service_provider/create_section/widgets/sp_photo_upload_box.dart';
+import 'package:familyside/view/service_provider/create_section/widgets/sp_tag_selector.dart';
+import 'package:familyside/view/widgets/auth_text_form_field.dart';
+import 'package:familyside/view/widgets/custom_app_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 
-class CreateGiftScreen extends StatefulWidget {
+final categoriesProvider = FutureProvider<List<Interest>>((ref) async {
+  return ref.read(spCreateProvider.notifier).getCategories();
+});
+
+class CreateGiftScreen extends ConsumerStatefulWidget {
   const CreateGiftScreen({super.key});
 
   @override
-  State<CreateGiftScreen> createState() => _CreateGiftScreenState();
+  ConsumerState<CreateGiftScreen> createState() => _CreateGiftScreenState();
 }
 
-class _CreateGiftScreenState extends State<CreateGiftScreen> {
+class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _tagSearchController = TextEditingController();
 
-  String? _selectedCategory;
-  List<String> _selectedTags = [];
+  Interest? _selectedCategoryInterest;
+  final List<String> _selectedTags = [];
 
   final List<String> _tags = ['Toddler', 'Indoor', 'Ongoing', 'Free', 'Paid'];
+
+  List<String> get _filteredTags {
+    final query = _tagSearchController.text.trim().toLowerCase();
+    if (query.isEmpty) return _tags;
+    return _tags.where((t) => t.toLowerCase().contains(query)).toList();
+  }
 
   final List<File> _selectedPhotos = [];
 
@@ -37,7 +52,43 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
     _nameController.dispose();
     _amountController.dispose();
     _descriptionController.dispose();
+    _tagSearchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_nameController.text.isEmpty ||
+        _amountController.text.isEmpty ||
+        _selectedPhotos.isEmpty ||
+        _selectedCategoryInterest == null) {
+      AppSnackbar.show(
+        message: 'Please fill all required fields',
+        type: SnackType.warning,
+      );
+      return;
+    }
+
+    final success = await ref.read(spCreateProvider.notifier).createGift(
+          giftName: _nameController.text,
+          categoryId: _selectedCategoryInterest!.id,
+          tags: _selectedTags,
+          price: int.parse(_amountController.text),
+          description: _descriptionController.text,
+          image: _selectedPhotos.first,
+        );
+
+    if (success && mounted) {
+      Navigator.of(context).pop();
+      AppSnackbar.show(
+        message: 'Gift created successfully',
+        type: SnackType.success,
+      );
+    } else if (mounted) {
+      AppSnackbar.show(
+        message: 'Failed to create gift',
+        type: SnackType.error,
+      );
+    }
   }
 
   void _pickPhotos() {
@@ -48,12 +99,18 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
           source: ImageSource.camera,
         );
         if (file != null) {
-          setState(() => _selectedPhotos.add(file));
+          setState(() {
+            _selectedPhotos.clear();
+            _selectedPhotos.add(file);
+          });
         }
       } else {
         final files = await pickImageFromGallery(context: context);
         if (files != null) {
-          setState(() => _selectedPhotos.addAll(files));
+          setState(() {
+            _selectedPhotos.clear();
+            _selectedPhotos.addAll(files);
+          });
         }
       }
     });
@@ -61,6 +118,8 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(spCreateProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -77,16 +136,17 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
                   Text(
                     'Add New Gift',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 22.sp,
-                    ),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22.sp,
+                        ),
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Fill all the necessary details for adding a new event',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
+                    'Fill all the necessary details for adding a new gift',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: AppColors.lightText),
                   ),
                   SizedBox(height: 16.h),
                 ],
@@ -98,36 +158,110 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Gift Name
                     const SpFormLabel('Gift Name'),
                     AuthTextFormField(
-                      hintText: 'Enter your activity name',
+                      hintText: 'Enter your gift name',
                       controller: _nameController,
                     ),
 
-                    // Category
                     const SpFormLabel('Category'),
-                    SpCategoryDropdown(
-                      value: _selectedCategory,
-                      onChanged: (v) => setState(() => _selectedCategory = v),
-                    ),
-                    SizedBox(height: 4.h),
+                    ref.watch(categoriesProvider).when(
+                          loading: () => const SizedBox(
+                            height: 50,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                          error: (err, _) => Text('Error: $err'),
+                          data: (categories) => SpCategoryDropdown(
+                            value: _selectedCategoryInterest?.name,
+                            items: categories.map((e) => e.name).toList(),
+                            onChanged: (v) => setState(() {
+                              _selectedCategoryInterest = categories.firstWhere(
+                                (e) => e.name == v,
+                              );
+                            }),
+                          ),
+                        ),
+                    SizedBox(height: 16.h),
 
-                    // Tag
                     const SpFormLabel('Tag'),
                     SizedBox(height: 8.h),
-                    SpTagSelector(
-                      tags: _tags,
-                      selectedTags: _selectedTags,
-                      onToggle: (tag) => setState(() {
-                        _selectedTags.contains(tag)
-                            ? _selectedTags.remove(tag)
-                            : _selectedTags.add(tag);
-                      }),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16.r),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      padding: EdgeInsets.all(12.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 40.h,
+                            child: TextField(
+                              controller: _tagSearchController,
+                              onChanged: (_) => setState(() {}),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.text,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Search or add tags...',
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: AppColors.lightText,
+                                ),
+                                filled: true,
+                                fillColor: AppColors.surface,
+                                prefixIcon: Icon(
+                                  Icons.search,
+                                  size: 20.sp,
+                                  color: AppColors.lightText,
+                                ),
+                                suffixIcon: _tagSearchController.text.isNotEmpty
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          setState(
+                                            () => _tagSearchController.clear(),
+                                          );
+                                        },
+                                        child: Icon(
+                                          Icons.close,
+                                          size: 18.sp,
+                                          color: AppColors.lightText,
+                                        ),
+                                      )
+                                    : null,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 12.w,
+                                  vertical: 10.h,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  borderSide: BorderSide(
+                                    color: AppColors.lightText.withValues(
+                                      alpha: 0.3,
+                                    ),
+                                    width: 1.w,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          AnimatedSize(
+                            duration: const Duration(milliseconds: 250),
+                            alignment: Alignment.topCenter,
+                            child: _tagSearchController.text.trim().isNotEmpty
+                                ? _buildSearchResults()
+                                : _buildDefaultTags(),
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(height: 16.h),
 
-                    // Amount
                     SpFormLabel('Enter amount', isRequired: true),
                     AuthTextFormField(
                       hintText: '\$00',
@@ -135,7 +269,6 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
                       keyboardType: TextInputType.number,
                     ),
 
-                    // Description
                     const SpFormLabel('Description'),
                     AuthTextFormField(
                       hintText: 'Enter Description...',
@@ -145,18 +278,19 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
                     ),
                     SizedBox(height: 16.h),
 
-                    // Photos
                     RichText(
                       text: TextSpan(
                         text: 'Add Photos ',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.text,
-                          fontWeight: FontWeight.w400,
-                        ),
+                              color: AppColors.text,
+                              fontWeight: FontWeight.w400,
+                            ),
                         children: [
                           TextSpan(
                             text: '(Optional)',
-                            style: Theme.of(context).textTheme.bodySmall
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
                                 ?.copyWith(color: AppColors.lightText),
                           ),
                         ],
@@ -165,14 +299,16 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
                     SizedBox(height: 8.h),
                     SpPhotoUploadBox(
                       onTap: _pickPhotos,
-                      previewFile:
-                          _selectedPhotos.isNotEmpty ? _selectedPhotos.first : null,
+                      previewFile: _selectedPhotos.isNotEmpty
+                          ? _selectedPhotos.first
+                          : null,
                     ),
                     SizedBox(height: 16.h),
 
                     SpFormButtons(
                       onCancel: () => Navigator.of(context).maybePop(),
-                      onSubmit: () {},
+                      onSubmit: _submit,
+                      isLoading: state.isLoading,
                       submitLabel: 'Submit gift',
                     ),
                     SizedBox(height: 24.h),
@@ -183,6 +319,126 @@ class _CreateGiftScreenState extends State<CreateGiftScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDefaultTags() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Popular tags',
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.lightText,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        SpTagSelector(
+          tags: _tags,
+          selectedTags: _selectedTags,
+          onToggle: (tag) => setState(() {
+            _selectedTags.contains(tag)
+                ? _selectedTags.remove(tag)
+                : _selectedTags.add(tag);
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchResults() {
+    final query = _tagSearchController.text.trim();
+    if (_filteredTags.isEmpty) {
+      return GestureDetector(
+        onTap: () {
+          if (query.isNotEmpty && !_tags.contains(query)) {
+            setState(() {
+              _tags.add(query);
+              _selectedTags.add(query);
+              _tagSearchController.clear();
+            });
+          }
+        },
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+          decoration: BoxDecoration(
+            color: AppColors.primaryLight.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(
+              color: AppColors.primaryLight.withValues(alpha: 0.2),
+              width: 1.w,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(6.r),
+                ),
+                child: Icon(Icons.add, size: 14.sp, color: Colors.white),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(fontSize: 13.sp, color: AppColors.text),
+                    children: [
+                      TextSpan(
+                        text: 'Create "',
+                        style: TextStyle(color: AppColors.lightText),
+                      ),
+                      TextSpan(
+                        text: query,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryLight,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '"',
+                        style: TextStyle(color: AppColors.lightText),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 14.sp,
+                color: AppColors.lightText,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Suggestions',
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w600,
+            color: AppColors.lightText,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        SpTagSelector(
+          tags: _filteredTags,
+          selectedTags: _selectedTags,
+          onToggle: (tag) => setState(() {
+            _selectedTags.contains(tag)
+                ? _selectedTags.remove(tag)
+                : _selectedTags.add(tag);
+          }),
+        ),
+      ],
     );
   }
 }

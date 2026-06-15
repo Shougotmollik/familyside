@@ -163,4 +163,48 @@ class SpCreateNotifier extends _$SpCreateNotifier {
       return false;
     }
   }
+
+  // create gift
+  Future<bool> createGift({
+    required String giftName,
+    required int categoryId,
+    required List<String> tags,
+    required int price,
+    required String description,
+    required File image,
+  }) async {
+    try {
+      state = const AsyncLoading();
+      final fields = {
+        'gift_name': giftName,
+        'category_id': categoryId.toString(),
+        'tags': jsonEncode(tags),
+        'price': price.toString(),
+        'description': description,
+      };
+
+      final response = await CustomHttp.multipart(
+        endpoint: ApiConstants.createGift,
+        fields: fields,
+        filePath: image.path,
+        fieldName: 'photo',
+      );
+
+      if (response.ok) {
+        if (ref.mounted) state = const AsyncValue<void>.data(null);
+        return true;
+      }
+      if (ref.mounted) {
+        state = AsyncValue<void>.error(
+          response.error ?? 'Failed',
+          StackTrace.current,
+        );
+      }
+      return false;
+    } catch (e, st) {
+      debugPrint(e.toString());
+      if (ref.mounted) state = AsyncValue.error(e, st);
+      return false;
+    }
+  }
 }

@@ -564,7 +564,6 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Popular predefined tags
         Text(
           'Popular tags',
           style: TextStyle(

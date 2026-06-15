@@ -57,41 +57,87 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
 
   Widget _buildList(String type) {
     final asyncItems = ref.watch(manageItemsProvider(type));
-    return asyncItems.when(
-      loading: () => ListView.builder(
-        itemCount: 3,
-        padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
-        itemBuilder: (_, __) => const Padding(
-          padding: EdgeInsets.only(bottom: 14),
-          child: SpHomeSkeleton(),
-        ),
-      ),
-      error: (err, _) => Center(child: Text('Error: $err', style: TextStyle(color: AppColors.text))),
-      data: (items) {
-        if (items.isEmpty) {
-          return Center(child: Text('No $type found', style: TextStyle(color: AppColors.grey, fontSize: 14.sp)));
-        }
-        return ListView.builder(
-          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
-          itemCount: items.length,
-          itemBuilder: (_, i) {
-            final item = items[i];
-            return SpManageCard(
-              imagePath: item.imageUrl ?? '',
-              category: item.categoryLabel,
-              title: item.name,
-              price: item.price.toStringAsFixed(0),
-              distance: '${item.distanceKm} km',
-              ageRange: item.ageRange,
-              date: item.dateLabel,
-              tag: item.itemType,
-              type: type == 'activity' ? SpCardType.activity : (type == 'event' ? SpCardType.event : SpCardType.gift),
-              onEdit: () => _openEdit(item.name, type),
-              onDelete: () => _openDelete(() {}),
-            );
-          },
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(manageItemsProvider(type));
+        // Wait for the future to complete so the indicator stays visible while loading
+        await ref.read(manageItemsProvider(type).future);
       },
+      child: asyncItems.when(
+        loading: () => ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: 3,
+          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+          itemBuilder: (_, __) => const Padding(
+            padding: EdgeInsets.only(bottom: 14),
+            child: SpHomeSkeleton(),
+          ),
+        ),
+        error: (err, _) => SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, color: Colors.red, size: 48.sp),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Error: $err',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppColors.text, fontSize: 14.sp),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Pull down to retry',
+                    style: TextStyle(color: AppColors.grey, fontSize: 12.sp),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        data: (items) {
+          if (items.isEmpty) {
+            return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.6,
+                child: Center(
+                  child: Text(
+                    'No $type found',
+                    style: TextStyle(color: AppColors.grey, fontSize: 14.sp),
+                  ),
+                ),
+              ),
+            );
+          }
+          return ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+            itemCount: items.length,
+            itemBuilder: (_, i) {
+              final item = items[i];
+              return SpManageCard(
+                imagePath: item.imageUrl ?? '',
+                category: item.categoryLabel,
+                title: item.name,
+                price: item.price.toStringAsFixed(0),
+                distance: '${item.distanceKm} km',
+                ageRange: item.ageRange,
+                date: item.dateLabel,
+                tag: item.itemType,
+                type: type == 'activity'
+                    ? SpCardType.activity
+                    : (type == 'event' ? SpCardType.event : SpCardType.gift),
+                onEdit: () => _openEdit(item.name, type),
+                onDelete: () => _openDelete(() {}),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

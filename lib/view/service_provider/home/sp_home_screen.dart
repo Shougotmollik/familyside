@@ -37,120 +37,151 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
-        child: state.when(
-          loading: () => const SpHomeSkeleton(),
-          error: (err, stack) {
-            debugPrint('Error loading home feed: $err');
-            return const SizedBox.shrink();
-          },
-          data: (data) {
-            final feed = data['feed'] as ProviderFeed;
-            final header = data['header'] as SpHomeHeader? ??
-                SpHomeHeader(
-                  name: 'User',
-                  profileImageUrl: null,
-                  location: 'Location not set',
-                  unreadNotifications: 0,
-                );
-            return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(header),
-                  SizedBox(height: 24.h),
-                  _buildSectionHeader(
-                    'Upcoming events',
-                    onSeeAll: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SpSeeAllScreen(
-                            title: 'Upcoming events',
-                            items: feed.upcomingEvents,
+        child: RefreshIndicator(
+          onRefresh: () =>
+              ref.read(spHomeProviderProvider.notifier).fetchSpHomeFeed(),
+          child: state.when(
+            loading: () => const SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: SpHomeSkeleton(),
+            ),
+            error: (err, stack) {
+              debugPrint('Error loading home feed: $err');
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline,
+                            color: Colors.red, size: 48.sp),
+                        SizedBox(height: 16.h),
+                        Text(
+                          'Failed to load data',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          'Pull down to refresh',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.grey,
                           ),
                         ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
-                  SizedBox(height: 12.h),
-                  if (feed.upcomingEvents.isEmpty)
-                    Container(
-                      margin: EdgeInsets.only(bottom: 14.h),
-                      padding: EdgeInsets.symmetric(vertical: 20.h),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'No upcoming events found',
-                        style: TextStyle(
-                          color: AppColors.grey,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    )
-                  else
-                    ...feed.upcomingEvents
-                        .take(2)
-                        .map(
-                          (e) => SpEventCard(
-                            imagePath: e.imageUrl ?? '',
-                            category: e.categoryLabel,
-                            title: e.name,
-                            price: e.price.toStringAsFixed(0),
-                            distance: '${e.distanceKm} km',
-                            ageRange: e.ageRange,
-                            date: e.dateLabel,
-                            tag: e.itemType,
+                ),
+              );
+            },
+            data: (data) {
+              final feed = data['feed'] as ProviderFeed;
+              final header = data['header'] as SpHomeHeader? ??
+                  SpHomeHeader(
+                    name: 'User',
+                    profileImageUrl: null,
+                    location: 'Location not set',
+                    unreadNotifications: 0,
+                  );
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(header),
+                    SizedBox(height: 24.h),
+                    _buildSectionHeader(
+                      'Upcoming events',
+                      onSeeAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SpSeeAllScreen(
+                              title: 'Upcoming events',
+                              items: feed.upcomingEvents,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 12.h),
+                    if (feed.upcomingEvents.isEmpty)
+                      Container(
+                        margin: EdgeInsets.only(bottom: 14.h),
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'No upcoming events found',
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 14.sp,
                           ),
                         ),
-                  SizedBox(height: 8.h),
-                  _buildSectionHeader(
-                    'Top service',
-                    onSeeAll: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => SpSeeAllScreen(
-                            title: 'Top service',
-                            items: feed.topServices,
+                      )
+                    else
+                      ...feed.upcomingEvents.take(2).map(
+                            (e) => SpEventCard(
+                              imagePath: e.imageUrl ?? '',
+                              category: e.categoryLabel,
+                              title: e.name,
+                              price: e.price.toStringAsFixed(0),
+                              distance: '${e.distanceKm} km',
+                              ageRange: e.ageRange,
+                              date: e.dateLabel,
+                              tag: e.itemType,
+                            ),
+                          ),
+                    SizedBox(height: 8.h),
+                    _buildSectionHeader(
+                      'Top service',
+                      onSeeAll: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SpSeeAllScreen(
+                              title: 'Top service',
+                              items: feed.topServices,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(height: 12.h),
+                    if (feed.topServices.isEmpty)
+                      Container(
+                        margin: EdgeInsets.only(bottom: 14.h),
+                        padding: EdgeInsets.symmetric(vertical: 20.h),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'No top services found',
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 14.sp,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                  SizedBox(height: 12.h),
-                  if (feed.topServices.isEmpty)
-                    Container(
-                      margin: EdgeInsets.only(bottom: 14.h),
-                      padding: EdgeInsets.symmetric(vertical: 20.h),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'No top services found',
-                        style: TextStyle(
-                          color: AppColors.grey,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    )
-                  else
-                    ...feed.topServices
-                        .take(3)
-                        .map(
-                          (e) => SpEventCard(
-                            imagePath: e.imageUrl ?? '',
-                            category: e.categoryLabel,
-                            title: e.name,
-                            price: e.price.toStringAsFixed(0),
-                            distance: '${e.distanceKm} km',
-                            ageRange: e.ageRange,
-                            date: e.dateLabel,
-                            tag: e.itemType,
+                      )
+                    else
+                      ...feed.topServices.take(3).map(
+                            (e) => SpEventCard(
+                              imagePath: e.imageUrl ?? '',
+                              category: e.categoryLabel,
+                              title: e.name,
+                              price: e.price.toStringAsFixed(0),
+                              distance: '${e.distanceKm} km',
+                              ageRange: e.ageRange,
+                              date: e.dateLabel,
+                              tag: e.itemType,
+                            ),
                           ),
-                        ),
-                  SizedBox(height: 16.h),
-                ],
-              ),
-            );
-          },
+                    SizedBox(height: 16.h),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

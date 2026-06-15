@@ -43,4 +43,6 @@ class ApiConstants {
       "$apiVersion/provider/manage/items/$id";
   static String updateGift({required int id}) =>
       "$apiVersion/provider/manage/items/$id";
+
+  static const String analytics = "$apiVersion/provider/analytics";
 }

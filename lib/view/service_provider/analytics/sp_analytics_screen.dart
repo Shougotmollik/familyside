@@ -1,39 +1,48 @@
+import 'package:familyside/provider/service_provider/sp_analytics_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 
-class SpAnalyticsScreen extends StatefulWidget {
+class SpAnalyticsScreen extends ConsumerStatefulWidget {
   const SpAnalyticsScreen({super.key});
 
   @override
-  State<SpAnalyticsScreen> createState() => _SpAnalyticsScreenState();
+  ConsumerState<SpAnalyticsScreen> createState() => _SpAnalyticsScreenState();
 }
 
-class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
+class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
   int _selectedCategoryIndex = 0;
-  String _selectedYear = '2025';
+  String _selectedYear = DateTime.now().year.toString();
 
-  final List<String> _categories = [
-    'Profile Views',
-    'User engagement',
-    'Total Activities',
-    'Platform Reach',
+  final List<Map<String, String>> _categories = [
+    {'name': 'Profile Views', 'slug': 'profile_view'},
+    {'name': 'User engagement', 'slug': 'item_view'},
+    {'name': 'Total Activities', 'slug': 'item_view'},
+    {'name': 'Platform Reach', 'slug': 'platform_reach'},
   ];
 
-  // Data sets per category (Jan–Jun)
-  final List<List<double>> _chartData = [
-    [-65, -25, -65, 55, -15, 20, -65],   // Profile Views
-    [-40, 10, -30, 40, -5, 30, -50],      // User engagement
-    [-50, -10, -50, 70, -20, 15, -55],    // Total Activities
-    [-30, 20, -40, 60, -10, 25, -45],     // Platform Reach
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchData();
+    });
+  }
 
-  final List<String> _months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun'];
+  void _fetchData() {
+    ref.read(spAnalyticsProvider.notifier).fetchAnalyticsData(
+          year: _selectedYear,
+          category: _categories[_selectedCategoryIndex]['slug']!,
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final analyticsState = ref.watch(spAnalyticsProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -47,9 +56,23 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
               SizedBox(height: 24.h),
               _buildCategoriesSection(),
               SizedBox(height: 16.h),
-              _buildChart(),
+              analyticsState.when(
+                data: (data) => _buildChart(data),
+                error: (err, stack) {
+                  debugPrint('Error fetching analytics data: $err');
+                  return const SizedBox.shrink();
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+              ),
               SizedBox(height: 28.h),
-              _buildSuggestionsSection(),
+              analyticsState.when(
+                data: (data) => _buildSuggestionsSection(data),
+                error: (err, stack) {
+                  debugPrint('Error fetching suggestions: $err');
+                  return const SizedBox.shrink();
+                },
+                loading: () => const SizedBox.shrink(),
+              ),
               SizedBox(height: 24.h),
             ],
           ),
@@ -76,6 +99,11 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
     );
   }
 
+  List<String> _getYearList() {
+    final currentYear = DateTime.now().year;
+    return List.generate(5, (i) => (currentYear - 4 + i).toString());
+  }
+
   Widget _buildYearDropdown() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
@@ -97,11 +125,14 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
                 fontWeight: FontWeight.w500,
                 fontSize: 14.sp,
               ),
-          items: ['2023', '2024', '2025'].map((y) {
+          items: _getYearList().map((y) {
             return DropdownMenuItem(value: y, child: Text(y));
           }).toList(),
           onChanged: (val) {
-            if (val != null) setState(() => _selectedYear = val);
+            if (val != null) {
+              setState(() => _selectedYear = val);
+              _fetchData();
+            }
           },
         ),
       ),
@@ -126,7 +157,10 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
             children: List.generate(_categories.length, (i) {
               final isSelected = _selectedCategoryIndex == i;
               return GestureDetector(
-                onTap: () => setState(() => _selectedCategoryIndex = i),
+                onTap: () {
+                  setState(() => _selectedCategoryIndex = i);
+                  _fetchData();
+                },
                 child: Container(
                   margin: EdgeInsets.only(right: 10.w),
                   padding: EdgeInsets.symmetric(
@@ -140,7 +174,7 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    _categories[i],
+                    _categories[i]['name']!,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: isSelected
                               ? Colors.white
@@ -158,12 +192,14 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
     );
   }
 
-  Widget _buildChart() {
-    final data = _chartData[_selectedCategoryIndex];
+  Widget _buildChart(List<dynamic> analyticsList) {
+    if (analyticsList.isEmpty) return const SizedBox.shrink();
+
+    final data = analyticsList.first.chartData ?? [];
 
     final spots = List.generate(
       data.length,
-      (i) => FlSpot(i.toDouble(), data[i]),
+      (i) => FlSpot(i.toDouble(), (data[i].value ?? 0).toDouble()),
     );
 
     return Container(
@@ -174,7 +210,7 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
       ),
       child: LineChart(
         LineChartData(
-          minY: -100,
+          minY: 0,
           maxY: 100,
           gridData: FlGridData(
             show: true,
@@ -190,7 +226,7 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                interval: 40,
+                interval: 20,
                 reservedSize: 36.w,
                 getTitlesWidget: (value, meta) {
                   return Text(
@@ -209,13 +245,13 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
                 interval: 1,
                 getTitlesWidget: (value, meta) {
                   final idx = value.toInt();
-                  if (idx < 0 || idx >= _months.length) {
+                  if (idx < 0 || idx >= data.length) {
                     return const SizedBox.shrink();
                   }
                   return Padding(
                     padding: EdgeInsets.only(top: 6.h),
                     child: Text(
-                      _months[idx],
+                      data[idx].label ?? '',
                       style: TextStyle(
                         fontSize: 11.sp,
                         color: AppColors.lightText,
@@ -255,7 +291,11 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
     );
   }
 
-  Widget _buildSuggestionsSection() {
+  Widget _buildSuggestionsSection(List<dynamic> analyticsList) {
+    if (analyticsList.isEmpty) return const SizedBox.shrink();
+    
+    final suggestion = analyticsList.first.suggestionText ?? '';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -267,12 +307,12 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
               ),
         ),
         SizedBox(height: 12.h),
-        _buildSuggestionCard(),
+        _buildSuggestionCard(suggestion),
       ],
     );
   }
 
-  Widget _buildSuggestionCard() {
+  Widget _buildSuggestionCard(String text) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
@@ -306,7 +346,7 @@ class _SpAnalyticsScreenState extends State<SpAnalyticsScreen> {
           ),
           SizedBox(height: 10.h),
           Text(
-            'Consectetur adipiscing elit. Vehicula massa in enim luctus. Rutrum arcu, aliquam nulla tincidunt gravida. Cursus convallis dolor semper pretium ornare.',
+            text,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.text,
                   height: 1.5,

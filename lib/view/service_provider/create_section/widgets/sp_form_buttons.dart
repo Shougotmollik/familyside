@@ -8,11 +8,13 @@ class SpFormButtons extends StatelessWidget {
     required this.onCancel,
     required this.onSubmit,
     this.submitLabel = 'Submit activity',
+    this.isLoading = false,
   });
 
   final VoidCallback onCancel;
   final VoidCallback onSubmit;
   final String submitLabel;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class SpFormButtons extends StatelessWidget {
       children: [
         // Cancel — ghost button
         GestureDetector(
-          onTap: onCancel,
+          onTap: isLoading ? null : onCancel,
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 15.h),
@@ -32,9 +34,9 @@ class SpFormButtons extends StatelessWidget {
               child: Text(
                 'Cancel',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primaryLight,
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: AppColors.primaryLight,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ),
           ),
@@ -42,7 +44,7 @@ class SpFormButtons extends StatelessWidget {
         SizedBox(height: 12.h),
         // Submit — filled button
         GestureDetector(
-          onTap: onSubmit,
+          onTap: isLoading ? null : onSubmit,
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 15.h),
@@ -51,13 +53,22 @@ class SpFormButtons extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Center(
-              child: Text(
-                submitLabel,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: isLoading
+                  ? SizedBox(
+                      height: 20.h,
+                      width: 20.h,
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      submitLabel,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
             ),
           ),
         ),

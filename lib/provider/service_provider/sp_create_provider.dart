@@ -91,13 +91,71 @@ class SpCreateNotifier extends _$SpCreateNotifier {
               filePath: image.path,
               fieldName: 'photo',
             )
-          : await CustomHttp.post(endpoint: ApiConstants.createActivity, body: fields);
+          : await CustomHttp.post(
+              endpoint: ApiConstants.createActivity,
+              body: fields,
+            );
 
       if (response.ok) {
         if (ref.mounted) state = const AsyncValue<void>.data(null);
         return true;
       }
-      if (ref.mounted) state = AsyncValue<void>.error(response.error ?? 'Failed', StackTrace.current);
+      if (ref.mounted) {
+        state = AsyncValue<void>.error(
+          response.error ?? 'Failed',
+          StackTrace.current,
+        );
+      }
+      return false;
+    } catch (e, st) {
+      debugPrint(e.toString());
+      if (ref.mounted) state = AsyncValue.error(e, st);
+      return false;
+    }
+  }
+
+  // create event
+  Future<bool> createEvent({
+    required String name,
+    required String date,
+    required String location,
+    required int categoryId,
+    required int price,
+    required String time,
+    required File image,
+    required List<String> tags,
+    required String description,
+  }) async {
+    try {
+      state = const AsyncLoading();
+      final fields = {
+        'name': name,
+        'date': date,
+        'location': location,
+        'category_id': categoryId.toString(),
+        'price': price.toString(),
+        'time': time,
+        'tags': jsonEncode(tags),
+        'description': description,
+      };
+
+      final response = await CustomHttp.multipart(
+        endpoint: ApiConstants.createEvent,
+        fields: fields,
+        filePath: image.path,
+        fieldName: 'photo',
+      );
+
+      if (response.ok) {
+        if (ref.mounted) state = const AsyncValue<void>.data(null);
+        return true;
+      }
+      if (ref.mounted) {
+        state = AsyncValue<void>.error(
+          response.error ?? 'Failed',
+          StackTrace.current,
+        );
+      }
       return false;
     } catch (e, st) {
       debugPrint(e.toString());

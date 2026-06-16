@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/core/constants/api_constant.dart';
 import 'package:familyside/services/check_for_internet.dart';
 import 'package:familyside/services/http_logger.dart';
 import 'package:familyside/services/local_storage.dart';
@@ -21,7 +22,9 @@ class CustomHttpResult {
     required this.ok,
   });
 
-  String? operator [](String other) {}
+  String? operator [](String other) {
+    return null;
+  }
 }
 
 enum _HttpMethod { post, put, patch, delete }
@@ -403,8 +406,34 @@ class CustomHttp {
   }
 
   static Future<bool> _refresh_access_token() async {
-    // ... (Keep your existing token refresh logic)
-    return true; // Simplified for length
+    try {
+      final refreshToken = await LocalStorage.refresh_token.get();
+      if (refreshToken == null || refreshToken.isEmpty) {
+        return false;
+      }
+
+      final response = await http.post(
+        Uri.parse('${AppCredentials.domain}/api${ApiConstants.refreshToken}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({'refresh_token': refreshToken}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'];
+        if (data != null) {
+          await LocalStorage.access_token.set(data['access_token']);
+          await LocalStorage.refresh_token.set(data['refresh_token']);
+          return true;
+        }
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Failed to refresh token: $e');
+      return false;
+    }
   }
 
   static String _build_url(String base, Map<String, dynamic>? queries) {
@@ -422,10 +451,36 @@ class CustomHttp {
   }) async {
     // IF UNAUTHORIZED
     if (response.statusCode == 401) {
-      print("🚩 401 Unauthorized! Refreshing token...");
-      final alreadyRetried = response.request?.headers['x-retried'] == 'true';
+      // Only attempt token refresh for authenticated requests (retryAction is set)
+      if (retryAction != null) {
+        print("🚩 401 Unauthorized! Refreshing token...");
+        final alreadyRetried = response.request?.headers['x-retried'] == 'true';
 
-      if (alreadyRetried || retryCount >= _maxRetry) {
+        if (alreadyRetried || retryCount >= _maxRetry) {
+          // await globalContainer.read(authProvider.notifier).logout();
+          return CustomHttpResult(
+            status_code: 401,
+            ok: false,
+            error: "Session expired",
+          );
+        }
+
+        // Only attempt to refresh token if we have a valid refresh token
+        final refreshToken = await LocalStorage.refresh_token.get();
+        if (refreshToken == null || refreshToken.isEmpty) {
+          return CustomHttpResult(
+            status_code: 401,
+            ok: false,
+            error: "Session expired",
+          );
+        }
+
+        final success = await _refresh_access_token();
+
+        if (success) {
+          print("✅ Refresh successful! Retrying request...");
+          return await retryAction();
+        }
         // await globalContainer.read(authProvider.notifier).logout();
         return CustomHttpResult(
           status_code: 401,
@@ -434,25 +489,11 @@ class CustomHttp {
         );
       }
 
-      // final success = await globalContainer
-      //     .read(authProvider.notifier)
-      //     .refreshToken();
-
-      // if (success) {
-      //   print("✅ Refresh successful! Retrying request...");
-      //   return retryAction != null
-      //       ? await retryAction()
-      //       : CustomHttpResult(
-      //           status_code: 401,
-      //           ok: false,
-      //           error: "Retry failed",
-      //         );
-      // }
-      // await globalContainer.read(authProvider.notifier).logout();
+      // For non-authenticated requests (login, signup), return the server error
       return CustomHttpResult(
         status_code: 401,
         ok: false,
-        error: "Session expired",
+        error: _parse_error_message(response),
       );
     }
     final method = response.request?.method ?? 'UNKNOWN';
@@ -501,7 +542,8 @@ class CustomHttp {
 
   static String _parse_error_message(http.Response response) {
     try {
-      return jsonDecode(response.body)['message'] ?? 'Error';
+      final body = jsonDecode(response.body);
+      return body['detail'] ?? body['message'] ?? 'Error';
     } catch (_) {
       return 'Error';
     }

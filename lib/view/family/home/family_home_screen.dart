@@ -1,4 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/model/family_home_feed.dart';
+import 'package:familyside/model/sp_home_header.dart';
+import 'package:familyside/provider/family/home_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +16,6 @@ import 'package:familyside/view/widgets/sub_category_card.dart';
 import 'package:familyside/view/family/explorer/models/explorer_data.dart';
 import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
-import 'package:familyside/view/family/home/sub_category_list_screen_config.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 
 class RecommendedItemModel {
@@ -36,102 +40,25 @@ class RecommendedItemModel {
   });
 }
 
-class SubCategoryModel {
-  final String imagePath;
-  final String title;
-  final String subtitle;
-
-  const SubCategoryModel({
-    required this.imagePath,
-    required this.title,
-    required this.subtitle,
-  });
-}
-
-class FamilyHomeScreen extends StatefulWidget {
+class FamilyHomeScreen extends ConsumerStatefulWidget {
   const FamilyHomeScreen({super.key});
 
   @override
-  State<FamilyHomeScreen> createState() => _FamilyHomeScreenState();
+  ConsumerState<FamilyHomeScreen> createState() => _FamilyHomeScreenState();
 }
 
-class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
+class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   String _selectedCategory = 'All';
   FilterResultModel? _currentFilters;
 
-  final List<String> _categories = [
-    'All',
-    'Health',
-    'Schools',
-    'Events',
-    'Outdoor',
-    'Sports',
-  ];
-
-  final List<RecommendedItemModel> _recommendedItems = const [
-    RecommendedItemModel(
-      imagePath: "assets/image/onboarding 1.jpg",
-      category: "Health",
-      date: "25 Jun",
-      title: "Little Stars Pediatric Clinic",
-      price: "20",
-      distance: "0.05 km",
-      ageRange: "Age: 0-20 years",
-      tag: "Recommended",
-    ),
-    RecommendedItemModel(
-      imagePath: "assets/image/onboarding 2.jpg",
-      category: "Health",
-      date: "25 Jun",
-      title: "Little Stars Pediatric Clinic",
-      price: "20",
-      distance: "0.05 km",
-      ageRange: "Age: 0-20 years",
-      tag: "Recommended",
-    ),
-  ];
-
-  final List<RecommendedItemModel> _eventsItems = const [
-    RecommendedItemModel(
-      imagePath: "assets/image/onboarding 3.jpg",
-      category: "Health",
-      date: "25 Jun",
-      title: "Little Stars Pediatric Clinic",
-      price: "20",
-      distance: "0.05 km",
-      ageRange: "Age: 0-20 years",
-      tag: "Recommended",
-    ),
-  ];
-
-  final List<SubCategoryModel> _subCategories = const [
-    SubCategoryModel(
-      imagePath: "assets/image/doctor.jpg",
-      title: "Pediatrician",
-      subtitle: "Clinic / Center",
-    ),
-    SubCategoryModel(
-      imagePath: "assets/image/doctor.jpg",
-      title: "Pediatrician",
-      subtitle: "Clinic / Center",
-    ),
-    SubCategoryModel(
-      imagePath: "assets/image/doctor.jpg",
-      title: "Pediatrician",
-      subtitle: "Clinic / Center",
-    ),
-    SubCategoryModel(
-      imagePath: "assets/image/doctor.jpg",
-      title: "Pediatrician",
-      subtitle: "Clinic / Center",
-    ),
-    SubCategoryModel(
-      imagePath: "assets/image/doctor.jpg",
-      title: "Pediatrician",
-      subtitle: "Clinic / Center",
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(homeProviderProvider.notifier).fetchHomeData();
+    });
+  }
 
   @override
   void dispose() {
@@ -139,21 +66,44 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
     super.dispose();
   }
 
-  void _openMapScreen() {
-    final List<RecommendedItemModel> items;
+  RecommendedItemModel _mapToRecommended(FamilyHomeItem item) {
+    // Format date: "06 June, 2026" -> "06 June"
+    String formattedDate = item.dateLabel;
+    if (formattedDate.contains(',')) {
+      formattedDate = formattedDate.split(',').first.trim();
+    }
+
+    return RecommendedItemModel(
+      imagePath: item.imageUrl ?? "",
+      category: item.categoryName,
+      date: formattedDate,
+      title: item.name,
+      price: item.price.toStringAsFixed(0),
+      distance: item.distanceKm != null
+          ? "${item.distanceKm!.toStringAsFixed(2)} km"
+          : "N/A",
+      ageRange: item.ageRange,
+      tag: item.itemType,
+    );
+  }
+
+  void _openMapScreen(FamilyHomeFeed? feed) {
+    if (feed == null) return;
+
+    final List<FamilyHomeItem> items;
     if (_selectedCategory == 'All') {
-      items = [..._recommendedItems, ..._eventsItems];
+      items = [...feed.recommended, ...feed.eventsNearYou];
     } else {
       items = [
-        ..._recommendedItems.where((i) => i.category == _selectedCategory),
-        ..._eventsItems.where((i) => i.category == _selectedCategory),
+        ...feed.recommended.where((i) => i.categoryName == _selectedCategory),
+        ...feed.eventsNearYou.where((i) => i.categoryName == _selectedCategory),
       ];
     }
 
     context.push(
       RouterPath.familyExplorerMapScreen,
       extra: ExplorerMapScreenConfig(
-        items: ExplorerData.toMapItems(items),
+        items: ExplorerData.toMapItems(items.map(_mapToRecommended).toList()),
         initialCategory: _selectedCategory,
       ),
     );
@@ -178,103 +128,125 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final homeState = ref.watch(homeProviderProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildProfileHeader(context),
-                SizedBox(height: 24.h),
-                _buildSearchSection(),
-                SizedBox(height: 24.h),
-                _buildCategoriesSection(),
-                SizedBox(height: 24.h),
-                if (_selectedCategory == 'All') ...[
-                  _buildSectionHeader('Recommended for You', () {
-                    context.push(
-                      RouterPath.familyRecommendationScreen,
-                      extra: ListScreenConfig(
-                        title: 'Recommended for You',
-                        items: _recommendedItems,
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 12.h),
-                  ...List.generate(_recommendedItems.length, (index) {
-                    final item = _recommendedItems[index];
-                    return EventCard(
-                      imagePath: item.imagePath,
-                      category: item.category,
-                      date: item.date,
-                      title: item.title,
-                      price: item.price,
-                      distance: item.distance,
-                      ageRange: item.ageRange,
-                      tag: item.tag,
-                    );
-                  }),
-                  SizedBox(height: 24.h),
-                  _buildSectionHeader('Events Near You', () {
-                    context.push(
-                      RouterPath.familyRecommendationScreen,
-                      extra: ListScreenConfig(
-                        title: 'Events Near You',
-                        items: _eventsItems,
-                      ),
-                    );
-                  }),
-                  SizedBox(height: 12.h),
-                  ...List.generate(_eventsItems.length, (index) {
-                    final item = _eventsItems[index];
-                    return EventCard(
-                      imagePath: item.imagePath,
-                      category: item.category,
-                      date: item.date,
-                      title: item.title,
-                      price: item.price,
-                      distance: item.distance,
-                      ageRange: item.ageRange,
-                      tag: item.tag,
-                    );
-                  }),
-                ] else ...[
-                  Text(
-                    "Sub-categories",
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1D1B20),
-                    ),
+        child: RefreshIndicator(
+          onRefresh: () =>
+              ref.read(homeProviderProvider.notifier).fetchHomeData(),
+          child: homeState.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (err, stack) => Center(child: Text('Error: $err')),
+            data: (data) {
+              final header = data['header'] as SpHomeHeader?;
+              final feed = data['feed'] as FamilyHomeFeed?;
+              final subCategories = data['subCategories'] as List<FamilySubCategory>;
+
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildProfileHeader(context, header),
+                      SizedBox(height: 24.h),
+                      _buildSearchSection(feed),
+                      SizedBox(height: 24.h),
+                      if (feed != null) _buildCategoriesSection(feed.categories),
+                      SizedBox(height: 24.h),
+                      if (_selectedCategory == 'All') ...[
+                        if (feed != null && feed.recommended.isNotEmpty) ...[
+                          _buildSectionHeader('Recommended for You', () {
+                            context.push(
+                              RouterPath.familyRecommendationScreen,
+                              extra: ListScreenConfig(
+                                title: 'Recommended for You',
+                                items: feed.recommended
+                                    .map(_mapToRecommended)
+                                    .toList(),
+                              ),
+                            );
+                          }),
+                          SizedBox(height: 12.h),
+                          ...feed.recommended.take(2).map((item) {
+                            final mapped = _mapToRecommended(item);
+                            return EventCard(
+                              imagePath: mapped.imagePath,
+                              category: mapped.category,
+                              date: mapped.date,
+                              title: mapped.title,
+                              price: mapped.price,
+                              distance: mapped.distance,
+                              ageRange: mapped.ageRange,
+                              tag: mapped.tag,
+                            );
+                          }),
+                          SizedBox(height: 24.h),
+                        ],
+                        if (feed != null && feed.eventsNearYou.isNotEmpty) ...[
+                          _buildSectionHeader('Events Near You', () {
+                            context.push(
+                              RouterPath.familyRecommendationScreen,
+                              extra: ListScreenConfig(
+                                title: 'Events Near You',
+                                items: feed.eventsNearYou
+                                    .map(_mapToRecommended)
+                                    .toList(),
+                              ),
+                            );
+                          }),
+                          SizedBox(height: 12.h),
+                          ...feed.eventsNearYou.take(2).map((item) {
+                            final mapped = _mapToRecommended(item);
+                            return EventCard(
+                              imagePath: mapped.imagePath,
+                              category: mapped.category,
+                              date: mapped.date,
+                              title: mapped.title,
+                              price: mapped.price,
+                              distance: mapped.distance,
+                              ageRange: mapped.ageRange,
+                              tag: mapped.tag,
+                            );
+                          }),
+                        ],
+                      ] else ...[
+                        Text(
+                          "Sub-categories",
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1D1B20),
+                          ),
+                        ),
+                        SizedBox(height: 16.h),
+                        if (subCategories.isEmpty)
+                          const Center(child: Text("No sub-categories found"))
+                        else
+                          ...subCategories.map((sub) => SubCategoryCard(
+                                imagePath: sub.imageUrl ?? "",
+                                title: sub.name,
+                                subtitle: sub.description,
+                                onTap: () {
+                                  // Navigate to sub-category details or list
+                                },
+                              )),
+                      ],
+                    ],
                   ),
-                  SizedBox(height: 16.h),
-                  ...List.generate(_subCategories.length, (index) {
-                    final sub = _subCategories[index];
-                    return SubCategoryCard(
-                      imagePath: sub.imagePath,
-                      title: sub.title,
-                      subtitle: sub.subtitle,
-                      onTap: () {
-                        context.push(
-                          RouterPath.familySubCategoryListScreen,
-                          extra: SubCategoryListScreenConfig(title: sub.title),
-                        );
-                      },
-                    );
-                  }),
-                ],
-              ],
-            ),
+                ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSearchSection() {
+  Widget _buildSearchSection(FamilyHomeFeed? feed) {
     return Row(
       children: [
         Expanded(
@@ -301,30 +273,49 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
           borderRadius: 8.r,
           iconWidth: 24.w,
           iconHeight: 24.h,
-          onTap: _openMapScreen,
+          onTap: () => _openMapScreen(feed),
         ),
       ],
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
+  Widget _buildProfileHeader(BuildContext context, SpHomeHeader? header) {
     return Row(
       children: [
         ClipOval(
-          child: Image.asset(
-            "assets/image/demo_image.jpg",
-            height: 52.w,
-            width: 52.w,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
+          child: header?.profileImageUrl != null
+              ? CachedNetworkImage(
+                imageUrl: header!.profileImageUrl!,
                 height: 52.w,
                 width: 52.w,
-                color: Colors.grey.shade300,
-                child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
-              );
-            },
-          ),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  height: 52.w,
+                  width: 52.w,
+                  color: Colors.grey.shade300,
+                  child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  height: 52.w,
+                  width: 52.w,
+                  color: Colors.grey.shade300,
+                  child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                ),
+              )
+              : Image.asset(
+                "assets/image/demo_image.jpg",
+                height: 52.w,
+                width: 52.w,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 52.w,
+                    width: 52.w,
+                    color: Colors.grey.shade300,
+                    child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                  );
+                },
+              ),
         ),
         SizedBox(width: 12.w),
         Expanded(
@@ -332,7 +323,7 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Welcome back Shahid",
+                "Welcome back ${header?.name.split(' ').first ?? 'User'}",
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.w500,
@@ -340,20 +331,20 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
                 ),
               ),
               SizedBox(height: 4.h),
-              _buildLocationRow(context),
+              _buildLocationRow(context, header?.location ?? "Location not set"),
             ],
           ),
         ),
-        _buildActionButtons(),
+        _buildActionButtons(header?.unreadNotifications ?? 0),
       ],
     );
   }
 
-  Widget _buildLocationRow(BuildContext context) {
+  Widget _buildLocationRow(BuildContext context, String location) {
     return Row(
       children: [
         Text(
-          "Dhaka, Bangladesh",
+          location,
           style: TextStyle(
             fontSize: 13.sp,
             fontWeight: FontWeight.w400,
@@ -374,7 +365,7 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(int unreadNotifications) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -394,32 +385,33 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
                 context.push(RouterPath.familyNotificationScreen);
               },
             ),
-            Positioned(
-              top: -2.h,
-              right: -2.w,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryLight,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  "3",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10.sp,
-                    fontWeight: FontWeight.bold,
+            if (unreadNotifications > 0)
+              Positioned(
+                top: -2.h,
+                right: -2.w,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryLight,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    unreadNotifications.toString(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildCategoriesSection() {
+  Widget _buildCategoriesSection(List<FamilyHomeCategory> apiCategories) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -435,50 +427,58 @@ class _FamilyHomeScreenState extends State<FamilyHomeScreen> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: _categories.map((category) {
-              final isSelected = _selectedCategory == category;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedCategory = category;
-                  });
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 10.w),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.primaryLight.withValues(alpha: 0.1)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(
-                      color: isSelected
-                          ? Colors.transparent
-                          : const Color(0xFFE5E5E5),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    category,
-                    style: TextStyle(
-                      color: isSelected
-                          ? AppColors.primaryLight
-                          : const Color(0xFF939094),
-                      fontSize: 14.sp,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+            children: [
+              _buildCategoryChip('All', null),
+              ...apiCategories.map((c) => _buildCategoryChip(c.name, c.id)),
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildCategoryChip(String name, int? id) {
+    final isSelected = _selectedCategory == name;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = name;
+        });
+        if (id != null) {
+          ref.read(homeProviderProvider.notifier).fetchSubCategories(id);
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 10.w),
+        padding: EdgeInsets.symmetric(
+          horizontal: 16.w,
+          vertical: 8.h,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primaryLight.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(
+            color: isSelected
+                ? Colors.transparent
+                : const Color(0xFFE5E5E5),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          name,
+          style: TextStyle(
+            color: isSelected
+                ? AppColors.primaryLight
+                : const Color(0xFF939094),
+            fontSize: 14.sp,
+            fontWeight: isSelected
+                ? FontWeight.w600
+                : FontWeight.w400,
+          ),
+        ),
+      ),
     );
   }
 

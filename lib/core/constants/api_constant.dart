@@ -50,4 +50,10 @@ class ApiConstants {
       "$apiVersion/provider/profile/dashboard";
   static const String providerProfileUpdate =
       "$apiVersion/provider/profile/update";
+
+  // family
+  static const String familyHeader = "$apiVersion/family/home/header";
+  static const String familyHome = "$apiVersion/family/home/feed";
+  static String familySubCategories({required int categoryId}) =>
+      "$apiVersion/family/categories/$categoryId/sub-categories";
 }

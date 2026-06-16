@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -28,7 +29,7 @@ class SubCategoryCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFF2F2F2), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -38,24 +39,7 @@ class SubCategoryCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12.r),
-              child: Image.asset(
-                imagePath,
-                width: 140.w,
-                height: 85.h,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 100.w,
-                    height: 80.h,
-                    color: Colors.grey.shade200,
-                    child: Icon(
-                      Icons.broken_image,
-                      color: Colors.grey,
-                      size: 24.sp,
-                    ),
-                  );
-                },
-              ),
+              child: _buildImage(),
             ),
             SizedBox(width: 16.w),
             Expanded(
@@ -91,5 +75,53 @@ class SubCategoryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildImage() {
+    final bool isNetworkImage = imagePath.startsWith('http');
+    
+    if (isNetworkImage) {
+      return CachedNetworkImage(
+        imageUrl: imagePath,
+        width: 140.w,
+        height: 85.h,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          width: 140.w,
+          height: 85.h,
+          color: Colors.grey.shade200,
+          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        ),
+        errorWidget: (context, url, error) => Container(
+          width: 140.w,
+          height: 85.h,
+          color: Colors.grey.shade200,
+          child: Icon(
+            Icons.broken_image,
+            color: Colors.grey,
+            size: 24.sp,
+          ),
+        ),
+      );
+    } else {
+      return Image.asset(
+        imagePath,
+        width: 140.w,
+        height: 85.h,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: 140.w,
+            height: 85.h,
+            color: Colors.grey.shade200,
+            child: Icon(
+              Icons.broken_image,
+              color: Colors.grey,
+              size: 24.sp,
+            ),
+          );
+        },
+      );
+    }
   }
 }

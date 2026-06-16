@@ -13,9 +13,9 @@ class SpHomeHeader {
 
   factory SpHomeHeader.fromJson(Map<String, dynamic> json) {
     return SpHomeHeader(
-      name: json['name'] ?? '',
+      name: json['name'] ?? json['first_name'] ?? '',
       profileImageUrl: json['profile_image_url'],
-      location: json['location'] ?? '',
+      location: json['location'] ?? json['location_name'] ?? '',
       unreadNotifications: json['unread_notifications'] ?? 0,
     );
   }

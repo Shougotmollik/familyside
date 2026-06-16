@@ -40,6 +40,7 @@ class Auth extends _$Auth {
         AppSnackbar.show(
           message: response.error?.toString() ?? 'Invalid login credentials',
         );
+        debugPrint("error: ${response.error.toString()}");
         return;
       }
 
@@ -99,7 +100,9 @@ class Auth extends _$Auth {
         _safeState(
           AsyncError(response.error ?? 'Invalid signup', StackTrace.current),
         );
-        AppSnackbar.show(message: response.error?.toString() ?? 'Invalid signup');
+        AppSnackbar.show(
+          message: response.error?.toString() ?? 'Invalid signup',
+        );
         return null;
       }
     } catch (e) {

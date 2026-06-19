@@ -19,27 +19,36 @@ class HomeProvider extends _$HomeProvider {
   }
 
   // fetch home header and feed
-  Future<void> fetchHomeData() async {
+  Future<void> fetchHomeData({String query = ''}) async {
     try {
+      final currentData = state.value;
       state = const AsyncLoading();
 
-      final headerResponse = await CustomHttp.get(
-        endpoint: ApiConstants.familyHeader,
-      );
+      // Only fetch header if we don't have it yet
+      SpHomeHeader? header = currentData?['header'];
+      if (header == null) {
+        final headerResponse = await CustomHttp.get(
+          endpoint: ApiConstants.familyHeader,
+        );
+        if (headerResponse.ok) {
+          header = SpHomeHeader.fromJson(headerResponse.data['data']);
+        }
+      }
 
       final feedResponse = await CustomHttp.get(
         endpoint: ApiConstants.familyHome,
+        queries: {'search': query},
       );
 
-      if (headerResponse.ok && feedResponse.ok) {
+      if (feedResponse.ok) {
         state = AsyncData({
-          'header': SpHomeHeader.fromJson(headerResponse.data['data']),
+          'header': header,
           'feed': FamilyHomeFeed.fromJson(feedResponse.data['data']),
           'subCategories': <FamilySubCategory>[],
         });
       } else {
         state = AsyncError(
-          headerResponse.error ?? feedResponse.error ?? 'Something went wrong',
+          feedResponse.error ?? 'Something went wrong',
           StackTrace.current,
         );
       }

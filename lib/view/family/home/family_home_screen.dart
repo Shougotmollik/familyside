@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/model/family_home_feed.dart';
 import 'package:familyside/model/sp_home_header.dart';
@@ -17,6 +18,7 @@ import 'package:familyside/view/family/explorer/models/explorer_data.dart';
 import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
+import 'package:familyside/view/family/home/widgets/family_home_skeleton.dart';
 
 class RecommendedItemModel {
   final String imagePath;
@@ -51,6 +53,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   final TextEditingController searchController = TextEditingController();
   String _selectedCategory = 'All';
   FilterResultModel? _currentFilters;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -63,7 +66,15 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   @override
   void dispose() {
     searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      ref.read(homeProviderProvider.notifier).fetchHomeData(query: query);
+    });
   }
 
   RecommendedItemModel _mapToRecommended(FamilyHomeItem item) {
@@ -137,7 +148,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
           onRefresh: () =>
               ref.read(homeProviderProvider.notifier).fetchHomeData(),
           child: homeState.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const FamilyHomeSkeleton(),
             error: (err, stack) => Center(child: Text('Error: $err')),
             data: (data) {
               final header = data['header'] as SpHomeHeader?;
@@ -158,8 +169,8 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                       if (feed != null) _buildCategoriesSection(feed.categories),
                       SizedBox(height: 24.h),
                       if (_selectedCategory == 'All') ...[
-                        if (feed != null && feed.recommended.isNotEmpty) ...[
-                          _buildSectionHeader('Recommended for You', () {
+                        _buildSectionHeader('Recommended for You', () {
+                          if (feed != null && feed.recommended.isNotEmpty) {
                             context.push(
                               RouterPath.familyRecommendationScreen,
                               extra: ListScreenConfig(
@@ -169,8 +180,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                                     .toList(),
                               ),
                             );
-                          }),
-                          SizedBox(height: 12.h),
+                          }
+                        }),
+                        SizedBox(height: 12.h),
+                        if (feed == null || feed.recommended.isEmpty)
+                          _buildEmptyState('No recommended items found')
+                        else
                           ...feed.recommended.take(2).map((item) {
                             final mapped = _mapToRecommended(item);
                             return EventCard(
@@ -184,10 +199,9 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                               tag: mapped.tag,
                             );
                           }),
-                          SizedBox(height: 24.h),
-                        ],
-                        if (feed != null && feed.eventsNearYou.isNotEmpty) ...[
-                          _buildSectionHeader('Events Near You', () {
+                        SizedBox(height: 24.h),
+                        _buildSectionHeader('Events Near You', () {
+                          if (feed != null && feed.eventsNearYou.isNotEmpty) {
                             context.push(
                               RouterPath.familyRecommendationScreen,
                               extra: ListScreenConfig(
@@ -197,8 +211,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                                     .toList(),
                               ),
                             );
-                          }),
-                          SizedBox(height: 12.h),
+                          }
+                        }),
+                        SizedBox(height: 12.h),
+                        if (feed == null || feed.eventsNearYou.isEmpty)
+                          _buildEmptyState('No events found near you')
+                        else
                           ...feed.eventsNearYou.take(2).map((item) {
                             final mapped = _mapToRecommended(item);
                             return EventCard(
@@ -212,7 +230,6 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                               tag: mapped.tag,
                             );
                           }),
-                        ],
                       ] else ...[
                         Text(
                           "Sub-categories",
@@ -253,6 +270,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
           child: SearchBarWidget(
             controller: searchController,
             hintText: "Search...",
+            onChanged: _onSearchChanged,
           ),
         ),
         SizedBox(width: 12.w),
@@ -477,6 +495,22 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                 ? FontWeight.w600
                 : FontWeight.w400,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(String message) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 20.h),
+      width: double.infinity,
+      alignment: Alignment.center,
+      child: Text(
+        message,
+        style: TextStyle(
+          fontSize: 14.sp,
+          color: AppColors.grey,
+          fontStyle: FontStyle.italic,
         ),
       ),
     );

@@ -56,4 +56,8 @@ class ApiConstants {
   static const String familyHome = "$apiVersion/family/home/feed";
   static String familySubCategories({required int categoryId}) =>
       "$apiVersion/family/categories/$categoryId/sub-categories";
+
+  static const String giftList = "$apiVersion/family/gifts/search";
+  static const String giftPlannerFolders =
+      "$apiVersion/family/gift-planner/folders";
 }

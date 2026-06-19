@@ -1,5 +1,5 @@
 import 'package:familyside/core/theme/app_colors.dart';
-import 'package:familyside/view/family/gift/widgets/gift_filter_result_model.dart';
+import 'package:familyside/model/gift_filter_result_model.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/view/widgets/filter_chip_widget.dart';
 import 'package:flutter/material.dart';

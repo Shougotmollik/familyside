@@ -10,12 +10,16 @@ class ExplorerHeader extends StatelessWidget {
     this.onLocationTap,
     this.onFilterTap,
     this.locationActive = false,
+    this.filterCount = 0,
+    this.hasFilters = false,
   });
 
   final VoidCallback? onListTap;
   final VoidCallback? onLocationTap;
   final VoidCallback? onFilterTap;
   final bool locationActive;
+  final int filterCount;
+  final bool hasFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -61,15 +65,41 @@ class ExplorerHeader extends StatelessWidget {
           onTap: onLocationTap,
         ),
         SizedBox(width: 8.w),
-        CustomIconButton(
-          assetPath: 'assets/logo/filter.svg',
-          containerHeight: 40.w,
-          containerWidth: 40.w,
-          borderRadius: 8.r,
-          backgroundColor: AppColors.surface,
-          iconWidth: 20.w,
-          iconHeight: 20.h,
-          onTap: onFilterTap,
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            CustomIconButton(
+              assetPath: 'assets/logo/filter.svg',
+              containerHeight: 40.w,
+              containerWidth: 40.w,
+              borderRadius: 8.r,
+              backgroundColor: hasFilters ? AppColors.primaryLight : AppColors.surface,
+              iconColor: hasFilters ? Colors.white : Colors.black,
+              iconWidth: 20.w,
+              iconHeight: 20.h,
+              onTap: onFilterTap,
+            ),
+            if (hasFilters)
+              Positioned(
+                top: -4.h,
+                right: -4.w,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primaryLight,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '$filterCount',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ],
     );

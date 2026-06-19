@@ -1,0 +1,62 @@
+import 'package:familyside/core/constants/api_constant.dart';
+import 'package:familyside/model/gift_api_item.dart';
+import 'package:familyside/services/custom_http.dart';
+import 'package:familyside/model/filter_result_model.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'explorer_provider.g.dart';
+
+@riverpod
+class ExplorerProvider extends _$ExplorerProvider {
+  @override
+  FutureOr<List<GiftApiItem>> build() {
+    return [];
+  }
+
+  Future<void> fetchExplorerItems({
+    String? itemType,
+    String query = '',
+    FilterResultModel? filters,
+  }) async {
+    try {
+      state = const AsyncLoading();
+
+      final Map<String, dynamic> queries = {};
+      if (query.isNotEmpty) queries['query'] = query;
+      if (itemType != null && itemType.isNotEmpty) {
+        queries['item_type'] = itemType;
+      }
+      if (filters != null) {
+        if (filters.location.isNotEmpty) {
+          queries['location'] = filters.location;
+        }
+        if (filters.categories.isNotEmpty) {
+          queries['category'] = filters.categories.join(',');
+        }
+        if (filters.ages.isNotEmpty) {
+          queries['age_range'] = filters.ages.join(',');
+        }
+        if (filters.price != 'All') {
+          queries['price'] = filters.price.toLowerCase();
+        }
+      }
+
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.explorer,
+        queries: queries.isNotEmpty ? queries : null,
+      );
+
+      if (response.ok) {
+        final items = GiftApiResponse.fromJson(response.data).items;
+        state = AsyncData(items);
+      } else {
+        state = AsyncError(
+          response.error ?? 'Failed to load items',
+          StackTrace.current,
+        );
+      }
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+    }
+  }
+}

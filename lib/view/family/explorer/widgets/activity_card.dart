@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -54,24 +55,39 @@ class ActivityCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.r),
-                  child: Image.asset(
-                    imagePath,
-                    width: 140.w,
-                    height: 120.h,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 120.w,
-                        height: 100.h,
-                        color: Colors.grey.shade200,
-                        child: Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                          size: 30.sp,
+                  child: imagePath.startsWith('http')
+                      ? CachedNetworkImage(
+                          imageUrl: imagePath,
+                          width: 140.w,
+                          height: 120.h,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            width: 140.w,
+                            height: 120.h,
+                            color: Colors.grey.shade200,
+                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            width: 140.w,
+                            height: 120.h,
+                            color: Colors.grey.shade200,
+                            child: Icon(Icons.broken_image, color: Colors.grey, size: 30.sp),
+                          ),
+                        )
+                      : Image.asset(
+                          imagePath,
+                          width: 140.w,
+                          height: 120.h,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 140.w,
+                              height: 120.h,
+                              color: Colors.grey.shade200,
+                              child: Icon(Icons.broken_image, color: Colors.grey, size: 30.sp),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
                 ),
                 // Category Badge
                 Positioned(

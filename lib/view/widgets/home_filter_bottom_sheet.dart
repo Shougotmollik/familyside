@@ -1,27 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:familyside/view/widgets/filter_chip_widget.dart';
-
-class FilterResultModel {
-  final String location;
-  final List<String> categories;
-  final List<String> ages;
-  final String price;
-
-  FilterResultModel({
-    required this.location,
-    required this.categories,
-    required this.ages,
-    required this.price,
-  });
-
-  @override
-  String toString() {
-    return 'FilterResultModel(location: $location, categories: $categories, ages: $ages, price: $price)';
-  }
-}
 
 class HomeFilterBottomSheet extends StatefulWidget {
   final FilterResultModel? initialFilters;

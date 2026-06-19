@@ -9,6 +9,7 @@ import 'package:familyside/view/family/explorer/models/explorer_map_screen_confi
 import 'package:familyside/view/family/explorer/widgets/explorer_category_chips.dart';
 import 'package:familyside/view/family/explorer/widgets/explorer_header.dart';
 import 'package:familyside/view/family/explorer/widgets/explorer_map_preview_card.dart';
+import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

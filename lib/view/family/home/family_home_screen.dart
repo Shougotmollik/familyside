@@ -17,6 +17,7 @@ import 'package:familyside/view/widgets/sub_category_card.dart';
 import 'package:familyside/view/family/explorer/models/explorer_data.dart';
 import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
+import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 import 'package:familyside/view/family/home/widgets/family_home_skeleton.dart';
 

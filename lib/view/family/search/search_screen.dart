@@ -11,6 +11,7 @@ import 'package:familyside/view/family/search/widgets/browse_category_section.da
 import 'package:familyside/view/family/search/widgets/quick_access_row.dart';
 import 'package:familyside/view/family/search/widgets/search_promo_banner.dart';
 import 'package:familyside/view/family/search/widgets/search_toolbar.dart';
+import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

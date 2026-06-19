@@ -1,3 +1,12 @@
+import 'package:familyside/core/config/credential.dart';
+
+// String _resolveImageUrl(String? url) {
+//   if (url == null || url.isEmpty) return '';
+//   if (url.startsWith('http://') || url.startsWith('https://')) return url;
+//   if (url.startsWith('/')) return '${AppCredentials.domain}$url';
+//   return url;
+// }
+
 class GiftApiItem {
   final int id;
   final String itemType;
@@ -32,7 +41,7 @@ class GiftApiItem {
       id: json['id'] as int,
       itemType: json['item_type'] as String? ?? 'gift',
       name: json['name'] as String? ?? '',
-      imageUrl: json['image_url'] as String?,
+      imageUrl: AppCredentials.fixurl(json['image_url'] as String?),
       categoryName: json['category_name'] as String?,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       location: json['location'] as String?,
@@ -49,10 +58,7 @@ class GiftApiCategory {
   final int id;
   final String name;
 
-  const GiftApiCategory({
-    required this.id,
-    required this.name,
-  });
+  const GiftApiCategory({required this.id, required this.name});
 
   factory GiftApiCategory.fromJson(Map<String, dynamic> json) {
     return GiftApiCategory(
@@ -66,24 +72,20 @@ class GiftApiResponse {
   final List<GiftApiItem> items;
   final List<GiftApiCategory> categories;
 
-  const GiftApiResponse({
-    this.items = const [],
-    this.categories = const [],
-  });
+  const GiftApiResponse({this.items = const [], this.categories = const []});
 
   factory GiftApiResponse.fromJson(Map<String, dynamic> json) {
     final data = json['data'] as Map<String, dynamic>? ?? json;
-    final itemsList = (data['items'] as List<dynamic>?)
+    final itemsList =
+        (data['items'] as List<dynamic>?)
             ?.map((e) => GiftApiItem.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
-    final categoriesList = (data['categories'] as List<dynamic>?)
+    final categoriesList =
+        (data['categories'] as List<dynamic>?)
             ?.map((e) => GiftApiCategory.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
-    return GiftApiResponse(
-      items: itemsList,
-      categories: categoriesList,
-    );
+    return GiftApiResponse(items: itemsList, categories: categoriesList);
   }
 }

@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
+import 'package:familyside/model/sp_home_header.dart';
+import 'package:familyside/provider/family/home_provider.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
@@ -12,17 +15,19 @@ import 'package:familyside/view/family/gift/widgets/gift_list_model.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:familyside/view/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class GiftScreen extends StatefulWidget {
+class GiftScreen extends ConsumerStatefulWidget {
   const GiftScreen({super.key});
 
   @override
-  State<GiftScreen> createState() => _GiftScreenState();
+  ConsumerState<GiftScreen> createState() => _GiftScreenState();
 }
 
-class _GiftScreenState extends State<GiftScreen> {
+class _GiftScreenState extends ConsumerState<GiftScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'All';
   GiftFilterResultModel? _currentFilters;
@@ -61,6 +66,17 @@ class _GiftScreenState extends State<GiftScreen> {
       location: 'Green meadows ark',
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final homeState = ref.read(homeProviderProvider);
+      if (homeState.value?['header'] == null) {
+        ref.read(homeProviderProvider.notifier).fetchHomeData();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -173,7 +189,7 @@ class _GiftScreenState extends State<GiftScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileHeader(),
+                _buildProfileHeader(header: _getHeader()),
                 SizedBox(height: 24.h),
                 _buildSearchSection(),
                 SizedBox(height: 24.h),
@@ -188,24 +204,48 @@ class _GiftScreenState extends State<GiftScreen> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  SpHomeHeader? _getHeader() {
+    final homeState = ref.watch(homeProviderProvider);
+    return homeState.value?['header'] as SpHomeHeader?;
+  }
+
+  Widget _buildProfileHeader({required SpHomeHeader? header}) {
     return Row(
       children: [
         ClipOval(
-          child: Image.asset(
-            'assets/image/demo_image.jpg',
-            height: 52.w,
-            width: 52.w,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 52.w,
-                width: 52.w,
-                color: Colors.grey.shade300,
-                child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
-              );
-            },
-          ),
+          child: header?.profileImageUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: header!.profileImageUrl!,
+                  height: 52.w,
+                  width: 52.w,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 52.w,
+                    width: 52.w,
+                    color: Colors.grey.shade300,
+                    child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 52.w,
+                    width: 52.w,
+                    color: Colors.grey.shade300,
+                    child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                  ),
+                )
+              : Image.asset(
+                  'assets/image/demo_image.jpg',
+                  height: 52.w,
+                  width: 52.w,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 52.w,
+                      width: 52.w,
+                      color: Colors.grey.shade300,
+                      child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                    );
+                  },
+                ),
         ),
         SizedBox(width: 12.w),
         Expanded(
@@ -213,7 +253,7 @@ class _GiftScreenState extends State<GiftScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Welcome back Shahid',
+                "Welcome back ${header?.name.split(' ').first ?? 'User'}",
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
@@ -221,13 +261,27 @@ class _GiftScreenState extends State<GiftScreen> {
                 ),
               ),
               SizedBox(height: 4.h),
-              Text(
-                'Dhaka, Bangladesh',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.lightText,
-                ),
+              Row(
+                children: [
+                  Text(
+                    header?.location ?? 'Location not set',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.lightText,
+                    ),
+                  ),
+                  SizedBox(width: 4.w),
+                  SvgPicture.asset(
+                    'assets/logo/edit.svg',
+                    height: 14.w,
+                    width: 14.w,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.primaryLight,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

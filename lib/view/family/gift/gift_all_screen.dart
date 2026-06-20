@@ -75,7 +75,7 @@ class _GiftAllScreenState extends State<GiftAllScreen> {
                     isBookmarked: _bookmarkedIndices.contains(index),
                     onTap: () => context.push(
                       RouterPath.familyGiftDetailsScreen,
-                      extra: item,
+                      extra: item.id,
                     ),
                     onAddToGiftList: () => _openAddToGiftList(item),
                     onShareTap: () => _openShareGiftCard(item),

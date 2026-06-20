@@ -1,10 +1,8 @@
 import 'package:familyside/core/router/router_path.dart';
-import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/gift_flow.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_cards.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
-import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -31,17 +29,6 @@ class _GiftListDetailScreenState extends State<GiftListDetailScreen> {
     _items = List.from(widget.config.items);
   }
 
-  String get _occasion {
-    switch (_list.id) {
-      case '2':
-        return 'Christmas';
-      case '3':
-        return 'Special';
-      default:
-        return 'Birthday';
-    }
-  }
-
   void _removeItem(int index) {
     setState(() => _items.removeAt(index));
   }
@@ -66,36 +53,9 @@ class _GiftListDetailScreenState extends State<GiftListDetailScreen> {
     setState(() => _items.add(gift));
   }
 
-  Future<void> _onEditListDetails() async {
-    final result = await GiftFlow.showEditListDetails(
-      context,
-      listName: _list.title,
-      occasion: _occasion,
-    );
-    if (result == null || !mounted) return;
-
-    setState(() {
-      _list = GiftListSummaryModel(
-        id: _list.id,
-        title: result.name,
-        emoji: _list.emoji,
-        iconBackgroundColor: _list.iconBackgroundColor,
-        itemCount: _items.length,
-        lastUpdated: 'today',
-      );
-      _description = giftListDescriptions[_list.id] ??
-          'Gifts saved in ${result.name}.';
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('List details updated')),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
 
     return Scaffold(
       body: SafeArea(
@@ -122,13 +82,7 @@ class _GiftListDetailScreenState extends State<GiftListDetailScreen> {
                         item: item,
                         onTap: () => context.push(
                           RouterPath.familyGiftDetailsScreen,
-                          extra: GiftItemModel(
-                            imagePath: item.imagePath,
-                            title: item.title,
-                            price: item.price,
-                            description: '',
-                            location: 'Adventure Play Center',
-                          ),
+                          extra: 0,
                         ),
                         onDelete: () => _removeItem(index),
                       );

@@ -162,6 +162,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
 
   GiftItemModel _apiToGiftItemModel(GiftApiItem item) {
     return GiftItemModel(
+      id: item.id,
       imagePath: item.imageUrl ?? '',
       title: item.name,
       price: item.price.toStringAsFixed(0),
@@ -288,10 +289,17 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
                         items: recommendedItems,
                         onItemTap: (index) {
                           final item = items[index];
-                          context.push(
-                            RouterPath.familyActivityDetailsScreen,
-                            extra: item.id,
-                          );
+                          if (_tabController.index == 0) {
+                            context.push(
+                              RouterPath.familyActivityDetailsScreen,
+                              extra: item.id,
+                            );
+                          } else {
+                            context.push(
+                              RouterPath.familyEventDetailsScreen,
+                              extra: item.id,
+                            );
+                          }
                         },
                         itemBuilder: (recommended) {
                           if (_tabController.index == 0) {
@@ -487,7 +495,7 @@ class _ExplorerGiftsTab extends StatelessWidget {
           isBookmarked: bookmarkedIndices.contains(index),
           onTap: () => context.push(
             RouterPath.familyGiftDetailsScreen,
-            extra: item,
+            extra: item.id,
           ),
           onAddToGiftList: () => onAddToGiftList(item),
           onShareTap: () => onShareTap(item),

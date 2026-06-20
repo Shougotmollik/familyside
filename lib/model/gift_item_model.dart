@@ -1,4 +1,5 @@
 class GiftItemModel {
+  final int id;
   final String imagePath;
   final String title;
   final String price;
@@ -6,6 +7,7 @@ class GiftItemModel {
   final String location;
 
   const GiftItemModel({
+    this.id = 0,
     required this.imagePath,
     required this.title,
     required this.price,

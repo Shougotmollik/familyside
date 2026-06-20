@@ -16,18 +16,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class ActivityDetailsScreen extends ConsumerStatefulWidget {
+class EventDetailsScreen extends ConsumerStatefulWidget {
   final int itemId;
 
-  const ActivityDetailsScreen({super.key, required this.itemId});
+  const EventDetailsScreen({super.key, required this.itemId});
 
   @override
-  ConsumerState<ActivityDetailsScreen> createState() =>
-      _ActivityDetailsScreenState();
+  ConsumerState<EventDetailsScreen> createState() =>
+      _EventDetailsScreenState();
 }
 
-class _ActivityDetailsScreenState
-    extends ConsumerState<ActivityDetailsScreen> {
+class _EventDetailsScreenState
+    extends ConsumerState<EventDetailsScreen> {
   bool _descExpanded = false;
   bool _isBookmarked = false;
 
@@ -104,12 +104,12 @@ class _ActivityDetailsScreenState
                     _buildAddressRow(details),
                     SizedBox(height: 24.h),
                     if (details.relatedEvents.isNotEmpty) ...[
-                      _buildSectionHeader('Events',
+                      _buildSectionHeader('Related Events',
                           onSeeAll: details.relatedEvents.length > 2
                               ? () => context.push(
                                   RouterPath.familyRecommendationScreen,
                                   extra: ListScreenConfig(
-                                      title: 'Events',
+                                      title: 'Related Events',
                                       items: details.relatedEvents
                                           .map(_apiItemToRecommended)
                                           .toList()))
@@ -219,6 +219,10 @@ class _ActivityDetailsScreenState
 
   Widget _buildHeroImage(ActivityDetails details) {
     final hasImage = details.imageUrl != null && details.imageUrl!.isNotEmpty;
+    // Format date for event badge
+    final dateLabel = details.relatedEvents.isNotEmpty
+        ? details.relatedEvents.first.dateLabel ?? ''
+        : '';
     return Stack(children: [
       SizedBox(
         width: double.infinity,
@@ -284,14 +288,36 @@ class _ActivityDetailsScreenState
                 padding:
                     EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
                 decoration: BoxDecoration(
-                    color: AppColors.secondaryLight,
+                    color: const Color(0xFF9C27B0),
                     borderRadius: BorderRadius.circular(20.r)),
-                child: Text(details.categoryName,
+                child: Text('Event',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w500)),
               ),
+              SizedBox(width: 8.w),
+              if (dateLabel.isNotEmpty)
+                Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                  decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(20.r)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.calendar_month_outlined,
+                          color: Colors.white, size: 10.sp),
+                      SizedBox(width: 4.w),
+                      Text(dateLabel,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
               const Spacer(),
               if (details.address.isNotEmpty) ...[
                 Icon(Icons.location_on_outlined,

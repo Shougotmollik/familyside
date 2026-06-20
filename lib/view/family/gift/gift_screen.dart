@@ -99,6 +99,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
 
   GiftItemModel _toGiftItemModel(GiftApiItem apiItem) {
     return GiftItemModel(
+      id: apiItem.id,
       imagePath: apiItem.imageUrl ?? '',
       title: apiItem.name,
       price: apiItem.price.toStringAsFixed(0),
@@ -655,7 +656,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
               isBookmarked: _bookmarkedGiftKeys.contains(_giftKey(item)),
               onTap: () => context.push(
                 RouterPath.familyGiftDetailsScreen,
-                extra: _toGiftItemModel(item),
+                extra: item.id,
               ),
               onAddToGiftList: () => _openAddToGiftList(item),
               onShareTap: () => _openShareGiftCard(item),

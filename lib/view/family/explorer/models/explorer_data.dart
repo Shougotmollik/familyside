@@ -82,21 +82,22 @@ class ExplorerData {
     ),
   ];
 
-  static const List<GiftItemModel> giftItems = [
-    GiftItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      title: '1 Month Activity Pass',
-      price: '45',
-      description: 'Gift a month of fun activities at Green Meadows...',
-      location: 'Green meadows ark',
-    ),
-    GiftItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      title: '1 Month Activity Pass',
-      price: '45',
-      description: 'Gift a month of fun activities at Green Meadows...',
-      location: 'Green meadows ark',
-    ),
+  static const List<GiftItemModel> giftItems = [      GiftItemModel(
+        id: 0,
+        imagePath: 'assets/image/onboarding 1.jpg',
+        title: '1 Month Activity Pass',
+        price: '45',
+        description: 'Gift a month of fun activities at Green Meadows...',
+        location: 'Green meadows ark',
+      ),
+      GiftItemModel(
+        id: 0,
+        imagePath: 'assets/image/onboarding 2.jpg',
+        title: '1 Month Activity Pass',
+        price: '45',
+        description: 'Gift a month of fun activities at Green Meadows...',
+        location: 'Green meadows ark',
+      ),
   ];
 
   static List<ExplorerMapItem> get mapItems => [

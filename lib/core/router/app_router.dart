@@ -1,4 +1,3 @@
-import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/auth/forgot/family_forgot_password_screen.dart';
 import 'package:familyside/view/family/auth/login/family_login_screen.dart';
 import 'package:familyside/view/family/auth/forgot/family_otp_verfication_screen.dart';
@@ -33,12 +32,14 @@ import 'package:familyside/view/service_provider/profile/sp_subscription_screen.
 import 'package:familyside/view/service_provider/profile/sp_payment_screen.dart';
 import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
-import 'package:familyside/view/family/gift/gift_details_screen.dart';
+
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
 import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/explorer/activity_details_screen.dart';
+import 'package:familyside/view/family/explorer/event_details_screen.dart';
 import 'package:familyside/view/family/explorer/explorer_map_screen.dart';
+import 'package:familyside/view/family/explorer/gift_detail_screen.dart';
 import 'package:familyside/view/family/explorer/write_review_screen.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
 import 'package:familyside/view/family/home/sub_category_list_screen.dart';
@@ -253,8 +254,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyGiftDetailsScreen,
-        builder: (context, state) =>
-            GiftDetailsScreen(item: state.extra as GiftItemModel),
+        builder: (context, state) => GiftDetailScreen(
+          itemId: state.extra as int,
+        ),
       ),
       GoRoute(
         path: RouterPath.familyChangePasswordScreen,
@@ -283,6 +285,12 @@ class AppRouter {
       GoRoute(
         path: RouterPath.familyActivityDetailsScreen,
         builder: (context, state) => ActivityDetailsScreen(
+          itemId: state.extra as int,
+        ),
+      ),
+      GoRoute(
+        path: RouterPath.familyEventDetailsScreen,
+        builder: (context, state) => EventDetailsScreen(
           itemId: state.extra as int,
         ),
       ),

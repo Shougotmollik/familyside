@@ -602,10 +602,17 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
                                   children: [
                                     ExplorerMapPreviewCard(
                                       item: item,
-                                      onTap: () => context.push(
-                                        RouterPath.familyActivityDetailsScreen,
-                                        extra: int.parse(item.id),
-                                      ),
+                                      onTap: () {
+                                        final route = switch (item.type) {
+                                          ExplorerItemType.activity =>
+                                            RouterPath.familyActivityDetailsScreen,
+                                          ExplorerItemType.event =>
+                                            RouterPath.familyEventDetailsScreen,
+                                          ExplorerItemType.gift =>
+                                            RouterPath.familyGiftDetailsScreen,
+                                        };
+                                        context.push(route, extra: int.parse(item.id));
+                                      },
                                     ),
                                     if (!hasPosition)
                                       Positioned(

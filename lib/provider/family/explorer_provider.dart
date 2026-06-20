@@ -60,3 +60,49 @@ class ExplorerProvider extends _$ExplorerProvider {
     }
   }
 }
+
+@riverpod
+class ExplorerMapProvider extends _$ExplorerMapProvider {
+  @override
+  FutureOr<MapExplorerResponse> build() {
+    return const MapExplorerResponse();
+  }
+
+  Future<void> fetchMapData({FilterResultModel? filters}) async {
+    try {
+      state = const AsyncLoading();
+
+      final Map<String, dynamic> queries = {};
+      if (filters != null) {
+        if (filters.location.isNotEmpty) {
+          queries['location'] = filters.location;
+        }
+        if (filters.categories.isNotEmpty) {
+          queries['category'] = filters.categories.join(',');
+        }
+        if (filters.ages.isNotEmpty) {
+          queries['age_range'] = filters.ages.join(',');
+        }
+        if (filters.price != 'All') {
+          queries['price'] = filters.price.toLowerCase();
+        }
+      }
+
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.mapExplorer,
+        queries: queries.isNotEmpty ? queries : null,
+      );
+
+      if (response.ok) {
+        state = AsyncData(MapExplorerResponse.fromJson(response.data));
+      } else {
+        state = AsyncError(
+          response.error ?? 'Failed to load map data',
+          StackTrace.current,
+        );
+      }
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+    }
+  }
+}

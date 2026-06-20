@@ -39,7 +39,6 @@ import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/explorer/activity_details_screen.dart';
 import 'package:familyside/view/family/explorer/explorer_map_screen.dart';
-import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/explorer/write_review_screen.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
 import 'package:familyside/view/family/home/sub_category_list_screen.dart';
@@ -85,9 +84,8 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyVerifyOtpScreen,
-        builder: (context, state) => FamilyOtpVerificationScreen(
-          email: state.extra as String?,
-        ),
+        builder: (context, state) =>
+            FamilyOtpVerificationScreen(email: state.extra as String?),
       ),
       GoRoute(
         path: RouterPath.familyResetPasswordScreen,
@@ -109,9 +107,8 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familySignupOtpVerificationScreen,
-        builder: (context, state) => FamilySignupOtpVerificationScreen(
-          email: state.extra as String?,
-        ),
+        builder: (context, state) =>
+            FamilySignupOtpVerificationScreen(email: state.extra as String?),
       ),
       GoRoute(
         path: RouterPath.familyChildInformationScreen,
@@ -149,9 +146,8 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.spVerifyOtpScreen,
-        builder: (context, state) => SpOtpVerificationScreen(
-          email: state.extra as String?,
-        ),
+        builder: (context, state) =>
+            SpOtpVerificationScreen(email: state.extra as String?),
       ),
       GoRoute(
         path: RouterPath.spResetPasswordScreen,
@@ -169,9 +165,8 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.spSignupOtpVerificationScreen,
-        builder: (context, state) => SpSignupOtpVerificationScreen(
-          email: state.extra as String?,
-        ),
+        builder: (context, state) =>
+            SpSignupOtpVerificationScreen(email: state.extra as String?),
       ),
       GoRoute(
         path: RouterPath.spUploadImageScreen,
@@ -283,12 +278,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyExplorerMapScreen,
-        builder: (context, state) {
-          final config = state.extra as ExplorerMapScreenConfig?;
-          return ExplorerMapScreen(
-            config: config ?? ExplorerMapScreenConfig.defaults(),
-          );
-        },
+        builder: (context, state) => const ExplorerMapScreen(),
       ),
       GoRoute(
         path: RouterPath.familyActivityDetailsScreen,

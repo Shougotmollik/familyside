@@ -3,23 +3,25 @@ import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+enum ExplorerViewMode { list, map }
+
 class ExplorerHeader extends StatelessWidget {
   const ExplorerHeader({
     super.key,
-    this.onListTap,
-    this.onLocationTap,
+    this.onViewModeChanged,
     this.onFilterTap,
-    this.locationActive = false,
+    this.viewMode = ExplorerViewMode.list,
     this.filterCount = 0,
     this.hasFilters = false,
   });
 
-  final VoidCallback? onListTap;
-  final VoidCallback? onLocationTap;
+  final ValueChanged<ExplorerViewMode>? onViewModeChanged;
   final VoidCallback? onFilterTap;
-  final bool locationActive;
+  final ExplorerViewMode viewMode;
   final int filterCount;
   final bool hasFilters;
+
+  bool get _isListView => viewMode == ExplorerViewMode.list;
 
   @override
   Widget build(BuildContext context) {
@@ -35,34 +37,58 @@ class ExplorerHeader extends StatelessWidget {
             ),
           ),
         ),
-        GestureDetector(
-          onTap: onListTap,
-          child: Container(
-            height: 40.w,
-            width: 40.w,
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Icon(
-              Icons.format_list_bulleted,
-              color: Colors.white,
-              size: 22.sp,
-            ),
+        // View mode toggle: List | Map
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(8.r),
           ),
-        ),
-        SizedBox(width: 8.w),
-        CustomIconButton(
-          assetPath: 'assets/logo/location.svg',
-          containerHeight: 40.w,
-          containerWidth: 40.w,
-          borderRadius: 8.r,
-          backgroundColor:
-              locationActive ? AppColors.primaryLight : AppColors.surface,
-          iconColor: locationActive ? Colors.white : Colors.black,
-          iconWidth: 20.w,
-          iconHeight: 20.h,
-          onTap: onLocationTap,
+          child: Row(
+            children: [
+              // List button
+              GestureDetector(
+                onTap: _isListView
+                    ? null
+                    : () => onViewModeChanged?.call(ExplorerViewMode.list),
+                child: Container(
+                  height: 40.w,
+                  width: 40.w,
+                  decoration: BoxDecoration(
+                    color: _isListView
+                        ? AppColors.primaryLight
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Icon(
+                    Icons.format_list_bulleted,
+                    color: _isListView ? Colors.white : AppColors.lightText,
+                    size: 22.sp,
+                  ),
+                ),
+              ),
+              // Map button
+              GestureDetector(
+                onTap: _isListView
+                    ? () => onViewModeChanged?.call(ExplorerViewMode.map)
+                    : null,
+                child: Container(
+                  height: 40.w,
+                  width: 40.w,
+                  decoration: BoxDecoration(
+                    color: !_isListView
+                        ? AppColors.primaryLight
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Icon(
+                    Icons.location_on_outlined,
+                    color: !_isListView ? Colors.white : AppColors.lightText,
+                    size: 22.sp,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         SizedBox(width: 8.w),
         Stack(

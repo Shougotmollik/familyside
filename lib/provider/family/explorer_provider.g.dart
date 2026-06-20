@@ -53,3 +53,50 @@ abstract class _$ExplorerProvider extends $AsyncNotifier<List<GiftApiItem>> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(ExplorerMapProvider)
+final explorerMapProviderProvider = ExplorerMapProviderProvider._();
+
+final class ExplorerMapProviderProvider
+    extends $AsyncNotifierProvider<ExplorerMapProvider, MapExplorerResponse> {
+  ExplorerMapProviderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'explorerMapProviderProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$explorerMapProviderHash();
+
+  @$internal
+  @override
+  ExplorerMapProvider create() => ExplorerMapProvider();
+}
+
+String _$explorerMapProviderHash() =>
+    r'555c85f872f8657b5bccc14989c9ac48942947c4';
+
+abstract class _$ExplorerMapProvider
+    extends $AsyncNotifier<MapExplorerResponse> {
+  FutureOr<MapExplorerResponse> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<MapExplorerResponse>, MapExplorerResponse>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<MapExplorerResponse>, MapExplorerResponse>,
+              AsyncValue<MapExplorerResponse>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

@@ -15,6 +15,9 @@ class ExplorerMapPreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasNetworkImage = item.imagePath.startsWith('http://') ||
+        item.imagePath.startsWith('https://');
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -38,24 +41,27 @@ class ExplorerMapPreviewCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.r),
-                  child: Image.asset(
-                    item.imagePath,
-                    width: 96.w,
-                    height: 88.h,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 96.w,
-                        height: 88.h,
-                        color: Colors.grey.shade200,
-                        child: Icon(
-                          Icons.broken_image,
-                          color: Colors.grey,
-                          size: 24.sp,
-                        ),
-                      );
-                    },
-                  ),
+                  child: hasNetworkImage
+                      ? Image.network(
+                          item.imagePath,
+                          width: 96.w,
+                          height: 88.h,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _placeholderImage();
+                          },
+                        )
+                      : item.imagePath.isNotEmpty
+                          ? Image.asset(
+                              item.imagePath,
+                              width: 96.w,
+                              height: 88.h,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return _placeholderImage();
+                              },
+                            )
+                          : _placeholderImage(),
                 ),
                 Positioned(
                   top: 6.h,
@@ -165,6 +171,19 @@ class ExplorerMapPreviewCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _placeholderImage() {
+    return Container(
+      width: 96.w,
+      height: 88.h,
+      color: Colors.grey.shade200,
+      child: Icon(
+        Icons.broken_image,
+        color: Colors.grey,
+        size: 24.sp,
       ),
     );
   }

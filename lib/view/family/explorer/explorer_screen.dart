@@ -3,7 +3,6 @@ import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_api_item.dart';
 import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/provider/family/explorer_provider.dart';
-import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/explorer/widgets/activity_card.dart';
 import 'package:familyside/view/family/explorer/widgets/explorer_header.dart';
 import 'package:familyside/view/family/explorer/widgets/explorer_screen_skeleton.dart';
@@ -77,10 +76,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
   }
 
   void _openMapScreen() {
-    context.push(
-      RouterPath.familyExplorerMapScreen,
-      extra: ExplorerMapScreenConfig.defaults(),
-    );
+    context.push(RouterPath.familyExplorerMapScreen);
   }
 
   Future<void> _openFilterBottomSheet() async {
@@ -205,7 +201,12 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 0),
               child: ExplorerHeader(
-                onLocationTap: _openMapScreen,
+                viewMode: ExplorerViewMode.list,
+                onViewModeChanged: (mode) {
+                  if (mode == ExplorerViewMode.map) {
+                    _openMapScreen();
+                  }
+                },
                 onFilterTap: _openFilterBottomSheet,
                 filterCount: _filterCount,
                 hasFilters: _hasAnyFilter,

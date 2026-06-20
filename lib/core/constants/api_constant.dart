@@ -62,4 +62,5 @@ class ApiConstants {
       "$apiVersion/family/gift-planner/folders";
 
   static const String explorer = "$apiVersion/family/explore/list";
+  static const String mapExplorer = "$apiVersion/family/explore/map";
 }

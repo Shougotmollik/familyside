@@ -66,4 +66,11 @@ class ApiConstants {
   static const String mapExplorer = "$apiVersion/family/explore/map";
   static String activityDetails({required int id}) =>
       "$apiVersion/family/items/$id/details";
+
+  static const String familyProfile = "$apiVersion/family/profile/me";
+  static const String familyProfileUpdate = "$apiVersion/family/profile/update";
+  static const String contactSupport = "$apiVersion/family/profile/support";
+  static const String familyChildInfo = "$apiVersion/family/profile/children";
+  static const String suggestions = "$apiVersion/family/profile/suggestions";
+  static const String familyReviews = "$apiVersion/family/profile/reviews";
 }

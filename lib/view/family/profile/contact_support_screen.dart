@@ -1,26 +1,42 @@
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/provider/family/family_profile_provider.dart';
+import 'package:familyside/services/local_storage.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/utils/form_validator.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class ContactSupportScreen extends StatefulWidget {
+class ContactSupportScreen extends ConsumerStatefulWidget {
   const ContactSupportScreen({super.key});
 
   @override
-  State<ContactSupportScreen> createState() => _ContactSupportScreenState();
+  ConsumerState<ContactSupportScreen> createState() =>
+      _ContactSupportScreenState();
 }
 
-class _ContactSupportScreenState extends State<ContactSupportScreen> {
+class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'shahidhasan@gmail.com');
-  final _locationController = TextEditingController(
-    text: 'mohakhali, dhaka, Bangladesh',
-  );
+  final _emailController = TextEditingController();
+  final _locationController = TextEditingController();
   final _problemDetailsController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profile = ref.read(familyProfileProvider).value;
+      if (profile != null) {
+        _locationController.text = profile.locationName;
+      }
+      final email = await LocalStorage.user_email.get();
+      _emailController.text = email ?? '';
+    });
+  }
 
   @override
   void dispose() {
@@ -30,10 +46,31 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
     super.dispose();
   }
 
-  void _onSubmit() {
-    FormValidator.validateAndProceed(_formKey, () {
-      context.pop();
-    });
+  Future<void> _onSubmit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final success = await ref
+        .read(familyProfileProvider.notifier)
+        .contactSupport(
+          email: _emailController.text.trim(),
+          location: _locationController.text.trim(),
+          problemDetails: _problemDetailsController.text.trim(),
+        );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.show(
+        message: 'Support request submitted successfully',
+        type: SnackType.success,
+      );
+      if (context.mounted) context.pop();
+    } else {
+      AppSnackbar.show(
+        message: 'Failed to submit support request',
+        type: SnackType.error,
+      );
+    }
   }
 
   String? _validateProblemDetails(String? value) {
@@ -56,6 +93,8 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final state = ref.watch(familyProfileProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -111,10 +150,11 @@ class _ContactSupportScreenState extends State<ContactSupportScreen> {
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
-                onPressed: _onSubmit,
+                onPressed: state.isLoading ? () {} : _onSubmit,
                 title: 'Submit',
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
+                isLoading: state.isLoading,
               ),
             ),
           ],

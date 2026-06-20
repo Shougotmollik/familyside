@@ -1,7 +1,12 @@
 import 'dart:io';
 
+import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/provider/family/family_profile_provider.dart';
+import 'package:familyside/services/local_storage.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,24 +16,35 @@ import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 
-class FamilyEditProfileScreen extends StatefulWidget {
+class FamilyEditProfileScreen extends ConsumerStatefulWidget {
   const FamilyEditProfileScreen({super.key});
 
   @override
-  State<FamilyEditProfileScreen> createState() => _FamilyEditProfileScreenState();
+  ConsumerState<FamilyEditProfileScreen> createState() =>
+      _FamilyEditProfileScreenState();
 }
 
-class _FamilyEditProfileScreenState extends State<FamilyEditProfileScreen> {
-  static const String _defaultAvatarAsset = 'assets/image/demo_image.jpg';
-
+class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'Shougot mollik');
-  final _emailController = TextEditingController(text: 'shougotmollik@gmail.com');
-  final _locationController = TextEditingController(
-    text: 'mohakhali, dhaka, Bangladesh',
-  );
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _locationController = TextEditingController();
 
   File? _pickedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profile = ref.read(familyProfileProvider).value;
+      if (profile != null) {
+        _nameController.text = profile.fullName;
+        _locationController.text = profile.locationName;
+      }
+      final email = await LocalStorage.user_email.get();
+      _emailController.text = email ?? '';
+    });
+  }
 
   @override
   void dispose() {
@@ -45,18 +61,39 @@ class _FamilyEditProfileScreenState extends State<FamilyEditProfileScreen> {
     }
   }
 
-  void _onUpdate() {
-    FormValidator.validateAndProceed(_formKey, () {
-      context.pop();
-    });
+  Future<void> _onUpdate() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final success = await ref
+        .read(familyProfileProvider.notifier)
+        .updateProfile(
+          image: _pickedImage,
+          name: _nameController.text.trim(),
+          location: _locationController.text.trim(),
+        );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.show(
+        message: 'Profile updated successfully',
+        type: SnackType.success,
+      );
+      if (context.mounted) context.pop();
+    } else {
+      AppSnackbar.show(
+        message: 'Failed to update profile',
+        type: SnackType.error,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final state = ref.watch(familyProfileProvider);
 
     return Scaffold(
- 
       body: SafeArea(
         child: Column(
           children: [
@@ -116,10 +153,11 @@ class _FamilyEditProfileScreenState extends State<FamilyEditProfileScreen> {
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
-                onPressed: _onUpdate,
+                onPressed: state.isLoading ? () {} : _onUpdate,
                 title: 'Update',
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
+                isLoading: state.isLoading,
               ),
             ),
           ],
@@ -129,22 +167,44 @@ class _FamilyEditProfileScreenState extends State<FamilyEditProfileScreen> {
   }
 
   Widget _buildProfileAvatar() {
-    const double avatarSize = 120;
+    const double size = 110;
+    final profile = ref.watch(familyProfileProvider).value;
 
     return SizedBox(
-      width: avatarSize.w,
-      height: avatarSize.w,
+      width: size.w,
+      height: size.w,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Container(
-            width: avatarSize.w,
-            height: avatarSize.w,
+            width: size.w,
+            height: size.w,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.border, width: 2.w),
             ),
-            child: ClipOval(child: _buildAvatarImage(avatarSize)),
+            child: ClipOval(
+              child: _pickedImage != null
+                  ? Image.file(
+                      _pickedImage!,
+                      width: size.w,
+                      height: size.w,
+                      fit: BoxFit.cover,
+                    )
+                  : (profile?.profileImageUrl.isNotEmpty == true
+                      ? Image.network(
+                          AppCredentials.fixurl(profile!.profileImageUrl),
+                          width: size.w,
+                          height: size.w,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          'assets/image/demo_image.jpg',
+                          width: size.w,
+                          height: size.w,
+                          fit: BoxFit.cover,
+                        )),
+            ),
           ),
           Positioned(
             bottom: 0,
@@ -169,36 +229,6 @@ class _FamilyEditProfileScreenState extends State<FamilyEditProfileScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAvatarImage(double size) {
-    if (_pickedImage != null) {
-      return Image.file(
-        _pickedImage!,
-        width: size.w,
-        height: size.w,
-        fit: BoxFit.cover,
-      );
-    }
-
-    return Image.asset(
-      _defaultAvatarAsset,
-      width: size.w,
-      height: size.w,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          width: size.w,
-          height: size.w,
-          color: AppColors.border,
-          child: Icon(
-            Icons.person_outline,
-            size: 48.sp,
-            color: AppColors.grey,
-          ),
-        );
-      },
     );
   }
 

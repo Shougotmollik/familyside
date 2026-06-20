@@ -11,6 +11,7 @@ import 'package:familyside/view/family/auth/signup/family_signup_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_choose_role_screen.dart';
 import 'package:familyside/view/family/auth/signup/family_signup_otp_verfication.dart';
 import 'package:familyside/view/family/family_main_nav_bar_screen.dart';
+import 'package:familyside/view/family/profile/my_reviews.dart';
 import 'package:familyside/view/service_provider/auth/login/sp_login_screen.dart';
 import 'package:familyside/view/service_provider/auth/signup/sp_signup_screen.dart';
 import 'package:familyside/view/service_provider/auth/forgot/sp_forgot_password_screen.dart';
@@ -254,9 +255,8 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyGiftDetailsScreen,
-        builder: (context, state) => GiftDetailScreen(
-          itemId: state.extra as int,
-        ),
+        builder: (context, state) =>
+            GiftDetailScreen(itemId: state.extra as int),
       ),
       GoRoute(
         path: RouterPath.familyChangePasswordScreen,
@@ -284,15 +284,13 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyActivityDetailsScreen,
-        builder: (context, state) => ActivityDetailsScreen(
-          itemId: state.extra as int,
-        ),
+        builder: (context, state) =>
+            ActivityDetailsScreen(itemId: state.extra as int),
       ),
       GoRoute(
         path: RouterPath.familyEventDetailsScreen,
-        builder: (context, state) => EventDetailsScreen(
-          itemId: state.extra as int,
-        ),
+        builder: (context, state) =>
+            EventDetailsScreen(itemId: state.extra as int),
       ),
       GoRoute(
         path: RouterPath.familyWriteReviewScreen,
@@ -307,6 +305,10 @@ class AppRouter {
         builder: (context, state) => SubCategoryListScreen(
           config: state.extra as SubCategoryListScreenConfig,
         ),
+      ),
+      GoRoute(
+        path: RouterPath.familyMyReviewsScreen,
+        builder: (context, state) => MyReviewsScreen(),
       ),
     ],
     errorBuilder: (context, state) =>

@@ -9,6 +9,7 @@ class ProfileStatCard extends StatelessWidget {
   final String value;
   final Color? iconColor;
   final Color? valueColor;
+  final VoidCallback? onTap;
 
   const ProfileStatCard({
     super.key,
@@ -17,49 +18,47 @@ class ProfileStatCard extends StatelessWidget {
     required this.value,
     this.iconColor,
     this.valueColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 94.w,
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: AppColors.border,
-          width: 1,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 94.w,
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: AppColors.border, width: 1),
         ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          ProfileSvgIcon(
-            iconPath: iconPath,
-            color: iconColor,
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.text,
-                  height: 2.h
-                ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: valueColor ?? AppColors.primaryLight,
-                ),
-          ),
-        ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ProfileSvgIcon(iconPath: iconPath, color: iconColor),
+            SizedBox(height: 12.h),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                color: AppColors.text,
+                height: 2.h,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: valueColor ?? AppColors.primaryLight,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

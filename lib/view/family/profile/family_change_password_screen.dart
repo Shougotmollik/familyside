@@ -1,5 +1,8 @@
+import 'package:familyside/provider/family/family_profile_provider.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -7,15 +10,15 @@ import 'package:familyside/utils/form_validator.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 
-class FamilyChangePasswordScreen extends StatefulWidget {
+class FamilyChangePasswordScreen extends ConsumerStatefulWidget {
   const FamilyChangePasswordScreen({super.key});
 
   @override
-  State<FamilyChangePasswordScreen> createState() =>
+  ConsumerState<FamilyChangePasswordScreen> createState() =>
       _FamilyChangePasswordScreenState();
 }
 
-class _FamilyChangePasswordScreenState extends State<FamilyChangePasswordScreen> {
+class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
@@ -38,10 +41,30 @@ class _FamilyChangePasswordScreenState extends State<FamilyChangePasswordScreen>
     super.dispose();
   }
 
-  void _onUpdate() {
-    FormValidator.validateAndProceed(_formKey, () {
-      context.pop();
-    });
+  Future<void> _onUpdate() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final success = await ref
+        .read(familyProfileProvider.notifier)
+        .changePassword(
+          currentPassword: _currentPasswordController.text,
+          newPassword: _newPasswordController.text,
+        );
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.show(
+        message: 'Password changed successfully',
+        type: SnackType.success,
+      );
+      if (context.mounted) context.pop();
+    } else {
+      AppSnackbar.show(
+        message: 'Failed to change password',
+        type: SnackType.error,
+      );
+    }
   }
 
   bool _hasMinLength(String password) => password.length >= 8;
@@ -58,9 +81,9 @@ class _FamilyChangePasswordScreenState extends State<FamilyChangePasswordScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final newPassword = _newPasswordController.text;
+    final state = ref.watch(familyProfileProvider);
 
     return Scaffold(
-
       body: SafeArea(
         child: Column(
           children: [
@@ -149,10 +172,11 @@ class _FamilyChangePasswordScreenState extends State<FamilyChangePasswordScreen>
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
-                onPressed: _onUpdate,
+                onPressed: state.isLoading ? () {} : _onUpdate,
                 title: 'Update',
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
+                isLoading: state.isLoading,
               ),
             ),
           ],

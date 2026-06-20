@@ -1,48 +1,37 @@
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/model/suggestion_item.dart';
+import 'package:familyside/provider/family/family_profile_provider.dart';
 import 'package:familyside/view/family/profile/widgets/suggestion_card.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SuggestionScreen extends StatelessWidget {
+class SuggestionScreen extends ConsumerStatefulWidget {
   const SuggestionScreen({super.key});
 
-  static const String _demoImage = 'assets/image/doctor.jpg';
+  @override
+  ConsumerState<SuggestionScreen> createState() => _SuggestionScreenState();
+}
 
-  static const List<_SuggestionItem> _suggestions = [
-    _SuggestionItem(
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      description:
-          "Amazing place! My kids absolutely loved it. The staff is friendly and attentive. We'll definitely come back.",
-      location: 'Dhaka, Bangladesh',
-      status: SuggestionStatus.approved,
-    ),
-    _SuggestionItem(
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      description:
-          "Amazing place! My kids absolutely loved it. The staff is friendly and attentive. We'll definitely come back.",
-      location: 'Dhaka, Bangladesh',
-      status: SuggestionStatus.pending,
-    ),
-    _SuggestionItem(
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      description:
-          "Amazing place! My kids absolutely loved it. The staff is friendly and attentive. We'll definitely come back.",
-      location: 'Dhaka, Bangladesh',
-      status: SuggestionStatus.approved,
-    ),
-    _SuggestionItem(
-      category: 'Health',
-      title: 'Little Stars Pediatric Clinic',
-      description:
-          "Amazing place! My kids absolutely loved it. The staff is friendly and attentive. We'll definitely come back.",
-      location: 'Dhaka, Bangladesh',
-      status: SuggestionStatus.pending,
-    ),
-  ];
+class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
+  List<SuggestionItem> _suggestions = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchSuggestions());
+  }
+
+  Future<void> _fetchSuggestions() async {
+    final items = await ref.read(familyProfileProvider.notifier).getSuggestions();
+    if (!mounted) return;
+    setState(() {
+      _suggestions = items;
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,42 +45,60 @@ class SuggestionScreen extends StatelessWidget {
               child: const CustomAppBar(title: 'Suggested'),
             ),
             Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
-                itemCount: _suggestions.length,
-                separatorBuilder: (_, _) => SizedBox(height: 12.h),
-                itemBuilder: (context, index) {
-                  final item = _suggestions[index];
-                  return SuggestionCard(
-                    imagePath: _demoImage,
-                    category: item.category,
-                    title: item.title,
-                    description: item.description,
-                    location: item.location,
-                    status: item.status,
-                  );
-                },
-              ),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _suggestions.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.separated(
+                          padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
+                          itemCount: _suggestions.length,
+                          separatorBuilder: (_, _) => SizedBox(height: 12.h),
+                          itemBuilder: (context, index) {
+                            final item = _suggestions[index];
+                            return SuggestionCard(
+                              imagePath: 'assets/image/doctor.jpg',
+                              category: item.category,
+                              title: item.name,
+                              description: item.description,
+                              location: item.location,
+                              status: item.suggestionStatus,
+                            );
+                          },
+                        ),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _SuggestionItem {
-  final String category;
-  final String title;
-  final String description;
-  final String location;
-  final SuggestionStatus status;
-
-  const _SuggestionItem({
-    required this.category,
-    required this.title,
-    required this.description,
-    required this.location,
-    required this.status,
-  });
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.lightbulb_outline,
+            size: 48.sp,
+            color: AppColors.lightText,
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            'No suggestions yet',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: AppColors.text,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            'Suggestions will appear here once available',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.lightText,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

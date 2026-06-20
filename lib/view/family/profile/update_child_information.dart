@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/child_info_provider.dart';
+import 'package:familyside/provider/family/family_profile_provider.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/view/family/auth/signup/widgets/custom_dropdown.dart';
 import 'package:familyside/view/family/auth/signup/widgets/type_toggle_widget.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class UpdateChildInformationScreen extends ConsumerStatefulWidget {
@@ -26,6 +28,55 @@ class _UpdateChildInformationScreenState
   String? _selectedGender;
   DateTime? _pickedDOB;
   bool _dueDateSynced = false;
+  bool _isLoading = false;
+  bool _isFetchingData = true;
+  String _locationName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchChildInfo());
+  }
+
+  Future<void> _fetchChildInfo() async {
+    final data = await ref.read(familyProfileProvider.notifier).getChildInfo();
+    if (!mounted) return;
+
+    final notifier = ref.read(childInfoProvider.notifier);
+
+    // Reset local state before populating from API (prevents duplicates on re-entry)
+    notifier.reset();
+    _clearForm();
+
+    if (data != null) {
+      // Store location name to send back on save
+      _locationName = data.locationName;
+
+      // Set expecting status
+      notifier.setIsExpecting(data.isExpecting);
+
+      // Set due date if expecting
+      if (data.expectedDueDate != null && data.expectedDueDate!.isNotEmpty) {
+        final date = DateTime.tryParse(data.expectedDueDate!);
+        if (date != null) {
+          notifier.setDueDate(date);
+          _dueDateController.text = _formatDate(date);
+          _dueDateSynced = true;
+        }
+      }
+
+      // Add kids from API
+      for (final kid in data.kids) {
+        DateTime? dob;
+        if (kid.dob != null && kid.dob!.isNotEmpty) {
+          dob = _parseApiDate(kid.dob!);
+        }
+        notifier.saveKid(name: kid.name, dob: dob, gender: kid.gender);
+      }
+    }
+
+    setState(() => _isFetchingData = false);
+  }
 
   @override
   void dispose() {
@@ -58,6 +109,21 @@ class _UpdateChildInformationScreenState
     }
   }
 
+  /// Parses a date string in dd/MM/yyyy format from the API
+  DateTime? _parseApiDate(String dateStr) {
+    final parts = dateStr.split('/');
+    if (parts.length == 3) {
+      final day = int.tryParse(parts[0]);
+      final month = int.tryParse(parts[1]);
+      final year = int.tryParse(parts[2]);
+      if (day != null && month != null && year != null) {
+        return DateTime(year, month, day);
+      }
+    }
+    // Fallback to ISO 8601 parse
+    return DateTime.tryParse(dateStr);
+  }
+
   String _formatDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
@@ -69,6 +135,12 @@ class _UpdateChildInformationScreenState
     if (!_dueDateSynced && state.selectedDueDate != null) {
       _dueDateController.text = _formatDate(state.selectedDueDate!);
       _dueDateSynced = true;
+    }
+
+    if (_isFetchingData) {
+      return Scaffold(
+        body: SafeArea(child: const Center(child: CircularProgressIndicator())),
+      );
     }
 
     return Scaffold(
@@ -86,7 +158,9 @@ class _UpdateChildInformationScreenState
                     TypeToggleWidget(
                       isExpecting: state.isExpecting,
                       onChanged: (value) {
-                        ref.read(childInfoProvider.notifier).setIsExpecting(value);
+                        ref
+                            .read(childInfoProvider.notifier)
+                            .setIsExpecting(value);
                         _clearForm();
                       },
                     ),
@@ -108,10 +182,11 @@ class _UpdateChildInformationScreenState
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
-                onPressed: () => _handleSave(state),
+                onPressed: _isLoading ? () {} : () => _handleSave(state),
                 title: 'Save',
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
+                isLoading: _isLoading,
               ),
             ),
           ],
@@ -565,11 +640,13 @@ class _UpdateChildInformationScreenState
   }
 
   void _saveKid() {
-    ref.read(childInfoProvider.notifier).saveKid(
-      name: _childNameController.text,
-      dob: _pickedDOB,
-      gender: _selectedGender,
-    );
+    ref
+        .read(childInfoProvider.notifier)
+        .saveKid(
+          name: _childNameController.text,
+          dob: _pickedDOB,
+          gender: _selectedGender,
+        );
     _clearForm();
   }
 
@@ -599,27 +676,55 @@ class _UpdateChildInformationScreenState
     );
   }
 
-  void _handleSave(ChildInfoState state) {
-    if (state.isExpecting) {
-      if (state.selectedDueDate != null) {
-        context.pop();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select due date')),
-        );
+  Future<void> _handleSave(ChildInfoState childState) async {
+    if (childState.isExpecting) {
+      if (childState.selectedDueDate == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please select due date')));
+        return;
       }
-      return;
     }
 
-    if (state.showForm) {
+    if (childState.showForm) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please save or cancel the current form'),
-        ),
+        const SnackBar(content: Text('Please save or cancel the current form')),
       );
       return;
     }
 
-    context.pop();
+    setState(() => _isLoading = true);
+
+    final childrenJson = childState.kids.map((k) => k.toJson()).toList();
+
+    // Format due date as yyyy-MM-dd to match the API's expected format
+    final dueDateStr = childState.selectedDueDate != null
+        ? '${childState.selectedDueDate!.year.toString().padLeft(4, '0')}-${childState.selectedDueDate!.month.toString().padLeft(2, '0')}-${childState.selectedDueDate!.day.toString().padLeft(2, '0')}'
+        : null;
+
+    final success = await ref
+        .read(familyProfileProvider.notifier)
+        .updateChildInfo(
+          locationName: _locationName,
+          isExpecting: childState.isExpecting,
+          expectedDueDate: dueDateStr,
+          children: childrenJson,
+        );
+
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+
+    if (success) {
+      AppSnackbar.show(
+        message: 'Child information updated successfully',
+        type: SnackType.success,
+      );
+      if (context.mounted) context.pop();
+    } else {
+      AppSnackbar.show(
+        message: 'Failed to update child information',
+        type: SnackType.error,
+      );
+    }
   }
 }

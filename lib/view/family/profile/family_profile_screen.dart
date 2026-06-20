@@ -1,6 +1,9 @@
+import 'package:familyside/core/config/credential.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/model/family_profile_data.dart';
 import 'package:familyside/provider/auth_provider.dart';
+import 'package:familyside/provider/family/family_profile_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/view/family/profile/widgets/profile_stat_card.dart';
@@ -46,34 +49,49 @@ class FamilyProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(familyProfileProvider);
+
     return Scaffold(
       backgroundColor: AppColors.profileHeaderBackground,
-      body: Column(
-        children: [
-          const _ProfileHeader(),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-              ),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _ProfileStatsRow(),
-                    SizedBox(height: 24.h),
-                    _GeneralSettingsSection(settings: _settings),
-                    SizedBox(height: 16.h),
-                    const _LogoutSection(),
-                  ],
+      body: profileAsync.when(
+        data: (profile) => RefreshIndicator(
+          onRefresh: () => ref.refresh(familyProfileProvider.future),
+          child: Column(
+            children: [
+              _ProfileHeader(profile: profile),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceLight,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24.r),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _ProfileStatsRow(metrics: profile?.metrics),
+                        SizedBox(height: 24.h),
+                        _GeneralSettingsSection(settings: _settings),
+                        SizedBox(height: 16.h),
+                        const _LogoutSection(),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
+        error: (err, stack) {
+          debugPrint('Error: $err');
+          return const Center(child: Text('Error loading profile'));
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }
@@ -81,8 +99,14 @@ class FamilyProfileScreen extends ConsumerWidget {
 
 class _ProfileAvatarWithBadge extends StatelessWidget {
   final ThemeData theme;
+  final String? imageUrl;
+  final String contributorLevel;
 
-  const _ProfileAvatarWithBadge({required this.theme});
+  const _ProfileAvatarWithBadge({
+    required this.theme,
+    this.imageUrl,
+    required this.contributorLevel,
+  });
 
   static const double _avatarSize = 120;
 
@@ -96,64 +120,77 @@ class _ProfileAvatarWithBadge extends StatelessWidget {
         alignment: Alignment.topCenter,
         children: [
           ClipOval(
-            child: Image.asset(
-              'assets/image/demo_image.jpg',
-              width: _avatarSize.w,
-              height: _avatarSize.w,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: _avatarSize.w,
-                  height: _avatarSize.w,
-                  color: AppColors.border,
-                  child: ProfileSvgIcon(
-                    iconPath: "assets/icon/edit_profile.svg",
-                    width: 40.w,
-                    height: 40.h,
-                    color: AppColors.grey,
+            child: imageUrl != null && imageUrl!.isNotEmpty
+                ? Image.network(
+                    AppCredentials.fixurl(imageUrl!),
+                    width: _avatarSize.w,
+                    height: _avatarSize.w,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: _avatarSize.w,
+                        height: _avatarSize.w,
+                        color: AppColors.border,
+                        child: Icon(
+                          Icons.person,
+                          color: AppColors.grey,
+                          size: 36.sp,
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    width: _avatarSize.w,
+                    height: _avatarSize.w,
+                    color: AppColors.border,
+                    child: Icon(
+                      Icons.person,
+                      color: AppColors.grey,
+                      size: 36.sp,
+                    ),
                   ),
-                );
-              },
-            ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(20.r),
-                  border: Border.all(
-                    color: AppColors.profileHeaderBackground,
-                    width: 2,
+          if (contributorLevel.isNotEmpty)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12.w,
+                    vertical: 6.h,
                   ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ProfileSvgIcon(
-                      iconPath: "assets/icon/coin.svg",
-                      width: 16.w,
-                      height: 16.h,
-                      // color: AppColors.accentYellow,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: AppColors.profileHeaderBackground,
+                      width: 2,
                     ),
-                    SizedBox(width: 6.w),
-                    Text(
-                      'Local Contributor',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.onPrimaryLight,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ProfileSvgIcon(
+                        iconPath: "assets/icon/coin.svg",
+                        width: 16.w,
+                        height: 16.h,
                       ),
-                    ),
-                  ],
+                      SizedBox(width: 6.w),
+                      Text(
+                        contributorLevel,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.onPrimaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -161,11 +198,14 @@ class _ProfileAvatarWithBadge extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader();
+  final FamilyProfileData? profile;
+
+  const _ProfileHeader({this.profile});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final metrics = profile?.metrics;
 
     return Container(
       width: double.infinity,
@@ -176,15 +216,24 @@ class _ProfileHeader extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 28.h),
           child: Column(
             children: [
-              _ProfileAvatarWithBadge(theme: theme),
+              _ProfileAvatarWithBadge(
+                theme: theme,
+                imageUrl: profile?.profileImageUrl,
+                contributorLevel: metrics?.contributorLevel ?? '',
+              ),
               SizedBox(height: 12.h),
               Text(
-                'You are among the most active families in your area',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
+                profile?.fullName ?? '',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
                   color: AppColors.text,
-                  height: 1.4,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                profile?.locationName ?? '',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: AppColors.lightText,
                 ),
               ),
               SizedBox(height: 16.h),
@@ -194,7 +243,7 @@ class _ProfileHeader extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
                       child: LinearProgressIndicator(
-                        value: 0.6,
+                        value: (metrics?.progressPct ?? 0).clamp(0.0, 1.0),
                         minHeight: 8.h,
                         backgroundColor: AppColors.progressTrack,
                         color: AppColors.primaryLight,
@@ -203,7 +252,7 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                   SizedBox(width: 12.w),
                   Text(
-                    'Top 9%',
+                    '${((metrics?.progressPct ?? 0) * 100).toInt()}%',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryLight,
@@ -220,7 +269,9 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileStatsRow extends StatelessWidget {
-  const _ProfileStatsRow();
+  final FamilyProfileMetrics? metrics;
+
+  const _ProfileStatsRow({this.metrics});
 
   @override
   Widget build(BuildContext context) {
@@ -230,27 +281,26 @@ class _ProfileStatsRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ProfileStatCard(
-            iconPath: "assets/icon/star.svg",            
+            iconPath: "assets/icon/star.svg",
             label: 'Reviews',
-            value: '32',
+            value: (metrics?.reviewsCount ?? 0).toString(),
+            onTap: () =>
+                GoRouter.of(context).push(RouterPath.familyMyReviewsScreen),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/activity.svg",
-            // iconColor: AppColors.primaryLight,
             label: 'Activities',
-            value: '12',
+            value: (metrics?.activitiesCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/invited_family.svg",
-            // iconColor: AppColors.primaryLight,
             label: 'Invited Family',
-            value: '12',
+            value: (metrics?.invitedFamilyCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/wrapped-gift.svg",
-            // iconColor: AppColors.accentYellow,
             label: 'Gifts Shared',
-            value: '12',
+            value: (metrics?.giftsSharedCount ?? 0).toString(),
           ),
         ],
       ),
@@ -398,11 +448,7 @@ class _LogoutSection extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             child: Row(
               children: [
-                Icon(
-                  Icons.logout,
-                  size: 22.sp,
-                  color: AppColors.error,
-                ),
+                Icon(Icons.logout, size: 22.sp, color: AppColors.error),
                 SizedBox(width: 12.w),
                 Text(
                   'Log Out',
@@ -433,11 +479,7 @@ class _LogoutSection extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.logout,
-                size: 48.sp,
-                color: AppColors.error,
-              ),
+              Icon(Icons.logout, size: 48.sp, color: AppColors.error),
               SizedBox(height: 16.h),
               Text(
                 'Log Out',
@@ -450,10 +492,7 @@ class _LogoutSection extends ConsumerWidget {
               SizedBox(height: 8.h),
               Text(
                 'Are you sure you want to log out?',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.lightText,
-                ),
+                style: TextStyle(fontSize: 14.sp, color: AppColors.lightText),
               ),
               SizedBox(height: 24.h),
               SizedBox(height: 8.h),
@@ -507,9 +546,7 @@ class _DialogButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDestructive ? AppColors.error : AppColors.surface,
           borderRadius: BorderRadius.circular(8.r),
-          border: isDestructive
-              ? null
-              : Border.all(color: AppColors.border),
+          border: isDestructive ? null : Border.all(color: AppColors.border),
         ),
         child: Center(
           child: Padding(

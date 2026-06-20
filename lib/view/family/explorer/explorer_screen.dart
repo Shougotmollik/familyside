@@ -283,8 +283,16 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
                         onShareTap: (item) => GiftFlow.showShareGiftCard(context, item),
                       );
                     } else {
+                      final recommendedItems = items.map(_apiItemToRecommended).toList();
                       return _ExplorerListTab(
-                        items: items.map(_apiItemToRecommended).toList(),
+                        items: recommendedItems,
+                        onItemTap: (index) {
+                          final item = items[index];
+                          context.push(
+                            RouterPath.familyActivityDetailsScreen,
+                            extra: item.id,
+                          );
+                        },
                         itemBuilder: (recommended) {
                           if (_tabController.index == 0) {
                             return ActivityCard(
@@ -425,17 +433,25 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
 }
 
 class _ExplorerListTab extends StatelessWidget {
-  const _ExplorerListTab({required this.items, required this.itemBuilder});
+  const _ExplorerListTab({
+    required this.items,
+    required this.itemBuilder,
+    this.onItemTap,
+  });
 
   final List<RecommendedItemModel> items;
   final Widget Function(RecommendedItemModel item) itemBuilder;
+  final ValueChanged<int>? onItemTap;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
       itemCount: items.length,
-      itemBuilder: (context, index) => itemBuilder(items[index]),
+      itemBuilder: (context, index) => GestureDetector(
+        onTap: onItemTap != null ? () => onItemTap!(index) : null,
+        child: itemBuilder(items[index]),
+      ),
     );
   }
 }

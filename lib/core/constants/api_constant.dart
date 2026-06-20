@@ -63,4 +63,6 @@ class ApiConstants {
 
   static const String explorer = "$apiVersion/family/explore/list";
   static const String mapExplorer = "$apiVersion/family/explore/map";
+  static String activityDetails({required int id}) =>
+      "$apiVersion/family/items/$id/details";
 }

@@ -1,5 +1,6 @@
 import 'package:familyside/core/constants/api_constant.dart';
 import 'package:familyside/model/family_home_feed.dart';
+import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/model/sp_home_header.dart';
 import 'package:familyside/services/custom_http.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class HomeProvider extends _$HomeProvider {
   }
 
   // fetch home header and feed
-  Future<void> fetchHomeData({String query = ''}) async {
+  Future<void> fetchHomeData({String query = '', FilterResultModel? filters}) async {
     try {
       final currentData = state.value;
       state = const AsyncLoading();
@@ -35,9 +36,26 @@ class HomeProvider extends _$HomeProvider {
         }
       }
 
+      final Map<String, dynamic> queries = {};
+      if (query.isNotEmpty) queries['search'] = query;
+      if (filters != null) {
+        if (filters.location.isNotEmpty) {
+          queries['location'] = filters.location;
+        }
+        if (filters.categories.isNotEmpty) {
+          queries['category'] = filters.categories.join(',');
+        }
+        if (filters.ages.isNotEmpty) {
+          queries['age_range'] = filters.ages.join(',');
+        }
+        if (filters.price != 'All') {
+          queries['price'] = filters.price.toLowerCase();
+        }
+      }
+
       final feedResponse = await CustomHttp.get(
         endpoint: ApiConstants.familyHome,
-        queries: {'search': query},
+        queries: queries.isNotEmpty ? queries : null,
       );
 
       if (feedResponse.ok) {

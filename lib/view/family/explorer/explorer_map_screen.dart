@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/family/explorer_provider.dart';
-import 'package:familyside/view/family/explorer/activity_details_screen.dart';
 import 'package:familyside/view/family/explorer/models/explorer_data.dart';
 import 'package:familyside/view/family/explorer/models/explorer_map_item.dart';
 import 'package:familyside/view/family/explorer/widgets/explorer_category_chips.dart';
@@ -605,9 +604,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
                                       item: item,
                                       onTap: () => context.push(
                                         RouterPath.familyActivityDetailsScreen,
-                                        extra: ActivityDetailsConfig.fromMapItem(
-                                          item,
-                                        ),
+                                        extra: int.parse(item.id),
                                       ),
                                     ),
                                     if (!hasPosition)

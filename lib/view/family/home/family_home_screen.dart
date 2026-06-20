@@ -74,7 +74,10 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(homeProviderProvider.notifier).fetchHomeData(query: query);
+      ref.read(homeProviderProvider.notifier).fetchHomeData(
+        query: query,
+        filters: _currentFilters,
+      );
     });
   }
 
@@ -130,12 +133,178 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
           HomeFilterBottomSheet(initialFilters: _currentFilters),
     );
 
-    if (result != null) {
+    if (result != null && mounted) {
       setState(() {
         _currentFilters = result;
       });
-      debugPrint('Selected Filters: $result');
+      ref.read(homeProviderProvider.notifier).fetchHomeData(
+        query: searchController.text,
+        filters: result,
+      );
     }
+  }
+
+  bool get _hasAnyFilter {
+    if (_currentFilters == null) return false;
+    return _currentFilters!.location.isNotEmpty ||
+        _currentFilters!.categories.isNotEmpty ||
+        _currentFilters!.ages.isNotEmpty ||
+        _currentFilters!.price != 'All';
+  }
+
+  int get _filterCount {
+    if (_currentFilters == null) return 0;
+    int count = 0;
+    if (_currentFilters!.location.isNotEmpty) count++;
+    if (_currentFilters!.categories.isNotEmpty) {
+      count += _currentFilters!.categories.length;
+    }
+    if (_currentFilters!.ages.isNotEmpty) {
+      count += _currentFilters!.ages.length;
+    }
+    if (_currentFilters!.price != 'All') count++;
+    return count;
+  }
+
+  void _clearFilters() {
+    setState(() => _currentFilters = null);
+    ref.read(homeProviderProvider.notifier).fetchHomeData(
+      query: searchController.text,
+    );
+  }
+
+  void _removeFilter(String filterKey, String filterValue) {
+    if (_currentFilters == null) return;
+
+    final updated = FilterResultModel(
+      location:
+          filterKey == 'location' ? '' : _currentFilters!.location,
+      categories: filterKey == 'categories'
+          ? _currentFilters!.categories
+              .where((c) => c != filterValue)
+              .toList()
+          : _currentFilters!.categories,
+      ages: filterKey == 'ages'
+          ? _currentFilters!.ages
+              .where((a) => a != filterValue)
+              .toList()
+          : _currentFilters!.ages,
+      price: filterKey == 'price' ? 'All' : _currentFilters!.price,
+    );
+
+    final hasAnyFilter = updated.location.isNotEmpty ||
+        updated.categories.isNotEmpty ||
+        updated.ages.isNotEmpty ||
+        updated.price != 'All';
+
+    setState(() => _currentFilters = hasAnyFilter ? updated : null);
+    ref.read(homeProviderProvider.notifier).fetchHomeData(
+      query: searchController.text,
+      filters: hasAnyFilter ? updated : null,
+    );
+  }
+
+  Widget _buildActiveFilterChips() {
+    final chips = <Widget>[];
+
+    if (_currentFilters!.location.isNotEmpty) {
+      chips.add(_filterChip(
+        label: _currentFilters!.location,
+        filterKey: 'location',
+        filterValue: _currentFilters!.location,
+      ));
+    }
+    for (final cat in _currentFilters!.categories) {
+      chips.add(_filterChip(
+        label: cat,
+        filterKey: 'categories',
+        filterValue: cat,
+      ));
+    }
+    for (final age in _currentFilters!.ages) {
+      chips.add(_filterChip(
+        label: age,
+        filterKey: 'ages',
+        filterValue: age,
+      ));
+    }
+    if (_currentFilters!.price != 'All') {
+      chips.add(_filterChip(
+        label: _currentFilters!.price,
+        filterKey: 'price',
+        filterValue: _currentFilters!.price,
+      ));
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          ...chips,
+          GestureDetector(
+            onTap: _clearFilters,
+            child: Container(
+              margin: EdgeInsets.only(right: 8.w),
+              padding:
+                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.r),
+                border: Border.all(color: AppColors.lightText),
+              ),
+              child: Text(
+                'Clear all',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.lightText,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _filterChip({
+    required String label,
+    required String filterKey,
+    required String filterValue,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(right: 8.w, bottom: 8.h),
+      padding:
+          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: AppColors.primaryLight.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: AppColors.primaryLight.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.primaryLight,
+            ),
+          ),
+          SizedBox(width: 4.w),
+          GestureDetector(
+            onTap: () => _removeFilter(filterKey, filterValue),
+            child: Icon(
+              Icons.close,
+              size: 14.sp,
+              color: AppColors.primaryLight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -265,35 +434,71 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }
 
   Widget _buildSearchSection(FamilyHomeFeed? feed) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: SearchBarWidget(
-            controller: searchController,
-            hintText: "Search...",
-            onChanged: _onSearchChanged,
+        Row(
+          children: [
+            Expanded(
+              child: SearchBarWidget(
+                controller: searchController,
+                hintText: "Search...",
+                onChanged: _onSearchChanged,
+              ),
+            ),
+            SizedBox(width: 12.w),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CustomIconButton(
+                  assetPath: "assets/logo/filter.svg",
+                  containerHeight: 48.h,
+                  containerWidth: 48.w,
+                  borderRadius: 8.r,
+                  iconWidth: 24.w,
+                  iconHeight: 24.h,
+                  onTap: _openFilterBottomSheet,
+                ),
+                if (_hasAnyFilter)
+                  Positioned(
+                    top: -2.h,
+                    right: -2.w,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryLight,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '$_filterCount',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(width: 12.w),
+            CustomIconButton(
+              assetPath: "assets/logo/location.svg",
+              containerHeight: 48.h,
+              containerWidth: 48.w,
+              borderRadius: 8.r,
+              iconWidth: 24.w,
+              iconHeight: 24.h,
+              onTap: () => _openMapScreen(feed),
+            ),
+          ],
+        ),
+        // Active filter chips
+        if (_hasAnyFilter)
+          Padding(
+            padding: EdgeInsets.only(top: 10.h),
+            child: _buildActiveFilterChips(),
           ),
-        ),
-        SizedBox(width: 12.w),
-        CustomIconButton(
-          assetPath: "assets/logo/filter.svg",
-          containerHeight: 48.h,
-          containerWidth: 48.w,
-          borderRadius: 8.r,
-          iconWidth: 24.w,
-          iconHeight: 24.h,
-          onTap: _openFilterBottomSheet,
-        ),
-        SizedBox(width: 12.w),
-        CustomIconButton(
-          assetPath: "assets/logo/location.svg",
-          containerHeight: 48.h,
-          containerWidth: 48.w,
-          borderRadius: 8.r,
-          iconWidth: 24.w,
-          iconHeight: 24.h,
-          onTap: () => _openMapScreen(feed),
-        ),
       ],
     );
   }

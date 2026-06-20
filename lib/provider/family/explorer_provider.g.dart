@@ -100,3 +100,49 @@ abstract class _$ExplorerMapProvider
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(ActivityDetailsProvider)
+final activityDetailsProviderProvider = ActivityDetailsProviderProvider._();
+
+final class ActivityDetailsProviderProvider
+    extends $AsyncNotifierProvider<ActivityDetailsProvider, ActivityDetails> {
+  ActivityDetailsProviderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activityDetailsProviderProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activityDetailsProviderHash();
+
+  @$internal
+  @override
+  ActivityDetailsProvider create() => ActivityDetailsProvider();
+}
+
+String _$activityDetailsProviderHash() =>
+    r'df650b36510e3b605dcd8fb7e5868caaffcd4dda';
+
+abstract class _$ActivityDetailsProvider
+    extends $AsyncNotifier<ActivityDetails> {
+  FutureOr<ActivityDetails> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<ActivityDetails>, ActivityDetails>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ActivityDetails>, ActivityDetails>,
+              AsyncValue<ActivityDetails>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

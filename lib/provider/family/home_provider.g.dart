@@ -33,7 +33,7 @@ final class HomeProviderProvider
   HomeProvider create() => HomeProvider();
 }
 
-String _$homeProviderHash() => r'62a2c61cb03217daf111dde6907d3c81f599d885';
+String _$homeProviderHash() => r'16d7b7762cb1b653a7940d28599d2a4e77fc3b4b';
 
 abstract class _$HomeProvider extends $AsyncNotifier<Map<String, dynamic>> {
   FutureOr<Map<String, dynamic>> build();

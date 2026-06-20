@@ -1,4 +1,5 @@
 import 'package:familyside/core/constants/api_constant.dart';
+import 'package:familyside/model/activity_details.dart';
 import 'package:familyside/model/gift_api_item.dart';
 import 'package:familyside/services/custom_http.dart';
 import 'package:familyside/model/filter_result_model.dart';
@@ -98,6 +99,35 @@ class ExplorerMapProvider extends _$ExplorerMapProvider {
       } else {
         state = AsyncError(
           response.error ?? 'Failed to load map data',
+          StackTrace.current,
+        );
+      }
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
+    }
+  }
+}
+
+@riverpod
+class ActivityDetailsProvider extends _$ActivityDetailsProvider {
+  @override
+  FutureOr<ActivityDetails> build() {
+    return const ActivityDetails();
+  }
+
+  Future<void> fetchDetails(int itemId) async {
+    try {
+      state = const AsyncLoading();
+
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.activityDetails(id: itemId),
+      );
+
+      if (response.ok) {
+        state = AsyncData(ActivityDetails.fromJson(response.data));
+      } else {
+        state = AsyncError(
+          response.error ?? 'Failed to load details',
           StackTrace.current,
         );
       }

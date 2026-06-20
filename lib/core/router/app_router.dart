@@ -282,8 +282,9 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyActivityDetailsScreen,
-        builder: (context, state) =>
-            ActivityDetailsScreen(config: state.extra as ActivityDetailsConfig),
+        builder: (context, state) => ActivityDetailsScreen(
+          itemId: state.extra as int,
+        ),
       ),
       GoRoute(
         path: RouterPath.familyWriteReviewScreen,

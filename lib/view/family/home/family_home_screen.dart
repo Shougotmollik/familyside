@@ -367,6 +367,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                               distance: mapped.distance,
                               ageRange: mapped.ageRange,
                               tag: mapped.tag,
+                              onTap: () => context.push(
+                                item.itemType == 'event'
+                                    ? RouterPath.familyEventDetailsScreen
+                                    : RouterPath.familyActivityDetailsScreen,
+                                extra: item.id,
+                              ),
                             );
                           }),
                         SizedBox(height: 24.h),
@@ -398,6 +404,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                               distance: mapped.distance,
                               ageRange: mapped.ageRange,
                               tag: mapped.tag,
+                              onTap: () => context.push(
+                                item.itemType == 'event'
+                                    ? RouterPath.familyEventDetailsScreen
+                                    : RouterPath.familyActivityDetailsScreen,
+                                extra: item.id,
+                              ),
                             );
                           }),
                       ] else ...[

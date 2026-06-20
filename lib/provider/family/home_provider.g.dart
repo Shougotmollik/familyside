@@ -57,3 +57,61 @@ abstract class _$HomeProvider extends $AsyncNotifier<Map<String, dynamic>> {
     element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(SavedItemsProvider)
+final savedItemsProviderProvider = SavedItemsProviderProvider._();
+
+final class SavedItemsProviderProvider
+    extends
+        $AsyncNotifierProvider<
+          SavedItemsProvider,
+          Map<String, List<GiftApiItem>>
+        > {
+  SavedItemsProviderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'savedItemsProviderProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$savedItemsProviderHash();
+
+  @$internal
+  @override
+  SavedItemsProvider create() => SavedItemsProvider();
+}
+
+String _$savedItemsProviderHash() =>
+    r'1ea6e2d186c4e6e7702b67461697a6145ad488ff';
+
+abstract class _$SavedItemsProvider
+    extends $AsyncNotifier<Map<String, List<GiftApiItem>>> {
+  FutureOr<Map<String, List<GiftApiItem>>> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<
+              AsyncValue<Map<String, List<GiftApiItem>>>,
+              Map<String, List<GiftApiItem>>
+            >;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<Map<String, List<GiftApiItem>>>,
+                Map<String, List<GiftApiItem>>
+              >,
+              AsyncValue<Map<String, List<GiftApiItem>>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

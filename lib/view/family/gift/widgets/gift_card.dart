@@ -11,6 +11,7 @@ class GiftCard extends StatelessWidget {
   final String description;
   final String location;
   final bool isBookmarked;
+  final bool showGiftBadge;
   final VoidCallback? onTap;
   final VoidCallback? onAddToGiftList;
   final VoidCallback? onShareTap;
@@ -24,6 +25,7 @@ class GiftCard extends StatelessWidget {
     required this.description,
     required this.location,
     this.isBookmarked = false,
+    this.showGiftBadge = false,
     this.onTap,
     this.onAddToGiftList,
     this.onShareTap,
@@ -55,6 +57,7 @@ class GiftCard extends StatelessWidget {
             _GiftImage(
               imagePath: imagePath,
               isBookmarked: isBookmarked,
+              showGiftBadge: showGiftBadge,
               onBookmarkTap: onBookmarkTap,
             ),
             SizedBox(width: 12.w),
@@ -78,11 +81,13 @@ class GiftCard extends StatelessWidget {
 class _GiftImage extends StatelessWidget {
   final String imagePath;
   final bool isBookmarked;
+  final bool showGiftBadge;
   final VoidCallback? onBookmarkTap;
 
   const _GiftImage({
     required this.imagePath,
     required this.isBookmarked,
+    this.showGiftBadge = false,
     this.onBookmarkTap,
   });
 
@@ -137,30 +142,53 @@ class _GiftImage extends StatelessWidget {
         Positioned(
           top: 8.h,
           left: 8.w,
-          child: GestureDetector(
-            onTap: onBookmarkTap,
-            behavior: HitTestBehavior.opaque,
-            child: Container(
-              height: 28.w,
-              width: 28.w,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icon/gift_icon.svg',
-                  height: 16.h,
-                  width: 16.w,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.surface,
-                    BlendMode.srcIn,
+          child: showGiftBadge
+              ? Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00B074),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
-                  fit: BoxFit.contain,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.card_giftcard, color: Colors.white, size: 12.sp),
+                      SizedBox(width: 4.w),
+                      Text(
+                        'Gift',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : GestureDetector(
+                  onTap: onBookmarkTap,
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    height: 28.w,
+                    width: 28.w,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(
+                        'assets/icon/gift_icon.svg',
+                        height: 16.h,
+                        width: 16.w,
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.surface,
+                          BlendMode.srcIn,
+                        ),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
       ],
     );

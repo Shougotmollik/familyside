@@ -1,6 +1,7 @@
 import 'package:familyside/core/constants/api_constant.dart';
 import 'package:familyside/model/family_home_feed.dart';
 import 'package:familyside/model/filter_result_model.dart';
+import 'package:familyside/model/gift_api_item.dart';
 import 'package:familyside/model/sp_home_header.dart';
 import 'package:familyside/services/custom_http.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,43 @@ class HomeProvider extends _$HomeProvider {
       }
     } catch (e) {
       debugPrint('Error fetching sub-categories: $e');
+    }
+  }
+}
+
+@riverpod
+class SavedItemsProvider extends _$SavedItemsProvider {
+  @override
+  FutureOr<Map<String, List<GiftApiItem>>> build() {
+    return {
+      'activity': <GiftApiItem>[],
+      'event': <GiftApiItem>[],
+      'gift': <GiftApiItem>[],
+    };
+  }
+
+  Future<void> fetchSavedItems({required String itemType}) async {
+    try {
+      state = const AsyncLoading();
+
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.familySavedItems,
+        queries: {'item_type': itemType},
+      );
+
+      if (response.ok) {
+        final items = GiftApiResponse.fromJson(response.data).items;
+        final currentData = Map<String, List<GiftApiItem>>.from(state.value ?? {});
+        currentData[itemType] = items;
+        state = AsyncData(currentData);
+      } else {
+        state = AsyncError(
+          response.error ?? 'Failed to load saved items',
+          StackTrace.current,
+        );
+      }
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
     }
   }
 }

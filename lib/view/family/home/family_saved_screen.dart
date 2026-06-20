@@ -1,145 +1,47 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
-import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/model/gift_api_item.dart';
+import 'package:familyside/provider/family/home_provider.dart';
 import 'package:familyside/view/family/explorer/widgets/activity_card.dart';
-import 'package:familyside/view/widgets/event_card.dart';
 import 'package:familyside/view/family/gift/widgets/gift_card.dart';
 import 'package:familyside/view/family/home/family_home_screen.dart';
+import 'package:familyside/view/widgets/event_card.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
-class FamilySavedScreen extends StatefulWidget {
+class FamilySavedScreen extends ConsumerStatefulWidget {
   const FamilySavedScreen({super.key});
 
   @override
-  State<FamilySavedScreen> createState() => _FamilySavedScreenState();
+  ConsumerState<FamilySavedScreen> createState() => _FamilySavedScreenState();
 }
 
-class _FamilySavedScreenState extends State<FamilySavedScreen>
+class _FamilySavedScreenState extends ConsumerState<FamilySavedScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-
-  String _selectedGiftCategory = 'Birthday';
-  final List<String> _giftCategories = [
-    'Birthday',
-    'Christmas',
-    'Special',
-    'General',
-    'Anniversary',
-  ];
-
-  final List<RecommendedItemModel> _savedActivities = const [
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      category: 'Health',
-      date: '25 Jun',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
-      tag: 'Recommended',
-    ),
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      category: 'Health',
-      date: '25 Jun',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
-      tag: 'Recommended',
-    ),
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 3.jpg',
-      category: 'Schools',
-      date: '25 Jun',
-      title: 'Sunrise Learning Center',
-      price: '35',
-      distance: '0.8 km',
-      ageRange: 'Age: 4-12 years',
-      tag: 'Recommended',
-    ),
-  ];
-
-  final List<RecommendedItemModel> _savedEvents = const [
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 3.jpg',
-      category: 'Events',
-      date: '25 Jun',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
-      tag: 'Recommended',
-    ),
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      category: 'Events',
-      date: '12 Jul',
-      title: 'Summer Kids Festival',
-      price: '15',
-      distance: '1.2 km',
-      ageRange: 'Age: 3-12 years',
-      tag: 'Recommended',
-    ),
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      category: 'Events',
-      date: '25 Jun',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
-      tag: 'Recommended',
-    ),
-  ];
-
-  final List<Map<String, dynamic>> _savedGifts = [
-    {
-      'imagePath': 'assets/image/onboarding 1.jpg',
-      'title': '1 Month Activity Pass',
-      'price': '45',
-      'description': 'Gift a month of fun activities at Green Meadows...',
-      'location': 'Green meadows ark',
-      'categories': ['Birthday', 'General'],
-    },
-    {
-      'imagePath': 'assets/image/onboarding 2.jpg',
-      'title': '1 Month Activity Pass',
-      'price': '45',
-      'description': 'Gift a month of fun activities at Green Meadows...',
-      'location': 'Green meadows ark',
-      'categories': ['Birthday', 'Christmas'],
-    },
-    {
-      'imagePath': 'assets/image/onboarding 3.jpg',
-      'title': 'Kids Toy Set Voucher',
-      'price': '25',
-      'description': 'Redeemable voucher for kids learning toys and sets...',
-      'location': 'Toyland Center',
-      'categories': ['Christmas', 'Special'],
-    },
-    {
-      'imagePath': 'assets/image/onboarding 1.jpg',
-      'title': 'Family Day Park Pass',
-      'price': '60',
-      'description': 'Full-day access for family to all rides and events...',
-      'location': 'Green meadows ark',
-      'categories': ['Special', 'Anniversary'],
-    },
-  ];
-
-  List<Map<String, dynamic>> get _filteredGifts {
-    return _savedGifts.where((item) {
-      final cats = item['categories'] as List<String>;
-      return cats.contains(_selectedGiftCategory);
-    }).toList();
-  }
+  // final Set<int> _bookmarkedGiftIndices = {};  //  saved items only, no bookmark needed here
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchAllTabs();
+    });
+  }
+
+  void _fetchAllTabs() {
+    ref
+        .read(savedItemsProviderProvider.notifier)
+        .fetchSavedItems(itemType: 'activity');
+    ref
+        .read(savedItemsProviderProvider.notifier)
+        .fetchSavedItems(itemType: 'event');
+    ref
+        .read(savedItemsProviderProvider.notifier)
+        .fetchSavedItems(itemType: 'gift');
   }
 
   @override
@@ -148,223 +50,220 @@ class _FamilySavedScreenState extends State<FamilySavedScreen>
     super.dispose();
   }
 
+  RecommendedItemModel _apiItemToRecommended(GiftApiItem item) {
+    final formattedDate = item.dateLabel ?? '';
+    return RecommendedItemModel(
+      imagePath: item.imageUrl ?? '',
+      category: item.categoryName ?? '',
+      date: formattedDate,
+      title: item.name,
+      price: item.price.toStringAsFixed(0),
+      distance: item.distanceKm != null
+          ? '${item.distanceKm!.toStringAsFixed(2)} km'
+          : (item.location ?? 'N/A'),
+      ageRange: item.ageRange ?? '',
+      tag: item.isRecommended ? 'Recommended' : item.itemType,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final savedState = ref.watch(savedItemsProviderProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header with Back button and Title
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 22.sp,
-                      color: AppColors.text,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Text(
-                    'Saved',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.text,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Tab Bar
-            TabBar(
-              controller: _tabController,
-              dividerColor: Colors.transparent,
-              indicatorColor: AppColors.primaryLight,
-              indicatorWeight: 2.h,
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: AppColors.primaryLight,
-              unselectedLabelColor: AppColors.grey,
-              labelStyle: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-              ),
-              tabs: const [
-                Tab(text: 'Activity'),
-                Tab(text: 'Events'),
-                Tab(text: 'Gifts'),
+        child: savedState.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Error: $err', textAlign: TextAlign.center),
+                SizedBox(height: 16.h),
+                ElevatedButton(
+                  onPressed: _fetchAllTabs,
+                  child: const Text('Retry'),
+                ),
               ],
             ),
+          ),
+          data: (data) {
+            final activities = data['activity'] ?? <GiftApiItem>[];
+            final events = data['event'] ?? <GiftApiItem>[];
+            final gifts = data['gift'] ?? <GiftApiItem>[];
 
-            // Tab Bar Views
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  // Activity Tab Content
-                  _buildActivityList(),
-
-                  // Events Tab Content
-                  _buildEventList(),
-
-                  // Gifts Tab Content
-                  _buildGiftTab(),
-                ],
-              ),
-            ),
-          ],
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header with Back button and Title
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => context.pop(),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 22.sp,
+                          color: AppColors.text,
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      Text(
+                        'Saved',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.text,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                TabBar(
+                  controller: _tabController,
+                  dividerColor: Colors.transparent,
+                  indicatorColor: AppColors.primaryLight,
+                  indicatorWeight: 2.h,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: AppColors.primaryLight,
+                  unselectedLabelColor: AppColors.grey,
+                  labelStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  unselectedLabelStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  tabs: const [
+                    Tab(text: 'Activity'),
+                    Tab(text: 'Events'),
+                    Tab(text: 'Gifts'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildList(activities, 'activity'),
+                      _buildList(events, 'event'),
+                      _buildGiftTab(gifts),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  Widget _buildActivityList() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16.w),
-      itemCount: _savedActivities.length,
-      itemBuilder: (context, index) {
-        final item = _savedActivities[index];
-        return ActivityCard(
-          imagePath: item.imagePath,
-          category: item.category,
-          date: item.date,
-          title: item.title,
-          price: item.price,
-          distance: item.distance,
-          ageRange: item.ageRange,
-          tag: item.tag,
-        );
-      },
-    );
-  }
-
-  Widget _buildEventList() {
-    return ListView.builder(
-      padding: EdgeInsets.all(16.w),
-      itemCount: _savedEvents.length,
-      itemBuilder: (context, index) {
-        final item = _savedEvents[index];
-        return EventCard(
-          imagePath: item.imagePath,
-          category: item.category,
-          date: item.date,
-          title: item.title,
-          price: item.price,
-          distance: item.distance,
-          ageRange: item.ageRange,
-          tag: item.tag,
-        );
-      },
-    );
-  }
-
-  Widget _buildGiftTab() {
-    final filtered = _filteredGifts;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
-          child: Text(
-            'Browse from list',
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.text,
-            ),
+  Widget _buildList(List<GiftApiItem> items, String type) {
+    if (items.isEmpty) {
+      return Center(
+        child: Text(
+          'No saved ${type}s found',
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: AppColors.grey,
+            fontStyle: FontStyle.italic,
           ),
         ),
-        SizedBox(height: 12.h),
-        SizedBox(
-          height: 38.h,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            itemCount: _giftCategories.length,
-            itemBuilder: (context, index) {
-              final cat = _giftCategories[index];
-              final isSelected = _selectedGiftCategory == cat;
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedGiftCategory = cat;
-                  });
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 8.w),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.primaryLight
-                        : AppColors.primaryLight.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Center(
-                    child: Text(
-                      cat,
-                      style: TextStyle(
-                        color: isSelected
-                            ? Colors.white
-                            : AppColors.primaryLight,
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        SizedBox(height: 8.h),
-        Expanded(
-          child: filtered.isEmpty
-              ? Center(
-                  child: Text(
-                    'No saved items in this category',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: AppColors.lightText,
-                    ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () => ref
+          .read(savedItemsProviderProvider.notifier)
+          .fetchSavedItems(itemType: type),
+      child: ListView.builder(
+        padding: EdgeInsets.all(16.w),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          final mapped = _apiItemToRecommended(item);
+          final card = type == 'activity'
+              ? ActivityCard(
+                  imagePath: mapped.imagePath,
+                  category: mapped.category,
+                  date: mapped.date,
+                  title: mapped.title,
+                  price: mapped.price,
+                  distance: mapped.distance,
+                  ageRange: mapped.ageRange,
+                  tag: mapped.tag,
+                  onTap: () => context.push(
+                    RouterPath.familyActivityDetailsScreen,
+                    extra: item.id,
                   ),
                 )
-              : ListView.builder(
-                  padding: EdgeInsets.all(16.w),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    final item = filtered[index];
-                    return GiftCard(
-                      imagePath: item['imagePath'],
-                      title: item['title'],
-                      price: item['price'],
-                      description: item['description'],
-                      location: item['location'],
-                      isBookmarked: true,
-                      onTap: () => context.push(
-                        RouterPath.familyGiftDetailsScreen,
-                        extra: 0,
-                      ),
-                      onAddToGiftList: () {},
-                      onShareTap: () {},
-                      onBookmarkTap: () {},
-                    );
-                  },
-                ),
+              : EventCard(
+                  imagePath: mapped.imagePath,
+                  category: mapped.category,
+                  date: mapped.date,
+                  title: mapped.title,
+                  price: mapped.price,
+                  distance: mapped.distance,
+                  ageRange: mapped.ageRange,
+                  tag: mapped.tag,
+                  onTap: () => context.push(
+                    RouterPath.familyEventDetailsScreen,
+                    extra: item.id,
+                  ),
+                );
+          return card;
+        },
+      ),
+    );
+  }
+
+  Widget _buildGiftTab(List<GiftApiItem> gifts) {
+    if (gifts.isEmpty) {
+      return Center(
+        child: Text(
+          'No saved gifts found',
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: AppColors.grey,
+            fontStyle: FontStyle.italic,
+          ),
         ),
-      ],
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () => ref
+          .read(savedItemsProviderProvider.notifier)
+          .fetchSavedItems(itemType: 'gift'),
+      child: ListView.builder(
+        padding: EdgeInsets.all(16.w),
+        itemCount: gifts.length,
+        itemBuilder: (context, index) {
+          final item = gifts[index];
+          return GiftCard(
+            imagePath: item.imageUrl ?? '',
+            title: item.name,
+            price: item.price.toStringAsFixed(0),
+            description: item.categoryName ?? '',
+            location: item.location ?? 'N/A',
+            showGiftBadge: true,
+            onTap: () => context.push(
+              RouterPath.familyGiftDetailsScreen,
+              extra: item.id,
+            ),
+            // saved items - addToGiftList, share, bookmark not needed here
+            // onAddToGiftList: null,
+            // onShareTap: null,
+            // onBookmarkTap: null,
+          );
+        },
+      ),
     );
   }
 }

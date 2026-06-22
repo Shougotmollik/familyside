@@ -8,7 +8,6 @@ import 'package:familyside/model/sp_home_header.dart';
 import 'package:familyside/provider/family/gift_provider.dart';
 import 'package:familyside/provider/family/home_provider.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
-import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/gift/widgets/gift_card.dart';
 import 'package:familyside/view/family/gift/widgets/gift_filter_bottom_sheet.dart';
@@ -60,6 +59,16 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
     _searchController.dispose();
     _debounce?.cancel();
     super.dispose();
+  }
+
+  Future<void> _openCreateNewList() async {
+    final list = await GiftFlow.showCreateNewList(context);
+    if (list != null && mounted) {
+      setState(() => _giftLists.add(list));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Created list "${list.name}"')),
+      );
+    }
   }
 
   Future<void> _openCreateGiftBottomSheet([GiftApiItem? item]) async {
@@ -144,16 +153,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   void _openMyGiftListScreen() {
-    context.push(
-      RouterPath.familyMyGiftListScreen,
-      extra: MyGiftListScreenConfig(
-        giftLists: defaultGiftListSummaries,
-        savedGiftsWithoutList: [
-          ...defaultSavedGiftsWithoutList,
-          ..._savedGiftsWithoutList,
-        ],
-      ),
-    );
+    context.push(RouterPath.familyMyGiftListScreen);
   }
 
   void _onSearchChanged(String query) {
@@ -362,7 +362,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
         ),
         SizedBox(width: 8.w),
         GestureDetector(
-          onTap: _openCreateGiftBottomSheet,
+          onTap: _openCreateNewList,
           child: Container(
             height: 36.w,
             width: 36.w,

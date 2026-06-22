@@ -36,7 +36,6 @@ import 'package:familyside/view/family/gift/gift_all_screen.dart';
 
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
 import 'package:familyside/view/family/gift/my_gift_list_screen.dart';
-import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/explorer/activity_details_screen.dart';
 import 'package:familyside/view/family/explorer/event_details_screen.dart';
 import 'package:familyside/view/family/explorer/explorer_map_screen.dart';
@@ -246,13 +245,12 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyMyGiftListScreen,
-        builder: (context, state) =>
-            MyGiftListScreen(config: state.extra as MyGiftListScreenConfig),
+        builder: (context, state) => const MyGiftListScreen(),
       ),
       GoRoute(
         path: RouterPath.familyGiftListDetailScreen,
         builder: (context, state) => GiftListDetailScreen(
-          config: state.extra as GiftListDetailScreenConfig,
+          folderId: state.extra as int,
         ),
       ),
       GoRoute(

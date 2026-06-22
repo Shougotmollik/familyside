@@ -61,6 +61,14 @@ class ApiConstants {
   static const String giftList = "$apiVersion/family/gifts/search";
   static const String giftPlannerFolders =
       "$apiVersion/family/gift-planner/folders";
+  static const String createGiftList =
+      "$apiVersion/family/gift-planner/folders";
+  static String giftListFolderDetails({required int id}) =>
+      "$apiVersion/family/gift-planner/folders/$id";
+  static String giftListItemDelete({
+    required int folderId,
+    required int itemId,
+  }) => "$apiVersion/family/gift-planner/folders/$folderId/items/$itemId";
 
   static const String explorer = "$apiVersion/family/explore/list";
   static const String mapExplorer = "$apiVersion/family/explore/map";

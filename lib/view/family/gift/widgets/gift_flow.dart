@@ -50,9 +50,10 @@ class GiftFlow {
     if (result == null) return null;
 
     return GiftListModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: result.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       name: result.name,
       occasion: result.occasion,
+      imagePath: result.imagePath,
     );
   }
 

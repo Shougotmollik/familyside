@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
@@ -77,16 +78,7 @@ class GiftListCard extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
           child: Row(
             children: [
-              Container(
-                height: 44.w,
-                width: 44.w,
-                decoration: BoxDecoration(
-                  color: list.iconBackgroundColor,
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                alignment: Alignment.center,
-                child: Text(list.emoji, style: TextStyle(fontSize: 22.sp)),
-              ),
+              _buildListAvatar(),
               SizedBox(width: 12.w),
               Expanded(
                 child: Column(
@@ -100,7 +92,7 @@ class GiftListCard extends StatelessWidget {
                     ),
                     SizedBox(height: 2.h),
                     Text(
-                      'Last updated ${list.lastUpdated}',
+                      ' ${list.lastUpdated}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.textTheme.bodySmall?.color?.withValues(
                           alpha: 0.8,
@@ -114,6 +106,46 @@ class GiftListCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildListAvatar() {
+    final imageUrl = list.imagePath;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10.r),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          height: 44.w,
+          width: 44.w,
+          fit: BoxFit.cover,
+          placeholder: (context, url) =>
+              Container(height: 44.w, width: 44.w, color: Colors.grey.shade200),
+          errorWidget: (context, url, error) => Container(
+            height: 44.w,
+            width: 44.w,
+            color: Colors.grey.shade200,
+            child: Icon(
+              Icons.image_outlined,
+              size: 20.sp,
+              color: Colors.grey.shade400,
+            ),
+          ),
+        ),
+      );
+    }
+    return Container(
+      height: 44.w,
+      width: 44.w,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: Icon(
+        Icons.image_outlined,
+        size: 20.sp,
+        color: Colors.grey.shade400,
       ),
     );
   }

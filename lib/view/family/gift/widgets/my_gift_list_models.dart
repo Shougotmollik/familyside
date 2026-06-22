@@ -7,6 +7,7 @@ class GiftListSummaryModel {
   final Color iconBackgroundColor;
   final int itemCount;
   final String lastUpdated;
+  final String? imagePath;
 
   const GiftListSummaryModel({
     required this.id,
@@ -15,6 +16,7 @@ class GiftListSummaryModel {
     required this.iconBackgroundColor,
     required this.itemCount,
     required this.lastUpdated,
+    this.imagePath,
   });
 }
 
@@ -30,103 +32,6 @@ class SavedGiftItemModel {
     required this.category,
     required this.price,
   });
-}
-
-class GiftListDetailScreenConfig {
-  final GiftListSummaryModel list;
-  final String description;
-  final List<SavedGiftItemModel> items;
-
-  const GiftListDetailScreenConfig({
-    required this.list,
-    required this.description,
-    required this.items,
-  });
-}
-
-const Map<String, String> giftListDescriptions = {
-  '1': 'Gift ideas that Emma will love for her special day!',
-  '2': 'Holiday gifts picked for the whole family.',
-  '3': 'Sweet surprises for the little one on the way.',
-};
-
-const Map<String, List<SavedGiftItemModel>> giftListItemsById = {
-  '1': [
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      title: 'Pediatric Osteopath Session',
-      category: 'Activities',
-      price: '45',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      title: 'Pediatric Osteopath Session',
-      category: 'Toys and Games',
-      price: '45',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 3.jpg',
-      title: 'Pediatric Osteopath Session',
-      category: 'Activities',
-      price: '45',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      title: 'Pediatric Osteopath Session',
-      category: 'Toys and Games',
-      price: '45',
-    ),
-  ],
-  '2': [
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      title: 'Holiday Craft Kit',
-      category: 'Activities',
-      price: '35',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 3.jpg',
-      title: 'Winter Story Book Set',
-      category: 'Toys and Games',
-      price: '28',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      title: 'Family Movie Night Pass',
-      category: 'Activities',
-      price: '50',
-    ),
-  ],
-  '3': [
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 3.jpg',
-      title: 'Soft Plush Toy Set',
-      category: 'Toys and Games',
-      price: '32',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      title: 'Baby Care Essentials Box',
-      category: 'Health',
-      price: '55',
-    ),
-    SavedGiftItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      title: 'Nursery Rhyme Book Bundle',
-      category: 'Activities',
-      price: '24',
-    ),
-  ],
-};
-
-GiftListDetailScreenConfig giftListDetailConfigFor(GiftListSummaryModel list) {
-  return GiftListDetailScreenConfig(
-    list: list,
-    description: giftListDescriptions[list.id] ?? 'Gifts saved in this list.',
-    items: List.from(
-      giftListItemsById[list.id] ?? defaultSavedGiftsWithoutList,
-    ),
-  );
 }
 
 const List<GiftListSummaryModel> defaultGiftListSummaries = [

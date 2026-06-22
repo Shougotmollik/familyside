@@ -1,11 +1,6 @@
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
-import 'package:familyside/view/family/explorer/models/explorer_data.dart';
-import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
-import 'package:familyside/view/family/gift/gift_all_screen.dart';
-import 'package:familyside/view/family/home/family_home_screen.dart';
-import 'package:familyside/view/family/home/recomandation_screen.dart';
-import 'package:familyside/view/family/home/sub_category_list_screen_config.dart';
+import 'package:familyside/provider/family/search_provider.dart';
 import 'package:familyside/model/search_data.dart';
 import 'package:familyside/view/family/search/widgets/browse_category_section.dart';
 import 'package:familyside/view/family/search/widgets/quick_access_row.dart';
@@ -14,55 +9,44 @@ import 'package:familyside/view/family/search/widgets/search_toolbar.dart';
 import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   FilterResultModel? _currentFilters;
 
-  static const List<RecommendedItemModel> _recommendedItems = [
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 1.jpg',
-      category: 'Health',
-      date: '25 Jun',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
-      tag: 'Recommended',
-    ),
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 2.jpg',
-      category: 'Health',
-      date: '25 Jun',
-      title: 'Little Stars Pediatric Clinic',
-      price: '20',
-      distance: '0.05 km',
-      ageRange: 'Age: 0-20 years',
-      tag: 'Recommended',
-    ),
-  ];
+  // Mode mapping from quick access label to API query param
+  String _modeForLabel(String label) {
+    switch (label) {
+      case 'For you':
+        return 'for_you';
+      case 'Near you':
+        return 'near_you';
+      case 'Gifts':
+        return 'gifts';
+      case 'Events':
+        return 'events';
+      default:
+        return '';
+    }
+  }
 
-  static const List<RecommendedItemModel> _eventItems = [
-    RecommendedItemModel(
-      imagePath: 'assets/image/onboarding 3.jpg',
-      category: 'Events',
-      date: '25 Jun',
-      title: 'Summer Kids Festival',
-      price: '15',
-      distance: '0.12 km',
-      ageRange: 'Age: 3-12 years',
-      tag: 'Event',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(searchProviderProvider.notifier).fetchSearchData();
+    });
+  }
 
   @override
   void dispose() {
@@ -86,53 +70,30 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _openMapScreen() {
     context.push(
-      RouterPath.familyExplorerMapScreen,
-      extra: ExplorerMapScreenConfig(
-        items: ExplorerData.toMapItems([..._recommendedItems, ..._eventItems]),
-      ),
+      RouterPath.familySearchResultsScreen,
+      extra: const SearchResultsConfig(mode: 'near_you'),
     );
   }
 
   void _onQuickAccessTap(QuickAccessItem item) {
-    switch (item.label) {
-      case 'For you':
-        context.push(
-          RouterPath.familyRecommendationScreen,
-          extra: ListScreenConfig(
-            title: 'For You',
-            items: _recommendedItems,
-          ),
-        );
-      case 'Near you':
-        _openMapScreen();
-      case 'Gifts':
-        context.push(
-          RouterPath.familyGiftAllScreen,
-          extra: GiftAllScreenConfig(
-            title: 'All Gifts',
-            items: ExplorerData.giftItems,
-          ),
-        );
-      case 'Events':
-        context.push(
-          RouterPath.familyRecommendationScreen,
-          extra: ListScreenConfig(
-            title: 'Events',
-            items: _eventItems,
-          ),
-        );
-    }
+    final mode = _modeForLabel(item.label);
+    context.push(
+      RouterPath.familySearchResultsScreen,
+      extra: SearchResultsConfig(mode: mode),
+    );
   }
 
   void _onCategoryTap(BrowseCategoryItem item) {
     context.push(
-      RouterPath.familySubCategoryListScreen,
-      extra: SubCategoryListScreenConfig(title: item.title),
+      RouterPath.familySearchResultsScreen,
+      extra: SearchResultsConfig(categoryId: item.id, title: item.title),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final searchState = ref.watch(searchProviderProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -153,11 +114,83 @@ class _SearchScreenState extends State<SearchScreen> {
                 onItemTap: _onQuickAccessTap,
               ),
               SizedBox(height: 16.h),
-              const SearchPromoBanner(message: SearchData.promoMessage),
+              // Personalized greeting from API
+              searchState.when(
+                data: (data) {
+                  final greeting =
+                      data['personalized_greeting'] as String? ?? '';
+                  if (greeting.isEmpty) return const SizedBox.shrink();
+                  return SearchPromoBanner(message: greeting);
+                },
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                ),
+                error: (_, _) => const SizedBox.shrink(),
+              ),
               SizedBox(height: 24.h),
-              BrowseCategorySection(
-                categories: SearchData.browseCategories,
-                onCategoryTap: _onCategoryTap,
+              // Browse Categories from API
+              searchState.when(
+                data: (data) {
+                  final categories =
+                      data['categories'] as List<BrowseCategoryItem>? ?? [];
+                  if (categories.isEmpty) return const SizedBox.shrink();
+                  return BrowseCategorySection(
+                    categories: categories,
+                    onCategoryTap: _onCategoryTap,
+                  );
+                },
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                error: (error, _) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32.h),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.cloud_off_outlined,
+                          size: 48.sp,
+                          color: AppColors.mutedIcon,
+                        ),
+                        SizedBox(height: 8.h),
+                        Text(
+                          error.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.mutedIcon,
+                            fontSize: 14.sp,
+                          ),
+                        ),
+                        SizedBox(height: 16.h),
+                        ElevatedButton.icon(
+                          onPressed: () =>
+                              ref.read(searchProviderProvider.notifier)
+                                  .fetchSearchData(),
+                          icon: const Icon(Icons.refresh, size: 18),
+                          label: const Text('Retry'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryLight,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

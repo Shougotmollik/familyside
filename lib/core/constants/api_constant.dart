@@ -73,4 +73,8 @@ class ApiConstants {
   static const String familyChildInfo = "$apiVersion/family/profile/children";
   static const String suggestions = "$apiVersion/family/profile/suggestions";
   static const String familyReviews = "$apiVersion/family/profile/reviews";
+
+  static const String familySearch = "$apiVersion/family/search/init";
+  static const String familySearchRecomendation =
+      "$apiVersion/family/search/execute";
 }

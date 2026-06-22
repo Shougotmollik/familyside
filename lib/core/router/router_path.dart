@@ -45,6 +45,7 @@ class RouterPath {
   static const String familyWriteReviewScreen = '/familyWriteReviewScreen';
   static const String familySavedScreen = '/familySavedScreen';
   static const String familyMyReviewsScreen = '/familyMyReviewsScreen';
+  static const String familySearchResultsScreen = '/familySearchResultsScreen';
 
   // Service Provider Auth Routes
   static const String spLoginScreen = '/spLoginScreen';

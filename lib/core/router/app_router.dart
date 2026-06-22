@@ -52,6 +52,8 @@ import 'package:familyside/view/family/profile/family_edit_profile_screen.dart';
 import 'package:familyside/view/family/profile/contact_support_screen.dart';
 import 'package:familyside/view/family/profile/suggestion_screen.dart';
 import 'package:familyside/view/family/profile/update_child_information.dart';
+import 'package:familyside/provider/family/search_provider.dart';
+import 'package:familyside/view/family/search/search_results_screen.dart';
 import 'package:familyside/view/onboarding/onboarding_screen.dart';
 import 'package:familyside/view/onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -309,6 +311,13 @@ class AppRouter {
       GoRoute(
         path: RouterPath.familyMyReviewsScreen,
         builder: (context, state) => MyReviewsScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.familySearchResultsScreen,
+        builder: (context, state) {
+          final config = state.extra as SearchResultsConfig;
+          return SearchResultsScreen.fromConfig(config);
+        },
       ),
     ],
     errorBuilder: (context, state) =>

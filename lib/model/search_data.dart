@@ -13,12 +13,14 @@ class QuickAccessItem {
 }
 
 class BrowseCategoryItem {
+  final int id;
   final String title;
   final String imageUrl;
   final Color backgroundColor;
   final Color iconColor;
 
   const BrowseCategoryItem({
+    this.id = 0,
     required this.title,
     required this.imageUrl,
     required this.backgroundColor,
@@ -28,14 +30,15 @@ class BrowseCategoryItem {
   factory BrowseCategoryItem.fromJson(Map<String, dynamic> json) {
     final title = json['title'] as String;
     return BrowseCategoryItem(
+      id: json['id'] as int? ?? 0,
       title: title,
       imageUrl: json['image_url'] as String? ?? '',
       backgroundColor: json['background_color'] != null
           ? Color(int.parse((json['background_color'] as String).replaceFirst('#', '0xFF')))
-          : _colorForCategory(title),
+          : colorForCategory(title),
       iconColor: json['icon_color'] != null
           ? Color(int.parse((json['icon_color'] as String).replaceFirst('#', '0xFF')))
-          : _iconColorForCategory(title),
+          : iconColorForCategory(title),
     );
   }
 
@@ -46,7 +49,7 @@ class BrowseCategoryItem {
         'icon_color': '#${iconColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}',
       };
 
-  static Color _colorForCategory(String title) {
+  static Color colorForCategory(String title) {
     switch (title) {
       case 'Health':
         return const Color(0xFFE8F5E9);
@@ -65,7 +68,7 @@ class BrowseCategoryItem {
     }
   }
 
-  static Color _iconColorForCategory(String title) {
+  static Color iconColorForCategory(String title) {
     switch (title) {
       case 'Health':
         return const Color(0xFF66BB6A);

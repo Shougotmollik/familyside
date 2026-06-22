@@ -122,6 +122,57 @@ class GiftProvider extends _$GiftProvider {
     }
   }
 
+  Future<bool> addItemToFolder({
+    required int folderId,
+    required int itemId,
+  }) async {
+    try {
+      final response = await CustomHttp.post(
+        endpoint: ApiConstants.giftListAddItem,
+        body: {
+          'item_id': itemId,
+          'gift_list_id': folderId,
+        },
+      );
+      return response.ok;
+    } catch (e) {
+      // ignore: avoid_print
+      print('Failed to add item to folder: $e');
+      return false;
+    }
+  }
+
+  Future<List<GiftApiItem>> fetchAvailableItems(int folderId) async {
+    try {
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.giftListAvailableItems(folderId: folderId),
+      );
+
+      if (response.ok && response.data != null) {
+        final body = response.data is Map
+            ? response.data as Map<String, dynamic>
+            : null;
+        final rawData = body?['data'];
+        final List<dynamic> itemsList;
+        if (rawData is List) {
+          itemsList = rawData;
+        } else if (rawData is Map) {
+          itemsList = (rawData['items'] as List<dynamic>?) ?? [];
+        } else {
+          itemsList = (body?['items'] as List<dynamic>?) ?? [];
+        }
+        return itemsList
+            .map((e) => GiftApiItem.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      // ignore: avoid_print
+      print('Failed to fetch available items: $e');
+      return [];
+    }
+  }
+
   Future<GiftListsResponse> fetchGiftLists() async {
     try {
       final response = await CustomHttp.get(

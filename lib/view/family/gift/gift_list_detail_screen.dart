@@ -189,9 +189,12 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
   }
 
   Future<void> _onAddGift() async {
-    final gift = await GiftFlow.showPickGiftToAdd(context);
-    if (gift == null || !mounted) return;
+    await GiftFlow.showPickGiftToAdd(
+      context,
+      folderId: widget.folderId,
+    );
 
+    if (!mounted) return;
     await _loadData(showSkeleton: false);
   }
 

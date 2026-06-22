@@ -64,11 +64,15 @@ class ApiConstants {
   static const String createGiftList =
       "$apiVersion/family/gift-planner/folders";
   static String giftListFolderDetails({required int id}) =>
-      "$apiVersion/family/gift-planner/folders/$id";
-  static String giftListItemDelete({
+      "$apiVersion/family/gift-planner/folders/$id";  static String giftListItemDelete({
     required int folderId,
     required int itemId,
-  }) => "$apiVersion/family/gift-planner/folders/$folderId/items/$itemId";
+  }) =>
+      "$apiVersion/family/gift-planner/folders/$folderId/items/$itemId";
+  static String giftListAvailableItems({required int folderId}) =>
+      "$apiVersion/family/gift-planner/folders/$folderId/available-items";
+  static const String giftListAddItem =
+      "$apiVersion/family/gift-planner/add-to-folder";
 
   static const String explorer = "$apiVersion/family/explore/list";
   static const String mapExplorer = "$apiVersion/family/explore/map";

@@ -33,7 +33,7 @@ final class GiftProviderProvider
   GiftProvider create() => GiftProvider();
 }
 
-String _$giftProviderHash() => r'a9ddafc43a11a02b53bff72f7ea18da1ccc7db09';
+String _$giftProviderHash() => r'0cd9b233315317f0fae0baef7086412a78ac3281';
 
 abstract class _$GiftProvider extends $AsyncNotifier<GiftApiResponse> {
   FutureOr<GiftApiResponse> build();

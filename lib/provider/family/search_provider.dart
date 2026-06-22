@@ -68,10 +68,11 @@ class SearchProvider extends _$SearchProvider {
 
 @riverpod
 Future<List<GiftApiItem>> searchResults(Ref ref,
-    {String? mode, int? categoryId}) async {
+    {String? mode, int? categoryId, String? query}) async {
   final Map<String, dynamic> queries = {};
   if (mode != null) queries['mode'] = mode;
   if (categoryId != null) queries['category_id'] = categoryId.toString();
+  if (query != null && query.isNotEmpty) queries['query'] = query;
 
   final response = await CustomHttp.get(
     endpoint: ApiConstants.familySearchRecomendation,

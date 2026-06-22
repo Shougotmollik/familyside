@@ -73,7 +73,7 @@ final class SearchResultsProvider
         $FutureProvider<List<GiftApiItem>> {
   SearchResultsProvider._({
     required SearchResultsFamily super.from,
-    required ({String? mode, int? categoryId}) super.argument,
+    required ({String? mode, int? categoryId, String? query}) super.argument,
   }) : super(
          retry: null,
          name: r'searchResultsProvider',
@@ -100,11 +100,13 @@ final class SearchResultsProvider
 
   @override
   FutureOr<List<GiftApiItem>> create(Ref ref) {
-    final argument = this.argument as ({String? mode, int? categoryId});
+    final argument =
+        this.argument as ({String? mode, int? categoryId, String? query});
     return searchResults(
       ref,
       mode: argument.mode,
       categoryId: argument.categoryId,
+      query: argument.query,
     );
   }
 
@@ -119,13 +121,13 @@ final class SearchResultsProvider
   }
 }
 
-String _$searchResultsHash() => r'2fdad803278cd15f23b3cf350a31b3ec3326c105';
+String _$searchResultsHash() => r'67919bf075bdc88928cbc786f144cd793cfe7469';
 
 final class SearchResultsFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<List<GiftApiItem>>,
-          ({String? mode, int? categoryId})
+          ({String? mode, int? categoryId, String? query})
         > {
   SearchResultsFamily._()
     : super(
@@ -136,9 +138,9 @@ final class SearchResultsFamily extends $Family
         isAutoDispose: true,
       );
 
-  SearchResultsProvider call({String? mode, int? categoryId}) =>
+  SearchResultsProvider call({String? mode, int? categoryId, String? query}) =>
       SearchResultsProvider._(
-        argument: (mode: mode, categoryId: categoryId),
+        argument: (mode: mode, categoryId: categoryId, query: query),
         from: this,
       );
 

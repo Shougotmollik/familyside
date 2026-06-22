@@ -8,14 +8,14 @@ class SearchToolbar extends StatelessWidget {
     super.key,
     required this.controller,
     this.hintText = 'Search activity & events....',
-    this.onFilterTap,
     this.onLocationTap,
+    this.onSearchChanged,
   });
 
   final TextEditingController controller;
   final String hintText;
-  final VoidCallback? onFilterTap;
   final VoidCallback? onLocationTap;
+  final ValueChanged<String>? onSearchChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +25,8 @@ class SearchToolbar extends StatelessWidget {
           child: SearchBarWidget(
             controller: controller,
             hintText: hintText,
+            onChanged: onSearchChanged,
           ),
-        ),
-        SizedBox(width: 12.w),
-        CustomIconButton(
-          assetPath: 'assets/logo/filter.svg',
-          containerHeight: 48.h,
-          containerWidth: 48.w,
-          borderRadius: 8.r,
-          iconWidth: 24.w,
-          iconHeight: 24.h,
-          onTap: onFilterTap,
         ),
         SizedBox(width: 12.w),
         CustomIconButton(

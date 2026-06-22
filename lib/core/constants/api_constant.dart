@@ -77,4 +77,7 @@ class ApiConstants {
   static const String familySearch = "$apiVersion/family/search/init";
   static const String familySearchRecomendation =
       "$apiVersion/family/search/execute";
+  static const String familyNotification = "$apiVersion/family/notifications";
+  static const String familyNotificationMarkAllRead =
+      "$apiVersion/family/notifications/mark-all-read";
 }

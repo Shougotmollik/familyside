@@ -62,6 +62,8 @@ class ApiConstants {
   }) => "$apiVersion/family/sub-categories/$subCategoryName/items";
 
   static const String familySavedItems = "$apiVersion/family/saved/items";
+  static const String familySavedItemsUniversalToggle =
+      "$apiVersion/family/saved-items/universal_toggle";
 
   static const String giftList = "$apiVersion/family/gifts/search";
   static const String giftPlannerFolders =

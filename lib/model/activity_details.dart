@@ -44,6 +44,7 @@ class ActivityDetails {
   final List<GiftApiItem> giftIdeas;
   final List<ActivityDetailsReview> reviews;
   final String averageRatingLabel;
+  final bool isSaved;
 
   const ActivityDetails({
     this.id = 0,
@@ -62,6 +63,7 @@ class ActivityDetails {
     this.giftIdeas = const [],
     this.reviews = const [],
     this.averageRatingLabel = '',
+    this.isSaved = false,
   });
 
   factory ActivityDetails.fromJson(Map<String, dynamic> json) {
@@ -93,6 +95,7 @@ class ActivityDetails {
               .toList() ??
           [],
       averageRatingLabel: data['average_rating_label'] as String? ?? '',
+      isSaved: data['is_saved'] as bool? ?? false,
     );
   }
 }

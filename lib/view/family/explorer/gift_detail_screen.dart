@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/activity_details.dart';
 import 'package:familyside/provider/family/explorer_provider.dart';
+import 'package:familyside/provider/family/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,7 +18,8 @@ class GiftDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
-  bool _isBookmarked = false;
+  bool _isSaved = false;
+  bool _saveInProgress = false;
   bool _isDescriptionExpanded = false;
 
   @override
@@ -53,7 +55,15 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
             ],
           ),
         ),
-        data: (details) => _buildDetailsContent(details),
+        data: (details) {
+          // Initialize saved state from API response on first load
+          if (!_saveInProgress && _isSaved != details.isSaved && mounted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _isSaved = details.isSaved);
+            });
+          }
+          return _buildDetailsContent(details);
+        },
       ),
     );
   }
@@ -350,18 +360,9 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                   ),
                   SizedBox(width: 10.w),
                   _circleActionButton(
-                    icon: _isBookmarked ? Icons.bookmark : Icons.bookmark_border_rounded,
-                    iconColor: _isBookmarked ? AppColors.primaryLight : Colors.white,
-                    onTap: () {
-                      setState(() => _isBookmarked = !_isBookmarked);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            _isBookmarked ? 'Added to bookmarks!' : 'Removed from bookmarks.',
-                          ),
-                        ),
-                      );
-                    },
+                    icon: _isSaved ? Icons.bookmark : Icons.bookmark_border_rounded,
+                    iconColor: _isSaved ? AppColors.primaryLight : Colors.white,
+                    onTap: _saveInProgress ? null : _toggleSave,
                   ),
                 ],
               ),
@@ -372,9 +373,34 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
     );
   }
 
+  Future<void> _toggleSave() async {
+    if (_saveInProgress) return;
+    setState(() => _saveInProgress = true);
+
+    final result = await ref
+        .read(savedItemsProviderProvider.notifier)
+        .toggleSaveItem(itemId: widget.itemId);
+
+    if (!mounted) return;
+    setState(() {
+      _saveInProgress = false;
+      if (result != null) {
+        _isSaved = result;
+      }
+    });
+    if (result != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result ? 'Saved!' : 'Removed from saved'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   Widget _circleActionButton({
     required IconData icon,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
     Color iconColor = Colors.white,
   }) {
     return GestureDetector(

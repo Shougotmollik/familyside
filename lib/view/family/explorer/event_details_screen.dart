@@ -5,6 +5,7 @@ import 'package:familyside/env.dart';
 import 'package:familyside/model/activity_details.dart';
 import 'package:familyside/model/gift_api_item.dart';
 import 'package:familyside/provider/family/explorer_provider.dart';
+import 'package:familyside/provider/family/home_provider.dart';
 import 'package:familyside/view/family/home/family_home_screen.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
 import 'package:familyside/view/widgets/event_card.dart';
@@ -26,7 +27,8 @@ class EventDetailsScreen extends ConsumerStatefulWidget {
 
 class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
   bool _descExpanded = false;
-  bool _isBookmarked = false;
+  bool _isSaved = false;
+  bool _saveInProgress = false;
 
   @override
   void initState() {
@@ -61,7 +63,15 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
             ],
           ),
         ),
-        data: (details) => _buildDetailsContent(details),
+        data: (details) {
+          // Initialize saved state from API response on first load
+          if (!_saveInProgress && _isSaved != details.isSaved && mounted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _isSaved = details.isSaved);
+            });
+          }
+          return _buildDetailsContent(details);
+        },
       ),
     );
   }
@@ -302,8 +312,9 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                     _circleBtn(Icons.share_outlined, () {}),
                     SizedBox(width: 8.w),
                     _circleBtn(
-                      _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      () => setState(() => _isBookmarked = !_isBookmarked),
+                      _isSaved ? Icons.bookmark : Icons.bookmark_border,
+                      _saveInProgress ? null : _toggleSave,
+                      iconColor: _isSaved ? AppColors.primaryLight : null,
                     ),
                   ],
                 ),
@@ -410,7 +421,32 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
     );
   }
 
-  Widget _circleBtn(IconData icon, VoidCallback onTap) {
+  Future<void> _toggleSave() async {
+    if (_saveInProgress) return;
+    setState(() => _saveInProgress = true);
+
+    final result = await ref
+        .read(savedItemsProviderProvider.notifier)
+        .toggleSaveItem(itemId: widget.itemId);
+
+    if (!mounted) return;
+    setState(() {
+      _saveInProgress = false;
+      if (result != null) {
+        _isSaved = result;
+      }
+    });
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result ? 'Saved!' : 'Removed from saved'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Widget _circleBtn(IconData icon, VoidCallback? onTap, {Color? iconColor}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -420,7 +456,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           color: Colors.white.withValues(alpha: 0.9),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, size: 18.sp, color: AppColors.text),
+        child: Icon(icon, size: 18.sp, color: iconColor ?? AppColors.text),
       ),
     );
   }

@@ -160,4 +160,34 @@ class SavedItemsProvider extends _$SavedItemsProvider {
       state = AsyncError(e, stackTrace);
     }
   }
+
+  /// Universal save/unsave toggle for activities, events, and gifts.
+  /// Returns `true` if the item is now saved, `false` if unsaved, or `null` on failure.
+  Future<bool?> toggleSaveItem({
+    required int itemId,
+    int? giftListId,
+  }) async {
+    try {
+      final Map<String, dynamic> body = {'item_id': itemId};
+      if (giftListId != null) {
+        body['gift_list_id'] = giftListId;
+      }
+
+      final response = await CustomHttp.post(
+        endpoint: ApiConstants.familySavedItemsUniversalToggle,
+        body: body,
+      );
+
+      if (response.ok) {
+        // The response likely returns the new saved state
+        final data = response.data['data'] as Map<String, dynamic>?;
+        final isSaved = data?['is_saved'] as bool?;
+        return isSaved;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error toggling save item: $e');
+      return null;
+    }
+  }
 }

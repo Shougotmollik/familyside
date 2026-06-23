@@ -87,7 +87,7 @@ final class SavedItemsProviderProvider
 }
 
 String _$savedItemsProviderHash() =>
-    r'1ea6e2d186c4e6e7702b67461697a6145ad488ff';
+    r'081817abc73c6a709e8ce79f36089b009640c2dc';
 
 abstract class _$SavedItemsProvider
     extends $AsyncNotifier<Map<String, List<GiftApiItem>>> {

@@ -135,4 +135,31 @@ class ActivityDetailsProvider extends _$ActivityDetailsProvider {
       state = AsyncError(e, stackTrace);
     }
   }
+
+  Future<CustomHttpResult> submitReview({
+    required int itemId,
+    required String categoryName,
+    required String recommendationLevel,
+    required String comment,
+    String? tags,
+    String? photoPath,
+  }) async {
+    final fields = <String, String>{
+      'category_name': categoryName,
+      'recommendation_level': recommendationLevel,
+      'comment': comment,
+    };
+    if (tags != null && tags.isNotEmpty) {
+      fields['tags'] = tags;
+    }
+
+    return CustomHttp.multipart(
+      endpoint: ApiConstants.familyReviewsLeave(itemId: itemId),
+      fieldName: 'photo',
+      filePath: photoPath,
+      fields: fields,
+      method: 'POST',
+    );
+  }
 }
+

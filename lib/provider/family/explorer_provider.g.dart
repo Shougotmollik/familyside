@@ -126,7 +126,7 @@ final class ActivityDetailsProviderProvider
 }
 
 String _$activityDetailsProviderHash() =>
-    r'df650b36510e3b605dcd8fb7e5868caaffcd4dda';
+    r'e6411be9a858676af9bcbcdb93cf4d5f2db267eb';
 
 abstract class _$ActivityDetailsProvider
     extends $AsyncNotifier<ActivityDetails> {

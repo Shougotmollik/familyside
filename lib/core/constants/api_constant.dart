@@ -61,6 +61,9 @@ class ApiConstants {
     required String subCategoryName,
   }) => "$apiVersion/family/sub-categories/$subCategoryName/items";
 
+  static String familyReviewsLeave({required int itemId}) =>
+      "$apiVersion/family/items/$itemId/reviews";
+
   static const String familySavedItems = "$apiVersion/family/saved/items";
   static const String familySavedItemsUniversalToggle =
       "$apiVersion/family/saved-items/universal_toggle";

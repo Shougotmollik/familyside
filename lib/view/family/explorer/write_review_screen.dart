@@ -1,20 +1,24 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+import 'package:familyside/provider/family/explorer_provider.dart';
 import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/family/auth/signup/widgets/custom_dropdown.dart';
 
-class WriteReviewScreen extends StatefulWidget {
-  const WriteReviewScreen({super.key});
+class WriteReviewScreen extends ConsumerStatefulWidget {
+  final int itemId;
+
+  const WriteReviewScreen({super.key, required this.itemId});
 
   @override
-  State<WriteReviewScreen> createState() => _WriteReviewScreenState();
+  ConsumerState<WriteReviewScreen> createState() => _WriteReviewScreenState();
 }
 
-class _WriteReviewScreenState extends State<WriteReviewScreen> {
+class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
   final _formKey = GlobalKey<FormState>();
   final _reviewController = TextEditingController();
   
@@ -22,6 +26,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
   final Set<String> _selectedTags = {'Education'};
   String _selectedRecommendation = 'Highly Recommended';
   final List<File> _pickedImages = [];
+  bool _isSubmitting = false;
 
   final List<String> _categories = [
     'Education',
@@ -67,7 +72,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
     });
   }
 
-  void _submitReview() {
+  Future<void> _submitReview() async {
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -77,14 +82,40 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
       );
       return;
     }
-    if (_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+
+    final result = await ref
+        .read(activityDetailsProviderProvider.notifier)
+        .submitReview(
+          itemId: widget.itemId,
+          categoryName: _selectedCategory!,
+          recommendationLevel: _selectedRecommendation,
+          comment: _reviewController.text.trim(),
+          tags: _selectedTags.isNotEmpty ? _selectedTags.join(',') : null,
+          photoPath: _pickedImages.isNotEmpty ? _pickedImages.first.path : null,
+        );
+
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    if (result.ok) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Review submitted successfully!'),
           backgroundColor: AppColors.secondaryLight,
         ),
       );
-      context.pop();
+      context.pop(true); // Return true to signal success
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.error ?? 'Failed to submit review. Please try again.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
@@ -270,7 +301,7 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
 
                       // Actions: Cancel & Submit
                       GestureDetector(
-                        onTap: () => context.pop(),
+                        onTap: _isSubmitting ? null : () => context.pop(),
                         child: Container(
                           width: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 16.h),
@@ -292,23 +323,34 @@ class _WriteReviewScreenState extends State<WriteReviewScreen> {
                       ),
                       SizedBox(height: 12.h),
                       GestureDetector(
-                        onTap: _submitReview,
+                        onTap: _isSubmitting ? null : _submitReview,
                         child: Container(
                           width: double.infinity,
                           padding: EdgeInsets.symmetric(vertical: 16.h),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryLight,
+                            color: _isSubmitting
+                                ? AppColors.primaryLight.withOpacity(0.5)
+                                : AppColors.primaryLight,
                             borderRadius: BorderRadius.circular(30.r),
                           ),
                           child: Center(
-                            child: Text(
-                              'Submit',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: _isSubmitting
+                                ? SizedBox(
+                                    width: 20.sp,
+                                    height: 20.sp,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.w,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    'Submit',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),

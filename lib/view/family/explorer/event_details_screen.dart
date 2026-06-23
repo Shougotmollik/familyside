@@ -231,7 +231,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
             padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 28.h),
             color: Colors.white,
             child: GestureDetector(
-              onTap: () => context.push(RouterPath.familyWriteReviewScreen),
+              onTap: () => context.push(RouterPath.familyWriteReviewScreen, extra: widget.itemId),
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 16.h),
                 decoration: BoxDecoration(

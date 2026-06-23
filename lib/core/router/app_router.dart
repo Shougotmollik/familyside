@@ -294,7 +294,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouterPath.familyWriteReviewScreen,
-        builder: (context, state) => const WriteReviewScreen(),
+        builder: (context, state) => WriteReviewScreen(itemId: state.extra as int),
       ),
       GoRoute(
         path: RouterPath.familySavedScreen,

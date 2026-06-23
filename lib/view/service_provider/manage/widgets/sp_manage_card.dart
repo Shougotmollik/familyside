@@ -19,6 +19,7 @@ class SpManageCard extends StatelessWidget {
     this.location,
     this.tag,
     this.date,
+    this.onTap,
     this.onEdit,
     this.onDelete,
   });
@@ -34,12 +35,15 @@ class SpManageCard extends StatelessWidget {
   final String? location;
   final String? tag;
   final String? date;
+  final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       margin: EdgeInsets.only(bottom: 14.h),
       padding: EdgeInsets.all(10.w),
       decoration: BoxDecoration(
@@ -386,6 +390,7 @@ class SpManageCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

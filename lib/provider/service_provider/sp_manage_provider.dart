@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:familyside/core/constants/api_constant.dart';
 import 'package:familyside/model/provider_feed_item.dart';
+import 'package:familyside/model/sp_item_details.dart';
 import 'package:familyside/services/custom_http.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -32,7 +33,7 @@ class SpManageProvider extends _$SpManageProvider {
     return [];
   }
 
-  // fetch single item details
+  // fetch single item details for editing
   Future<Map<String, dynamic>?> getItemDetails({required int id}) async {
     try {
       final response = await CustomHttp.get(
@@ -43,6 +44,24 @@ class SpManageProvider extends _$SpManageProvider {
       }
     } catch (e) {
       debugPrint('Error fetching item details: $e');
+    }
+    return null;
+  }
+
+  // fetch item details for the detail view screen
+  Future<SpItemDetails?> fetchItemDetails({required int itemId}) async {
+    try {
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.itemDetails(itemId: itemId),
+      );
+      if (response.ok) {
+        final data = response.data['data'] as Map<String, dynamic>?;
+        if (data != null) {
+          return SpItemDetails.fromJson(data);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching item details view: $e');
     }
     return null;
   }

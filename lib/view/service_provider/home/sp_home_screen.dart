@@ -132,6 +132,10 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                               ageRange: e.ageRange,
                               date: e.dateLabel,
                               tag: e.itemType,
+                              onTap: () => context.push(
+                                RouterPath.spItemDetailsScreen,
+                                extra: e.id,
+                              ),
                             ),
                           ),
                     SizedBox(height: 8.h),
@@ -174,6 +178,10 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                               ageRange: e.ageRange,
                               date: e.dateLabel,
                               tag: e.itemType,
+                              onTap: () => context.push(
+                                RouterPath.spItemDetailsScreen,
+                                extra: e.id,
+                              ),
                             ),
                           ),
                     SizedBox(height: 16.h),

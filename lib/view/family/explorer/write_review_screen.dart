@@ -21,7 +21,7 @@ class WriteReviewScreen extends ConsumerStatefulWidget {
 class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
   final _formKey = GlobalKey<FormState>();
   final _reviewController = TextEditingController();
-  
+
   String? _selectedCategory;
   final Set<String> _selectedTags = {'Education'};
   String _selectedRecommendation = 'Highly Recommended';
@@ -112,7 +112,9 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.error ?? 'Failed to submit review. Please try again.'),
+          content: Text(
+            result.error ?? 'Failed to submit review. Please try again.',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -133,7 +135,11 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                 children: [
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: Icon(Icons.arrow_back_ios_new_rounded, size: 22.sp, color: AppColors.text),
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 22.sp,
+                      color: AppColors.text,
+                    ),
                   ),
                   SizedBox(width: 12.w),
                   Text(
@@ -156,18 +162,18 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 10.h),
-                      
-                      // Category Dropdown
-                      _buildSectionHeader('Category'),
-                      SizedBox(height: 8.h),
-                      CustomDropdown(
-                        hintText: 'Select category',
-                        value: _selectedCategory,
-                        items: _categories,
-                        onChanged: (value) {
-                          setState(() => _selectedCategory = value);
-                        },
-                      ),
+
+                      // // Category Dropdown
+                      // _buildSectionHeader('Category'),
+                      // SizedBox(height: 8.h),
+                      // CustomDropdown(
+                      //   hintText: 'Select category',
+                      //   value: _selectedCategory,
+                      //   items: _categories,
+                      //   onChanged: (value) {
+                      //     setState(() => _selectedCategory = value);
+                      //   },
+                      // ),
                       SizedBox(height: 16.h),
 
                       // Tag wrap chips
@@ -189,7 +195,10 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                               });
                             },
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 8.h,
+                              ),
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? AppColors.primaryLight
@@ -199,7 +208,9 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                               child: Text(
                                 tag,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : AppColors.primaryLight,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.primaryLight,
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -225,7 +236,10 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                               });
                             },
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 8.h,
+                              ),
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? AppColors.primaryLight
@@ -235,7 +249,9 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                               child: Text(
                                 option,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : AppColors.primaryLight,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : AppColors.primaryLight,
                                   fontSize: 13.sp,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -259,9 +275,13 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                           }
                           return null;
                         },
-                        style: TextStyle(fontSize: 14.sp, color: AppColors.text),
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.text,
+                        ),
                         decoration: InputDecoration(
-                          hintText: 'Share your experience with this place. What did you and your family enjoy most?',
+                          hintText:
+                              'Share your experience with this place. What did you and your family enjoy most?',
                           hintStyle: TextStyle(
                             fontSize: 14.sp,
                             color: AppColors.lightText.withOpacity(0.7),
@@ -272,25 +292,43 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.r),
-                            borderSide: BorderSide(color: AppColors.lightText.withOpacity(0.3), width: 1.w),
+                            borderSide: BorderSide(
+                              color: AppColors.lightText.withOpacity(0.3),
+                              width: 1.w,
+                            ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.r),
-                            borderSide: BorderSide(color: AppColors.lightText.withOpacity(0.3), width: 1.w),
+                            borderSide: BorderSide(
+                              color: AppColors.lightText.withOpacity(0.3),
+                              width: 1.w,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.r),
-                            borderSide: BorderSide(color: AppColors.text.withOpacity(0.7), width: 1.2.w),
+                            borderSide: BorderSide(
+                              color: AppColors.text.withOpacity(0.7),
+                              width: 1.2.w,
+                            ),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.r),
-                            borderSide: BorderSide(color: AppColors.error, width: 1.2.w),
+                            borderSide: BorderSide(
+                              color: AppColors.error,
+                              width: 1.2.w,
+                            ),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.r),
-                            borderSide: BorderSide(color: AppColors.error, width: 1.2.w),
+                            borderSide: BorderSide(
+                              color: AppColors.error,
+                              width: 1.2.w,
+                            ),
                           ),
-                          errorStyle: TextStyle(fontSize: 11.sp, color: AppColors.error),
+                          errorStyle: TextStyle(
+                            fontSize: 11.sp,
+                            color: AppColors.error,
+                          ),
                         ),
                       ),
                       SizedBox(height: 24.h),
@@ -552,10 +590,12 @@ class DashedBorderPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    path.addRRect(RRect.fromRectAndRadius(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Radius.circular(borderRadius),
-    ));
+    path.addRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Radius.circular(borderRadius),
+      ),
+    );
 
     final dashPath = Path();
     double distance = 0.0;
@@ -564,7 +604,10 @@ class DashedBorderPainter extends CustomPainter {
         final length = dashWidth;
         final isLast = distance + length >= measurePath.length;
         dashPath.addPath(
-          measurePath.extractPath(distance, isLast ? measurePath.length : distance + length),
+          measurePath.extractPath(
+            distance,
+            isLast ? measurePath.length : distance + length,
+          ),
           Offset.zero,
         );
         distance += length + dashSpace;

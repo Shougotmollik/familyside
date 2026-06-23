@@ -71,9 +71,9 @@ class SpProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _SpStatsRow(stats: profile?.stats),
-                      SizedBox(height: 16.h),
-                      _ContributeSection(),
+                      // _SpStatsRow(stats: profile?.stats),
+                      // SizedBox(height: 16.h),
+                      // _ContributeSection(),
                       SizedBox(height: 16.h),
                       _GeneralSettingsSection(settings: _settings),
                       SizedBox(height: 16.h),

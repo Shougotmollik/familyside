@@ -24,6 +24,7 @@ import 'package:familyside/view/service_provider/auth/signup/sp_profile_setup_sc
 import 'package:familyside/view/service_provider/create_section/create_activity_screen.dart';
 import 'package:familyside/view/service_provider/create_section/create_event_screen.dart';
 import 'package:familyside/view/service_provider/create_section/create_gift_screen.dart';
+import 'package:familyside/view/service_provider/manage/sp_item_details_screen.dart';
 import 'package:familyside/view/service_provider/profile/sp_change_password_screen.dart';
 import 'package:familyside/view/service_provider/profile/sp_edit_profile_screen.dart';
 import 'package:familyside/view/service_provider/profile/sp_privacy_policy_screen.dart';
@@ -214,6 +215,11 @@ class AppRouter {
       GoRoute(
         path: RouterPath.spSubscriptionScreen,
         builder: (context, state) => const SpSubscriptionScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spItemDetailsScreen,
+        builder: (context, state) =>
+            SpItemDetailsScreen(itemId: state.extra as int),
       ),
       GoRoute(
         path: RouterPath.spPaymentScreen,

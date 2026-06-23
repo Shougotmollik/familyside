@@ -68,5 +68,6 @@ class RouterPath {
   static const String spSuggestionScreen = '/spSuggestionScreen';
   static const String spSubscriptionScreen = '/spSubscriptionScreen';
   static const String spPaymentScreen = '/spPaymentScreen';
+  static const String spItemDetailsScreen = '/spItemDetailsScreen';
   static const String spMainNavBarScreen = '/spMainNavBarScreen';
 }

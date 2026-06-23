@@ -150,47 +150,47 @@ class _ProfileAvatarWithBadge extends StatelessWidget {
                     ),
                   ),
           ),
-          if (contributorLevel.isNotEmpty)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 6.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(20.r),
-                    border: Border.all(
-                      color: AppColors.profileHeaderBackground,
-                      width: 2,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ProfileSvgIcon(
-                        iconPath: "assets/icon/coin.svg",
-                        width: 16.w,
-                        height: 16.h,
-                      ),
-                      SizedBox(width: 6.w),
-                      Text(
-                        contributorLevel,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.onPrimaryLight,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          // if (contributorLevel.isNotEmpty)
+          //   Positioned(
+          //     bottom: 0,
+          //     left: 0,
+          //     right: 0,
+          //     child: Center(
+          //       child: Container(
+          //         padding: EdgeInsets.symmetric(
+          //           horizontal: 12.w,
+          //           vertical: 6.h,
+          //         ),
+          //         decoration: BoxDecoration(
+          //           color: AppColors.primaryLight,
+          //           borderRadius: BorderRadius.circular(20.r),
+          //           border: Border.all(
+          //             color: AppColors.profileHeaderBackground,
+          //             width: 2,
+          //           ),
+          //         ),
+          //         child: Row(
+          //           mainAxisSize: MainAxisSize.min,
+          //           children: [
+          //             ProfileSvgIcon(
+          //               iconPath: "assets/icon/coin.svg",
+          //               width: 16.w,
+          //               height: 16.h,
+          //             ),
+          //             SizedBox(width: 6.w),
+          //             Text(
+          //               contributorLevel,
+          //               style: theme.textTheme.bodyMedium?.copyWith(
+          //                 fontSize: 12.sp,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: AppColors.onPrimaryLight,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );

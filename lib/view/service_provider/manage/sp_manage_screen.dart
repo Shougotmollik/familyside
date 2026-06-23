@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/provider_feed_item.dart';
 import 'package:familyside/provider/service_provider/sp_manage_provider.dart';
@@ -137,6 +139,10 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
                 type: type == 'activity'
                     ? SpCardType.activity
                     : (type == 'event' ? SpCardType.event : SpCardType.gift),
+                onTap: () => context.push(
+                  RouterPath.spItemDetailsScreen,
+                  extra: item.id,
+                ),
                 onEdit: () => _openEdit(item.id, item.name, type),
                 onDelete: () => _openDelete(() {}),
               );

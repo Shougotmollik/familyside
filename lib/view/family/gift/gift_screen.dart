@@ -7,6 +7,7 @@ import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/model/sp_home_header.dart';
 import 'package:familyside/provider/family/gift_provider.dart';
 import 'package:familyside/provider/family/home_provider.dart';
+import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 import 'package:familyside/view/family/gift/widgets/my_gift_list_models.dart';
 import 'package:familyside/view/family/gift/widgets/gift_card.dart';
@@ -37,7 +38,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   Timer? _debounce;
   final Set<String> _bookmarkedGiftKeys = {};
   final List<SavedGiftItemModel> _savedGiftsWithoutList = [];
-  final List<GiftListModel> _giftLists = [];
+  List<GiftListModel> _giftLists = [];
 
   @override
   void initState() {
@@ -51,6 +52,22 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
         filters: _currentFilters,
         category: _selectedCategory,
       );
+      _loadGiftLists();
+    });
+  }
+
+  Future<void> _loadGiftLists() async {
+    final response = await ref
+        .read(giftProviderProvider.notifier)
+        .fetchGiftLists();
+    if (!mounted) return;
+    setState(() {
+      _giftLists = response.folders.map((f) => GiftListModel(
+        id: f.id.toString(),
+        name: f.name,
+        occasion: f.occasion,
+        imagePath: f.imageUrl,
+      )).toList();
     });
   }
 
@@ -65,8 +82,9 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
     final list = await GiftFlow.showCreateNewList(context);
     if (list != null && mounted) {
       setState(() => _giftLists.add(list));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Created list "${list.name}"')),
+      AppSnackbar.show(
+        message: 'Created list "${list.name}"',
+        type: SnackType.success,
       );
     }
   }
@@ -79,16 +97,42 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Future<void> _openAddToGiftList(GiftApiItem item) async {
+    await _loadGiftLists();
+
     final result = await GiftFlow.showAddToGiftList(
       context,
       item: _toGiftItemModel(item),
       giftLists: _giftLists,
       onListCreated: (list) => setState(() => _giftLists.add(list)),
     );
-    if (result != null && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Added to ${result.list.name}')));
+
+    if (result == null || !mounted) return;
+
+    final folderId = int.tryParse(result.list.id);
+    if (folderId == null) {
+      AppSnackbar.show(
+        message: 'Could not add to this list. Please try again.',
+        type: SnackType.error,
+      );
+      return;
+    }
+
+    final success = await ref
+        .read(giftProviderProvider.notifier)
+        .addItemToFolder(folderId: folderId, itemId: item.id);
+
+    if (!mounted) return;
+
+    if (success) {
+      AppSnackbar.show(
+        message: '"${item.name}" added to "${result.list.name}"',
+        type: SnackType.success,
+      );
+    } else {
+      AppSnackbar.show(
+        message: 'Failed to add gift to list. Please try again.',
+        type: SnackType.error,
+      );
     }
   }
 
@@ -143,12 +187,9 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
     });
 
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          wasBookmarked ? 'Removed from saved gifts' : 'Saved to My list',
-        ),
-      ),
+    AppSnackbar.show(
+      message: wasBookmarked ? 'Removed from saved gifts' : 'Saved to My list',
+      type: SnackType.info,
     );
   }
 

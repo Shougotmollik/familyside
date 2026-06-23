@@ -56,6 +56,11 @@ class ApiConstants {
   static const String familyHome = "$apiVersion/family/home/feed";
   static String familySubCategories({required int categoryId}) =>
       "$apiVersion/family/categories/$categoryId/sub-categories";
+
+  static String familySubCategoriesRecommendation({
+    required String subCategoryName,
+  }) => "$apiVersion/family/sub-categories/$subCategoryName/items";
+
   static const String familySavedItems = "$apiVersion/family/saved/items";
 
   static const String giftList = "$apiVersion/family/gifts/search";
@@ -64,11 +69,11 @@ class ApiConstants {
   static const String createGiftList =
       "$apiVersion/family/gift-planner/folders";
   static String giftListFolderDetails({required int id}) =>
-      "$apiVersion/family/gift-planner/folders/$id";  static String giftListItemDelete({
+      "$apiVersion/family/gift-planner/folders/$id";
+  static String giftListItemDelete({
     required int folderId,
     required int itemId,
-  }) =>
-      "$apiVersion/family/gift-planner/folders/$folderId/items/$itemId";
+  }) => "$apiVersion/family/gift-planner/folders/$folderId/items/$itemId";
   static String giftListAvailableItems({required int folderId}) =>
       "$apiVersion/family/gift-planner/folders/$folderId/available-items";
   static const String giftListAddItem =

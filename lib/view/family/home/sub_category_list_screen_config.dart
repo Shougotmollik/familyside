@@ -2,10 +2,12 @@ import 'package:familyside/view/family/home/family_home_screen.dart';
 
 class SubCategoryListScreenConfig {
   final String title;
+  final String? subCategoryName;
   final List<RecommendedItemModel> items;
 
   const SubCategoryListScreenConfig({
     required this.title,
+    this.subCategoryName,
     this.items = defaultItems,
   });
 

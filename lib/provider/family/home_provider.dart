@@ -76,6 +76,31 @@ class HomeProvider extends _$HomeProvider {
     }
   }
 
+  // fetch sub-category recommendations (items for a given sub-category name)
+  // Returns null on API failure, empty list on successful empty response
+  Future<List<GiftApiItem>?> fetchSubCategoryRecommendations(String subCategoryName) async {
+    try {
+      final response = await CustomHttp.get(
+        endpoint: ApiConstants.familySubCategoriesRecommendation(
+          subCategoryName: subCategoryName,
+        ),
+      );
+
+      if (response.ok) {
+        final dataMap = response.data['data'] as Map<String, dynamic>? ?? {};
+        final items = dataMap['items'] as List<dynamic>? ?? [];
+        return items
+            .map((e) => GiftApiItem.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      // API responded but with error status
+      return null;
+    } catch (e) {
+      debugPrint('Error fetching sub-category recommendations: $e');
+      return null;
+    }
+  }
+
   // fetch sub-categories
   Future<void> fetchSubCategories(int categoryId) async {
     try {

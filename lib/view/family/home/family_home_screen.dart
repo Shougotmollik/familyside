@@ -17,6 +17,7 @@ import 'package:familyside/view/widgets/sub_category_card.dart';
 import 'package:familyside/view/family/explorer/models/explorer_data.dart';
 import 'package:familyside/view/family/explorer/models/explorer_map_screen_config.dart';
 import 'package:familyside/view/family/home/recomandation_screen.dart';
+import 'package:familyside/view/family/home/sub_category_list_screen_config.dart';
 import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/home_filter_bottom_sheet.dart';
 import 'package:familyside/view/family/home/widgets/family_home_skeleton.dart';
@@ -74,15 +75,13 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(homeProviderProvider.notifier).fetchHomeData(
-        query: query,
-        filters: _currentFilters,
-      );
+      ref
+          .read(homeProviderProvider.notifier)
+          .fetchHomeData(query: query, filters: _currentFilters);
     });
   }
 
   RecommendedItemModel _mapToRecommended(FamilyHomeItem item) {
-    // Format date: "06 June, 2026" -> "06 June"
     String formattedDate = item.dateLabel;
     if (formattedDate.contains(',')) {
       formattedDate = formattedDate.split(',').first.trim();
@@ -137,10 +136,9 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
       setState(() {
         _currentFilters = result;
       });
-      ref.read(homeProviderProvider.notifier).fetchHomeData(
-        query: searchController.text,
-        filters: result,
-      );
+      ref
+          .read(homeProviderProvider.notifier)
+          .fetchHomeData(query: searchController.text, filters: result);
     }
   }
 
@@ -168,72 +166,68 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
 
   void _clearFilters() {
     setState(() => _currentFilters = null);
-    ref.read(homeProviderProvider.notifier).fetchHomeData(
-      query: searchController.text,
-    );
+    ref
+        .read(homeProviderProvider.notifier)
+        .fetchHomeData(query: searchController.text);
   }
 
   void _removeFilter(String filterKey, String filterValue) {
     if (_currentFilters == null) return;
 
     final updated = FilterResultModel(
-      location:
-          filterKey == 'location' ? '' : _currentFilters!.location,
+      location: filterKey == 'location' ? '' : _currentFilters!.location,
       categories: filterKey == 'categories'
-          ? _currentFilters!.categories
-              .where((c) => c != filterValue)
-              .toList()
+          ? _currentFilters!.categories.where((c) => c != filterValue).toList()
           : _currentFilters!.categories,
       ages: filterKey == 'ages'
-          ? _currentFilters!.ages
-              .where((a) => a != filterValue)
-              .toList()
+          ? _currentFilters!.ages.where((a) => a != filterValue).toList()
           : _currentFilters!.ages,
       price: filterKey == 'price' ? 'All' : _currentFilters!.price,
     );
 
-    final hasAnyFilter = updated.location.isNotEmpty ||
+    final hasAnyFilter =
+        updated.location.isNotEmpty ||
         updated.categories.isNotEmpty ||
         updated.ages.isNotEmpty ||
         updated.price != 'All';
 
     setState(() => _currentFilters = hasAnyFilter ? updated : null);
-    ref.read(homeProviderProvider.notifier).fetchHomeData(
-      query: searchController.text,
-      filters: hasAnyFilter ? updated : null,
-    );
+    ref
+        .read(homeProviderProvider.notifier)
+        .fetchHomeData(
+          query: searchController.text,
+          filters: hasAnyFilter ? updated : null,
+        );
   }
 
   Widget _buildActiveFilterChips() {
     final chips = <Widget>[];
 
     if (_currentFilters!.location.isNotEmpty) {
-      chips.add(_filterChip(
-        label: _currentFilters!.location,
-        filterKey: 'location',
-        filterValue: _currentFilters!.location,
-      ));
+      chips.add(
+        _filterChip(
+          label: _currentFilters!.location,
+          filterKey: 'location',
+          filterValue: _currentFilters!.location,
+        ),
+      );
     }
     for (final cat in _currentFilters!.categories) {
-      chips.add(_filterChip(
-        label: cat,
-        filterKey: 'categories',
-        filterValue: cat,
-      ));
+      chips.add(
+        _filterChip(label: cat, filterKey: 'categories', filterValue: cat),
+      );
     }
     for (final age in _currentFilters!.ages) {
-      chips.add(_filterChip(
-        label: age,
-        filterKey: 'ages',
-        filterValue: age,
-      ));
+      chips.add(_filterChip(label: age, filterKey: 'ages', filterValue: age));
     }
     if (_currentFilters!.price != 'All') {
-      chips.add(_filterChip(
-        label: _currentFilters!.price,
-        filterKey: 'price',
-        filterValue: _currentFilters!.price,
-      ));
+      chips.add(
+        _filterChip(
+          label: _currentFilters!.price,
+          filterKey: 'price',
+          filterValue: _currentFilters!.price,
+        ),
+      );
     }
 
     return SingleChildScrollView(
@@ -245,8 +239,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
             onTap: _clearFilters,
             child: Container(
               margin: EdgeInsets.only(right: 8.w),
-              padding:
-                  EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.r),
                 border: Border.all(color: AppColors.lightText),
@@ -273,8 +266,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }) {
     return Container(
       margin: EdgeInsets.only(right: 8.w, bottom: 8.h),
-      padding:
-          EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: AppColors.primaryLight.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20.r),
@@ -323,12 +315,16 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
             data: (data) {
               final header = data['header'] as SpHomeHeader?;
               final feed = data['feed'] as FamilyHomeFeed?;
-              final subCategories = data['subCategories'] as List<FamilySubCategory>;
+              final subCategories =
+                  data['subCategories'] as List<FamilySubCategory>;
 
               return SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 12.h,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -336,7 +332,8 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                       SizedBox(height: 24.h),
                       _buildSearchSection(feed),
                       SizedBox(height: 24.h),
-                      if (feed != null) _buildCategoriesSection(feed.categories),
+                      if (feed != null)
+                        _buildCategoriesSection(feed.categories),
                       SizedBox(height: 24.h),
                       if (_selectedCategory == 'All') ...[
                         _buildSectionHeader('Recommended for You', () {
@@ -425,14 +422,22 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                         if (subCategories.isEmpty)
                           const Center(child: Text("No sub-categories found"))
                         else
-                          ...subCategories.map((sub) => SubCategoryCard(
-                                imagePath: sub.imageUrl ?? "",
-                                title: sub.name,
-                                subtitle: sub.description,
-                                onTap: () {
-                                  // Navigate to sub-category details or list
-                                },
-                              )),
+                          ...subCategories.map(
+                            (sub) => SubCategoryCard(
+                              imagePath: sub.imageUrl ?? "",
+                              title: sub.name,
+                              subtitle: sub.description,
+                              onTap: () {
+                                context.push(
+                                  RouterPath.familySubCategoryListScreen,
+                                  extra: SubCategoryListScreenConfig(
+                                    title: sub.name,
+                                    subCategoryName: sub.name,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                       ],
                     ],
                   ),
@@ -476,7 +481,10 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                     top: -2.h,
                     right: -2.w,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 5.w,
+                        vertical: 2.h,
+                      ),
                       decoration: const BoxDecoration(
                         color: AppColors.primaryLight,
                         shape: BoxShape.circle,
@@ -521,37 +529,41 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
         ClipOval(
           child: header?.profileImageUrl != null
               ? CachedNetworkImage(
-                imageUrl: header!.profileImageUrl!,
-                height: 52.w,
-                width: 52.w,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
+                  imageUrl: header!.profileImageUrl!,
                   height: 52.w,
                   width: 52.w,
-                  color: Colors.grey.shade300,
-                  child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  height: 52.w,
-                  width: 52.w,
-                  color: Colors.grey.shade300,
-                  child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
-                ),
-              )
-              : Image.asset(
-                "assets/image/demo_image.jpg",
-                height: 52.w,
-                width: 52.w,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
                     height: 52.w,
                     width: 52.w,
                     color: Colors.grey.shade300,
                     child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
-                  );
-                },
-              ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 52.w,
+                    width: 52.w,
+                    color: Colors.grey.shade300,
+                    child: Icon(Icons.person, color: Colors.grey, size: 24.sp),
+                  ),
+                )
+              : Image.asset(
+                  "assets/image/demo_image.jpg",
+                  height: 52.w,
+                  width: 52.w,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 52.w,
+                      width: 52.w,
+                      color: Colors.grey.shade300,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.grey,
+                        size: 24.sp,
+                      ),
+                    );
+                  },
+                ),
         ),
         SizedBox(width: 12.w),
         Expanded(
@@ -567,7 +579,10 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                 ),
               ),
               SizedBox(height: 4.h),
-              _buildLocationRow(context, header?.location ?? "Location not set"),
+              _buildLocationRow(
+                context,
+                header?.location ?? "Location not set",
+              ),
             ],
           ),
         ),
@@ -686,19 +701,14 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
       },
       child: Container(
         margin: EdgeInsets.only(right: 10.w),
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.w,
-          vertical: 8.h,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primaryLight.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: isSelected
-                ? Colors.transparent
-                : const Color(0xFFE5E5E5),
+            color: isSelected ? Colors.transparent : const Color(0xFFE5E5E5),
             width: 1,
           ),
         ),
@@ -709,9 +719,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                 ? AppColors.primaryLight
                 : const Color(0xFF939094),
             fontSize: 14.sp,
-            fontWeight: isSelected
-                ? FontWeight.w600
-                : FontWeight.w400,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ),

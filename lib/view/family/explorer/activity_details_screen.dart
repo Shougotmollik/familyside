@@ -205,7 +205,17 @@ class _ActivityDetailsScreenState
             padding: EdgeInsets.fromLTRB(16.w, 12.h, 16.w, 28.h),
             color: Colors.white,
             child: GestureDetector(
-              onTap: () => context.push(RouterPath.familyWriteReviewScreen, extra: widget.itemId),
+              onTap: () async {
+                final reviewed = await context.push<bool>(
+                  RouterPath.familyWriteReviewScreen,
+                  extra: widget.itemId,
+                );
+                if (reviewed == true && mounted) {
+                  ref
+                      .read(activityDetailsProviderProvider.notifier)
+                      .fetchDetails(widget.itemId);
+                }
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(vertical: 16.h),
                 decoration: BoxDecoration(

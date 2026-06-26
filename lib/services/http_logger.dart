@@ -28,7 +28,10 @@ class HttpLogger {
   static final Map<String, DateTime> _timings = {};
 
   static void _print(String message) {
-    if (kDebugMode) debugPrint(message);
+    if (!kDebugMode) return;
+    for (final line in message.split('\n')) {
+      debugPrint(line);
+    }
   }
 
   // ═══════════════════════════════════════════

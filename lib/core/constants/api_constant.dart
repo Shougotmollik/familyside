@@ -33,6 +33,8 @@ class ApiConstants {
   static String subCategories({required int categoryId}) =>
       "$apiVersion/provider/categories/$categoryId/sub-categories";
 
+  static const String parseFlyer = "$apiVersion/provider/ai/parse-flyer";
+
   static const String createActivity = "$apiVersion/provider/create/activity";
   static const String createEvent = "$apiVersion/provider/create/event";
   static const String createGift = "$apiVersion/provider/create/gift";

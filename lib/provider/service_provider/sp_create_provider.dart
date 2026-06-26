@@ -114,6 +114,28 @@ class SpCreateNotifier extends _$SpCreateNotifier {
     }
   }
 
+  // parse flyer
+  Future<Map<String, dynamic>?> parseFlyer({required File image}) async {
+    try {
+      final response = await CustomHttp.multipart(
+        endpoint: ApiConstants.parseFlyer,
+        filePath: image.path,
+        fieldName: 'flyer_image',
+      );
+
+      if (response.ok) {
+        final data = response.data;
+        if (data != null && data['data'] != null) {
+          return Map<String, dynamic>.from(data['data']);
+        }
+      }
+      return null;
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+  }
+
   // create event
   Future<bool> createEvent({
     required String name,

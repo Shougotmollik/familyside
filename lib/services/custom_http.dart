@@ -254,12 +254,19 @@ class CustomHttp {
         url: url,
         headers: multipartHeaders,
         body: {
-          'filePath': filePath,
-          'filePaths': filePaths,
           'fieldName': fieldName,
           if (fields != null) ...fields,
         },
       );
+
+      if (filePath != null) {
+        debugPrint('    📎  FILE     $filePath');
+      }
+      if (filePaths != null && filePaths.isNotEmpty) {
+        for (final p in filePaths) {
+          debugPrint('    📎  FILE     $p');
+        }
+      }
 
       final streamedResponse = await request.send();
 

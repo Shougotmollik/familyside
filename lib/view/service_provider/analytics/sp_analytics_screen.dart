@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 
 class SpAnalyticsScreen extends ConsumerStatefulWidget {
@@ -18,10 +19,10 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
   String _selectedYear = DateTime.now().year.toString();
 
   final List<Map<String, String>> _categories = [
-    {'name': 'Profile Views', 'slug': 'profile_view'},
-    {'name': 'User engagement', 'slug': 'item_view'},
-    {'name': 'Total Activities', 'slug': 'item_view'},
-    {'name': 'Platform Reach', 'slug': 'platform_reach'},
+    {'name': 'profileViews', 'slug': 'profile_view'},
+    {'name': 'userEngagement', 'slug': 'item_view'},
+    {'name': 'totalActivities', 'slug': 'item_view'},
+    {'name': 'platformReach', 'slug': 'platform_reach'},
   ];
 
   @override
@@ -82,12 +83,13 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
   }
 
   Widget _buildHeader() {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Analytics',
+          loc.translate('analytics'),
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 28.sp,
@@ -140,11 +142,12 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
   }
 
   Widget _buildCategoriesSection() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Categories',
+          loc.translate('categories'),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.text,
@@ -174,7 +177,7 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    _categories[i]['name']!,
+                    loc.translate(_categories[i]['name']!),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: isSelected
                               ? Colors.white
@@ -293,14 +296,14 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
 
   Widget _buildSuggestionsSection(List<dynamic> analyticsList) {
     if (analyticsList.isEmpty) return const SizedBox.shrink();
-    
+    final loc = AppLocalizations.of(context);
     final suggestion = analyticsList.first.suggestionText ?? '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Suggestions For You',
+          loc.translate('suggestionsForYou'),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.text,
@@ -313,6 +316,7 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
   }
 
   Widget _buildSuggestionCard(String text) {
+    final loc = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
@@ -335,7 +339,7 @@ class _SpAnalyticsScreenState extends ConsumerState<SpAnalyticsScreen> {
               ),
               SizedBox(width: 8.w),
               Text(
-                'Familyside',
+                loc.translate('brandName'),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.primaryLight,
                       fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/auth_provider.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,7 @@ class FamilyLoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
 
     ref.listen(authProvider, (prev, next) {
       next.whenOrNull(
@@ -56,10 +58,10 @@ class FamilyLoginScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 60.h),
-                _buildLogoSection(theme),
+                _buildLogoSection(context, theme),
                 SizedBox(height: 32.h),
                 Text(
-                  "Sign In",
+                  loc.translate('signIn'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -69,7 +71,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "Sign in to your account",
+                  loc.translate('signInToAccount'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.lightText,
@@ -78,7 +80,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 48.h),
                 Text(
-                  "Email",
+                  loc.translate('email'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -87,7 +89,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter your email",
+                  hintText: loc.translate('enterEmail'),
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
@@ -100,7 +102,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  "Password",
+                  loc.translate('password'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -109,7 +111,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter your password",
+                  hintText: loc.translate('enterPassword'),
                   controller: _passwordController,
                   isPassword: true,
                   textInputAction: TextInputAction.done,
@@ -149,7 +151,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                             GestureDetector(
                               onTap: () => _rememberMe.value = !rememberMe,
                               child: Text(
-                                "Remember me",
+                                loc.translate('rememberMe'),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   color: AppColors.text,
                                   fontSize: 14.sp,
@@ -168,7 +170,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           child: Text(
-                            "Forgot Password?",
+                            loc.translate('forgotPassword'),
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,
@@ -183,7 +185,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                 SizedBox(height: 60.h),
                 CustomElevatedButton(
                   onPressed: () => _onSignIn(ref, context),
-                  title: "Sign In",
+                  title: loc.translate('signIn'),
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
                   isLoading: authState.isLoading,
@@ -200,7 +202,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      "Or, continue with",
+                      loc.translate('orContinueWith'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.text,
                         fontSize: 14.sp,
@@ -237,7 +239,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account? ",
+                      loc.translate('dontHaveAccount'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.lightText,
                         fontSize: 14.sp,
@@ -248,7 +250,7 @@ class FamilyLoginScreen extends ConsumerWidget {
                         context.push(RouterPath.familySignUpScreen);
                       },
                       child: Text(
-                        "Sign Up",
+                        loc.translate('signUp'),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
@@ -266,7 +268,8 @@ class FamilyLoginScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogoSection(ThemeData theme) {
+  Widget _buildLogoSection(BuildContext context, ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -280,7 +283,7 @@ class FamilyLoginScreen extends ConsumerWidget {
         ),
         SizedBox(width: 10.w),
         Text(
-          'Familyside',
+          loc.translate('brandName'),
           style: theme.textTheme.headlineMedium?.copyWith(
             fontFamily: 'Quando',
             fontSize: 22.sp,

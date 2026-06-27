@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/family_review.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
@@ -35,6 +36,7 @@ class _MyReviewsScreenState extends ConsumerState<MyReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: AppColors.border,
@@ -43,7 +45,7 @@ class _MyReviewsScreenState extends ConsumerState<MyReviewsScreen> {
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 0),
-              child: const CustomAppBar(title: 'My Reviews'),
+              child: CustomAppBar(title: loc.translate('myReviews')),
             ),
             Expanded(
               child: _isLoading
@@ -69,6 +71,7 @@ class _MyReviewsScreenState extends ConsumerState<MyReviewsScreen> {
   }
 
   Widget _buildEmptyState(ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +83,7 @@ class _MyReviewsScreenState extends ConsumerState<MyReviewsScreen> {
           ),
           SizedBox(height: 16.h),
           Text(
-            'No reviews yet',
+            loc.translate('noReviewsYet'),
             style: theme.textTheme.bodyLarge?.copyWith(
               color: AppColors.text,
               fontWeight: FontWeight.w500,
@@ -88,7 +91,7 @@ class _MyReviewsScreenState extends ConsumerState<MyReviewsScreen> {
           ),
           SizedBox(height: 8.h),
           Text(
-            'Your reviews will appear here once you write some',
+            loc.translate('reviewsAppearHere'),
             style: theme.textTheme.bodySmall?.copyWith(
               color: AppColors.lightText,
             ),

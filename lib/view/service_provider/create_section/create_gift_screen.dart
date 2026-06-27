@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/interest.dart';
 import 'package:familyside/provider/service_provider/sp_create_provider.dart';
@@ -57,18 +58,21 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context);
     if (_nameController.text.isEmpty ||
         _amountController.text.isEmpty ||
         _selectedPhotos.isEmpty ||
         _selectedCategoryInterest == null) {
       AppSnackbar.show(
-        message: 'Please fill all required fields',
+        message: loc.translate('pleaseFillAllRequired'),
         type: SnackType.warning,
       );
       return;
     }
 
-    final success = await ref.read(spCreateProvider.notifier).createGift(
+    final success = await ref
+        .read(spCreateProvider.notifier)
+        .createGift(
           giftName: _nameController.text,
           categoryId: _selectedCategoryInterest!.id,
           tags: _selectedTags,
@@ -80,14 +84,11 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
     if (success && mounted) {
       Navigator.of(context).pop();
       AppSnackbar.show(
-        message: 'Gift created successfully',
+        message: loc.translate('giftCreatedSuccess'),
         type: SnackType.success,
       );
     } else if (mounted) {
-      AppSnackbar.show(
-        message: 'Failed to create gift',
-        type: SnackType.error,
-      );
+      AppSnackbar.show(message: loc.translate('failedToCreateGift'), type: SnackType.error);
     }
   }
 
@@ -118,6 +119,7 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final state = ref.watch(spCreateProvider);
 
     return Scaffold(
@@ -131,22 +133,21 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8.h),
-                  CustomAppBar(title: 'Add gift'),
+                  CustomAppBar(title: loc.translate('addGift')),
                   SizedBox(height: 20.h),
                   Text(
-                    'Add New Gift',
+                    loc.translate('addNewGift'),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 22.sp,
-                        ),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 22.sp,
+                    ),
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Fill all the necessary details for adding a new gift',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: AppColors.lightText),
+                    loc.translate('addGiftSubtitle'),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
                   ),
                   SizedBox(height: 16.h),
                 ],
@@ -158,19 +159,19 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SpFormLabel('Gift Name'),
+                    SpFormLabel(loc.translate('giftName')),
                     AuthTextFormField(
-                      hintText: 'Enter your gift name',
+                      hintText: loc.translate('enterYourGiftName'),
                       controller: _nameController,
                     ),
 
-                    const SpFormLabel('Category'),
-                    ref.watch(categoriesProvider).when(
+                    SpFormLabel(loc.translate('category')),
+                    ref
+                        .watch(categoriesProvider)
+                        .when(
                           loading: () => const SizedBox(
                             height: 50,
-                            child: Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                            child: Center(child: CircularProgressIndicator()),
                           ),
                           error: (err, _) => Text('Error: $err'),
                           data: (categories) => SpCategoryDropdown(
@@ -185,7 +186,7 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
                         ),
                     SizedBox(height: 16.h),
 
-                    const SpFormLabel('Tag'),
+                    SpFormLabel(loc.translate('tag')),
                     SizedBox(height: 8.h),
                     Container(
                       decoration: BoxDecoration(
@@ -207,7 +208,7 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
                                 color: AppColors.text,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Search or add tags...',
+                                hintText: loc.translate('searchOrAddTags'),
                                 hintStyle: TextStyle(
                                   fontSize: 14.sp,
                                   color: AppColors.lightText,
@@ -262,16 +263,16 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
                     ),
                     SizedBox(height: 16.h),
 
-                    SpFormLabel('Enter amount', isRequired: true),
+                    SpFormLabel(loc.translate('enterAmount'), isRequired: true),
                     AuthTextFormField(
-                      hintText: '\$00',
+                      hintText: loc.translate('enterAmountHint'),
                       controller: _amountController,
                       keyboardType: TextInputType.number,
                     ),
 
-                    const SpFormLabel('Description'),
+                    SpFormLabel(loc.translate('description')),
                     AuthTextFormField(
-                      hintText: 'Enter Description...',
+                      hintText: loc.translate('enterDescription'),
                       controller: _descriptionController,
                       maxLines: 5,
                       minLines: 4,
@@ -280,17 +281,15 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
 
                     RichText(
                       text: TextSpan(
-                        text: 'Add Photos ',
+                        text: '${loc.translate('addPhotos')} ',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.text,
-                              fontWeight: FontWeight.w400,
-                            ),
+                          color: AppColors.text,
+                          fontWeight: FontWeight.w400,
+                        ),
                         children: [
                           TextSpan(
-                            text: '(Optional)',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
+                            text: loc.translate('optional'),
+                            style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: AppColors.lightText),
                           ),
                         ],
@@ -309,7 +308,7 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
                       onCancel: () => Navigator.of(context).maybePop(),
                       onSubmit: _submit,
                       isLoading: state.isLoading,
-                      submitLabel: 'Submit gift',
+                      submitLabel: loc.translate('submitGift'),
                     ),
                     SizedBox(height: 24.h),
                   ],
@@ -323,11 +322,12 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
   }
 
   Widget _buildDefaultTags() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Popular tags',
+          loc.translate('popularTags'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,
@@ -349,6 +349,7 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
   }
 
   Widget _buildSearchResults() {
+    final loc = AppLocalizations.of(context);
     final query = _tagSearchController.text.trim();
     if (_filteredTags.isEmpty) {
       return GestureDetector(
@@ -421,7 +422,7 @@ class _CreateGiftScreenState extends ConsumerState<CreateGiftScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Suggestions',
+          loc.translate('suggestions'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/utils/app_snackbar.dart';
 import 'dart:io';
 
@@ -91,12 +92,13 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
   }
 
   Future<void> _pickOpeningDays() async {
+    final loc = AppLocalizations.of(context);
     List<String> tempSelected = List.from(_selectedOpeningDays);
     await showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Select Opening Days'),
+          title: Text(loc.translate('selectOpeningDays')),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -123,7 +125,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                 setState(() => _selectedOpeningDays = List.from(tempSelected));
                 Navigator.of(ctx).pop();
               },
-              child: const Text('Done'),
+              child: Text(loc.translate('done')),
             ),
           ],
         ),
@@ -188,6 +190,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -199,10 +202,10 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8.h),
-                  CustomAppBar(title: 'Add activity'),
+                   CustomAppBar(title: loc.translate('addActivity')),
                   SizedBox(height: 20.h),
                   Text(
-                    'Add New Activity',
+                    loc.translate('addNewActivity'),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       fontSize: 22.sp,
@@ -210,7 +213,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Fill all the necessary details for adding a new activity',
+                    loc.translate('addActivitySubtitle'),
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
@@ -233,14 +236,14 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                     SizedBox(height: 16.h),
 
                     // Activity Name
-                    const SpFormLabel('Activity Name'),
+                    SpFormLabel(loc.translate('activityName')),
                     AuthTextFormField(
-                      hintText: 'Enter your activity name',
+                      hintText: loc.translate('enterYourActivityName'),
                       controller: _nameController,
                     ),
 
                     // Category
-                    const SpFormLabel('Category'),
+                    SpFormLabel(loc.translate('category')),
                     ref
                         .watch(categoriesProvider)
                         .when(
@@ -264,7 +267,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
 
                     // Sub-category
                     if (_selectedCategoryInterest != null) ...[
-                      const SpFormLabel('Sub-category'),
+                      SpFormLabel(loc.translate('subCategoriesLabel')),
                       SizedBox(height: 8.h),
                       ref
                           .watch(
@@ -292,7 +295,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                     ],
 
                     // Tag
-                    const SpFormLabel('Tag'),
+                    SpFormLabel(loc.translate('tag')),
                     SizedBox(height: 8.h),
                     Container(
                       decoration: BoxDecoration(
@@ -315,7 +318,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                                 color: AppColors.text,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Search or add tags...',
+                                hintText: loc.translate('searchOrAddTags'),
                                 hintStyle: TextStyle(
                                   fontSize: 14.sp,
                                   color: AppColors.lightText,
@@ -389,7 +392,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                     SizedBox(height: 16.h),
 
                     // Activity Price
-                    SpFormLabel('Activity Price', isRequired: true),
+                    SpFormLabel(loc.translate('activityPrice'), isRequired: true),
                     AuthTextFormField(
                       hintText: '500',
                       controller: _priceController,
@@ -397,33 +400,33 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                     ),
 
                     // Website
-                    const SpFormLabel('Website'),
+                    SpFormLabel(loc.translate('website')),
                     AuthTextFormField(
-                      hintText: 'Enter website link',
+                      hintText: loc.translate('enterWebsiteLink'),
                       controller: _websiteController,
                       keyboardType: TextInputType.url,
                     ),
 
                     // WhatsApp
-                    const SpFormLabel("What's App Number"),
+                    SpFormLabel(loc.translate('whatsappNumber')),
                     AuthTextFormField(
-                      hintText: 'Enter phone number',
+                      hintText: loc.translate('enterPhoneNumber'),
                       controller: _whatsappController,
                       keyboardType: TextInputType.phone,
                     ),
 
                     // Email
-                    const SpFormLabel('Email'),
+                    SpFormLabel(loc.translate('email')),
                     AuthTextFormField(
-                      hintText: 'Enter your email address',
+                      hintText: loc.translate('enterYourEmailAddress'),
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                     ),
 
                     // Instagram
-                    const SpFormLabel('Instagram Link'),
+                    SpFormLabel(loc.translate('instagramLink')),
                     AuthTextFormField(
-                      hintText: 'Enter instagram link',
+                      hintText: loc.translate('enterInstagramLink'),
                       controller: _instagramController,
                     ),
 
@@ -435,7 +438,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SpFormLabel('Opening Days'),
+                              SpFormLabel(loc.translate('openingDays')),
                               SizedBox(
                                 height: 44.h,
                                 child: _buildOpeningDaysField(),
@@ -448,12 +451,12 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SpFormLabel('Opening Hours'),
+                              SpFormLabel(loc.translate('openingHours')),
                               SizedBox(
                                 height: 44.h,
                                 child: _buildTimeField(
-                                  _openingStartTime == null
-                                      ? 'Select hours'
+                                   _openingStartTime == null
+                                       ? loc.translate('selectHours')
                                       : '${_openingStartTime!.format(context)} - ${_openingEndTime!.format(context)}',
                                   _pickOpeningHours,
                                 ),
@@ -468,14 +471,14 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                     // Photos
                     RichText(
                       text: TextSpan(
-                        text: 'Add Photos ',
+                        text: loc.translate('addPhotos'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.text,
                           fontWeight: FontWeight.w400,
                         ),
                         children: [
                           TextSpan(
-                            text: '(Optional)',
+                            text: loc.translate('optional'),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: AppColors.lightText),
                           ),
@@ -492,9 +495,9 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                     SizedBox(height: 16.h),
 
                     // Description
-                    const SpFormLabel('Description'),
+                    SpFormLabel(loc.translate('description')),
                     AuthTextFormField(
-                      hintText: 'Enter Description...',
+                      hintText: loc.translate('enterDescription'),
                       controller: _descriptionController,
                       maxLines: 5,
                       minLines: 4,
@@ -506,7 +509,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
                       onSubmit: () async {
                         if (_selectedCategoryInterest == null) {
                           AppSnackbar.show(
-                            message: 'Please select a category',
+                            message: loc.translate('pleaseSelectCategoryFirst'),
                             type: SnackType.warning,
                           );
                           return;
@@ -536,18 +539,18 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
 
                         if (success && mounted) {
                           AppSnackbar.show(
-                            message: 'Activity created successfully',
+                            message: loc.translate('activityCreatedSuccess'),
                             type: SnackType.success,
                           );
                           Navigator.of(context).pop();
                         } else if (mounted) {
                           AppSnackbar.show(
-                            message: 'Failed to create activity',
+                            message: loc.translate('failedToCreateActivity'),
                             type: SnackType.error,
                           );
                         }
                       },
-                      submitLabel: 'Submit activity',
+                      submitLabel: loc.translate('submitActivity'),
                     ),
                     SizedBox(height: 24.h),
                   ],
@@ -561,11 +564,12 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
   }
 
   Widget _buildDefaultTags() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Popular tags',
+          loc.translate('popularTags'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,
@@ -594,7 +598,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
               ),
               SizedBox(width: 4.w),
               Text(
-                '${_selectedTags.length} selected',
+                '${_selectedTags.length} ${loc.translate('selectedCount')}',
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -609,6 +613,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
   }
 
   Widget _buildSearchResults() {
+    final loc = AppLocalizations.of(context);
     final query = _tagSearchController.text.trim();
     if (_filteredTags.isEmpty) {
       return GestureDetector(
@@ -681,7 +686,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Suggestions',
+          loc.translate('suggestions'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,
@@ -703,6 +708,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
   }
 
   Widget _buildOpeningDaysField() {
+    final loc = AppLocalizations.of(context);
     return GestureDetector(
       onTap: _pickOpeningDays,
       child: Container(
@@ -721,7 +727,7 @@ class _CreateActivityScreenState extends ConsumerState<CreateActivityScreen> {
           alignment: Alignment.centerLeft,
           child: _selectedOpeningDays.isEmpty
               ? Text(
-                  'Select days',
+                  loc.translate('selectDays'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.lightText,
                     fontSize: 11.sp,

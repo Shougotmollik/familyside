@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/model/gift_item_model.dart';
@@ -39,7 +40,7 @@ class _GiftAllScreenState extends State<GiftAllScreen> {
     if (result != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Added to ${result.list.name}'),
+          content: Text(AppLocalizations.of(context).translate('addedToList') + ' ${result.list.name}'),
         ),
       );
     }

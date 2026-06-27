@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/sp_item_details.dart';
 import 'package:familyside/provider/service_provider/sp_manage_provider.dart';
@@ -43,6 +44,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: _isLoading
@@ -54,6 +56,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
   }
 
   Widget _buildError() {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -61,7 +64,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
           Icon(Icons.error_outline, color: Colors.red, size: 48.sp),
           SizedBox(height: 16.h),
           Text(
-            'Failed to load details',
+            loc.translate('failedToLoadDetails'),
             style: TextStyle(fontSize: 16.sp, color: AppColors.text),
           ),
           SizedBox(height: 12.h),
@@ -70,7 +73,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
               setState(() => _isLoading = true);
               _loadDetails();
             },
-            child: const Text('Retry'),
+            child: Text(loc.translate('retry')),
           ),
         ],
       ),
@@ -78,6 +81,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
   }
 
   Widget _buildContent(SpItemDetails details) {
+    final loc = AppLocalizations.of(context);
     final isActivity = details.itemType == 'activity';
     final isEvent = details.itemType == 'event';
 
@@ -143,7 +147,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 
                     if (details.description.isNotEmpty) ...[
                       Text(
-                        'Description',
+                        loc.translate('description'),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
@@ -162,7 +166,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
                     SizedBox(height: 24.h),
 
                     if (isActivity && details.openingDays != null) ...[
-                      _buildSectionHeader('Opening Days'),
+                      _buildSectionHeader(loc.translate('openingDays')),
                       SizedBox(height: 12.h),
                       Container(
                         width: double.infinity,
@@ -185,7 +189,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
                     ],
 
                     if (isEvent && details.date != null) ...[
-                      _buildSectionHeader('Date & Time'),
+                      _buildSectionHeader('${loc.translate('date')} & ${loc.translate('time')}'),
                       SizedBox(height: 12.h),
                       Container(
                         width: double.infinity,
@@ -234,7 +238,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 
                     // Sub-categories
                     if (details.subCategories.isNotEmpty) ...[
-                      _buildSectionHeader('Sub-categories'),
+                      _buildSectionHeader(loc.translate('subCategoriesLabel')),
                       SizedBox(height: 12.h),
                       Wrap(
                         spacing: 8.w,
@@ -267,7 +271,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 
                     // Tags
                     if (details.tags.isNotEmpty) ...[
-                      _buildSectionHeader('Tags'),
+                      _buildSectionHeader(loc.translate('tags')),
                       SizedBox(height: 12.h),
                       Wrap(
                         spacing: 8.w,
@@ -513,6 +517,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 
   // EXACTLY same as family
   Widget _buildDescription(String description) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -532,7 +537,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
           GestureDetector(
             onTap: () => setState(() => _descExpanded = !_descExpanded),
             child: Text(
-              _descExpanded ? 'Show less' : 'Read more',
+              _descExpanded ? loc.translate('showLess') : loc.translate('readMore'),
               style: TextStyle(
                 fontSize: 13.sp,
                 color: AppColors.primaryLight,
@@ -644,6 +649,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 
   // EXACTLY same as family
   Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -659,7 +665,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
           GestureDetector(
             onTap: onSeeAll,
             child: Text(
-              'See All',
+              loc.translate('seeAll'),
               style: TextStyle(
                 fontSize: 13.sp,
                 color: AppColors.primaryLight,

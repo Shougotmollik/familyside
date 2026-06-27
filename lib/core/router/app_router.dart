@@ -33,6 +33,7 @@ import 'package:familyside/view/service_provider/profile/sp_suggestion_screen.da
 import 'package:familyside/view/service_provider/profile/sp_subscription_screen.dart';
 import 'package:familyside/view/service_provider/profile/sp_payment_screen.dart';
 import 'package:familyside/view/service_provider/sp_main_nav_bar_screen.dart';
+import 'package:familyside/view/service_provider/notification/sp_notification_screen.dart';
 import 'package:familyside/view/family/gift/gift_all_screen.dart';
 
 import 'package:familyside/view/family/gift/gift_list_detail_screen.dart';
@@ -56,17 +57,26 @@ import 'package:familyside/provider/family/search_provider.dart';
 import 'package:familyside/view/family/search/search_results_screen.dart';
 import 'package:familyside/view/onboarding/onboarding_screen.dart';
 import 'package:familyside/view/onboarding/splash_screen.dart';
+import 'package:familyside/view/onboarding/language_selection_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'router_path.dart';
 
 class AppRouter {
+  static final localeNotifier = ValueNotifier<int>(0);
+
   static final GoRouter router = GoRouter(
     initialLocation: RouterPath.splashScreen,
+    refreshListenable: localeNotifier,
     routes: [
       GoRoute(
         path: RouterPath.splashScreen,
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.languageSelectionScreen,
+        builder: (context, state) => const LanguageSelectionScreen(),
       ),
       GoRoute(
         path: RouterPath.onBoardingScreen,
@@ -234,6 +244,10 @@ class AppRouter {
       GoRoute(
         path: RouterPath.spMainNavBarScreen,
         builder: (context, state) => const SpMainNavBarScreen(),
+      ),
+      GoRoute(
+        path: RouterPath.spNotificationScreen,
+        builder: (context, state) => const SpNotificationScreen(),
       ),
       GoRoute(
         path: RouterPath.familyNotificationScreen,

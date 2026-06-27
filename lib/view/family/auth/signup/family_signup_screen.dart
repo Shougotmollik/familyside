@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,6 +58,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -70,7 +72,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 _buildLogoSection(theme),
                 SizedBox(height: 32.h),
                 Text(
-                  "Sign Up",
+                  loc.translate('signUp'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -80,7 +82,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "Create your account",
+                  loc.translate('createAccount'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.lightText,
@@ -89,7 +91,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 48.h),
                 Text(
-                  "Name",
+                  loc.translate('name'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -98,7 +100,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter your name",
+                  hintText: loc.translate('enterName'),
                   controller: _nameController,
                   keyboardType: TextInputType.name,
                   textInputAction: TextInputAction.next,
@@ -111,7 +113,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  "Email",
+                  loc.translate('email'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -120,7 +122,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter your email",
+                  hintText: loc.translate('enterEmail'),
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
@@ -133,7 +135,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  "Password",
+                  loc.translate('password'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -142,7 +144,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter your password",
+                  hintText: loc.translate('enterPassword'),
                   controller: _passwordController,
                   isPassword: true,
                   textInputAction: TextInputAction.next,
@@ -155,7 +157,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  "Confirm Password",
+                  loc.translate('confirmPassword'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -164,7 +166,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Confirm your password",
+                  hintText: loc.translate('confirmYourPassword'),
                   controller: _confirmPasswordController,
                   isPassword: true,
                   textInputAction: TextInputAction.done,
@@ -182,7 +184,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                 SizedBox(height: 48.h),
                 CustomElevatedButton(
                   onPressed: _onSignUp,
-                  title: "Sign Up",
+                  title: loc.translate('signUp'),
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
                   isLoading: ref.watch(authProvider).isLoading,
@@ -198,7 +200,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                       ),
                     ),
                     Text(
-                      "Or, continue with",
+                      loc.translate('orContinueWith'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.text,
                         fontSize: 14.sp,
@@ -233,7 +235,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Already have an account? ",
+                      loc.translate('alreadyHaveAccount'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: AppColors.lightText,
                         fontSize: 14.sp,
@@ -244,7 +246,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
                         context.pop();
                       },
                       child: Text(
-                        "Sign In",
+                        loc.translate('signIn'),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
@@ -264,6 +266,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
   }
 
   Widget _buildLogoSection(ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -277,7 +280,7 @@ class _FamilySignupScreenState extends ConsumerState<FamilySignupScreen> {
         ),
         SizedBox(width: 10.w),
         Text(
-          'Familyside',
+          loc.translate('brandName'),
           style: theme.textTheme.headlineMedium?.copyWith(
             fontFamily: 'Quando',
             fontSize: 22.sp,

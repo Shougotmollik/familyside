@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/filter_result_model.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
@@ -80,6 +81,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
@@ -114,7 +116,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
             TextField(
               controller: _locationController,
               decoration: InputDecoration(
-                hintText: "Enter the name of the Location",
+                hintText: loc.translate('enterNameOfLocation'),
                 hintStyle: TextStyle(
                   color: AppColors.lightText,
                   fontSize: 14.sp,
@@ -145,7 +147,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
             Row(
               children: [
                 Text(
-                  "Category",
+                  loc.translate('category'),
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -237,7 +239,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
             Row(
               children: [
                 Text(
-                  "Price",
+                  loc.translate('price'),
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -285,7 +287,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
             // Apply Filter Button
             CustomElevatedButton(
               onPressed: _applyFilter,
-              title: "Apply Filter",
+              title: loc.translate('applyFilter'),
               color: AppColors.primaryLight,
               textColor: Colors.white,
             ),
@@ -294,7 +296,7 @@ class _HomeFilterBottomSheetState extends State<HomeFilterBottomSheet> {
             // Clear All Button
             CustomElevatedButton(
               onPressed: _clearAll,
-              title: "Clear all",
+              title: loc.translate('clearAll'),
               color: AppColors.primaryLight.withValues(alpha: 0.1),
               textColor: AppColors.primaryLight,
             ),

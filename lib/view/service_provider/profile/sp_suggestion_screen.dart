@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
@@ -15,13 +16,13 @@ class SpSuggestionScreen extends StatefulWidget {
 class _SpSuggestionScreenState extends State<SpSuggestionScreen> {
   final _titleCtrl = TextEditingController();
   final _suggestionCtrl = TextEditingController();
-  String _selectedType = 'Feature Request';
+  String _selectedType = 'featureRequest';
 
   final List<String> _types = [
-    'Feature Request',
-    'Bug Report',
-    'UI Improvement',
-    'Other',
+    'featureRequest',
+    'bugReport',
+    'uiImprovement',
+    'other',
   ];
 
   @override
@@ -33,6 +34,7 @@ class _SpSuggestionScreenState extends State<SpSuggestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -43,9 +45,9 @@ class _SpSuggestionScreenState extends State<SpSuggestionScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomAppBar(title: 'Your Suggestions'),
+                    CustomAppBar(title: loc.translate('yourSuggestions')),
                     SizedBox(height: 28.h),
-                    _label('Type'),
+                    _label(loc.translate('type')),
                     SizedBox(height: 10.h),
                     Wrap(
                       spacing: 8.w,
@@ -68,7 +70,7 @@ class _SpSuggestionScreenState extends State<SpSuggestionScreen> {
                               borderRadius: BorderRadius.circular(20.r),
                             ),
                             child: Text(
-                              t,
+                              loc.translate(t),
                               style: TextStyle(
                                 fontSize: 13.sp,
                                 fontWeight: FontWeight.w500,
@@ -82,18 +84,18 @@ class _SpSuggestionScreenState extends State<SpSuggestionScreen> {
                       }).toList(),
                     ),
                     SizedBox(height: 20.h),
-                    _label('Title'),
+                    _label(loc.translate('title')),
                     SizedBox(height: 8.h),
                     AuthTextFormField(
-                      hintText: 'Enter a short title',
+                      hintText: loc.translate('enterShortTitle'),
                       controller: _titleCtrl,
                       textInputAction: TextInputAction.next,
                     ),
                     SizedBox(height: 16.h),
-                    _label('Suggestion'),
+                    _label(loc.translate('suggestion')),
                     SizedBox(height: 8.h),
                     AuthTextFormField(
-                      hintText: 'Describe your suggestion in detail...',
+                      hintText: loc.translate('describeSuggestion'),
                       controller: _suggestionCtrl,
                       maxLines: 6,
                       minLines: 5,
@@ -106,7 +108,7 @@ class _SpSuggestionScreenState extends State<SpSuggestionScreen> {
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: () {},
-                title: 'Submit',
+                title: loc.translate('submit'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),

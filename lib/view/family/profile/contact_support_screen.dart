@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
 import 'package:familyside/services/local_storage.dart';
@@ -49,6 +50,7 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
   Future<void> _onSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final loc = AppLocalizations.of(context);
     final success = await ref
         .read(familyProfileProvider.notifier)
         .contactSupport(
@@ -61,13 +63,13 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
 
     if (success) {
       AppSnackbar.show(
-        message: 'Support request submitted successfully',
+        message: loc.translate('supportRequestSuccess'),
         type: SnackType.success,
       );
       if (context.mounted) context.pop();
     } else {
       AppSnackbar.show(
-        message: 'Failed to submit support request',
+        message: loc.translate('failedToSubmitSupport'),
         type: SnackType.error,
       );
     }
@@ -92,6 +94,7 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     final state = ref.watch(familyProfileProvider);
@@ -110,10 +113,10 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
                     children: [
                       const CustomAppBar(title: 'Contact Support'),
                       SizedBox(height: 32.h),
-                      _buildFieldLabel(theme, 'Your Email'),
+                      _buildFieldLabel(theme, loc.translate('yourEmail')),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your email',
+                        hintText: loc.translate('enterEmail'),
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
@@ -121,20 +124,20 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
                         validator: FormValidator.validateEmail,
                       ),
                       SizedBox(height: 16.h),
-                      _buildFieldLabel(theme, 'Your Location'),
+                      _buildFieldLabel(theme, loc.translate('yourLocation')),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your location',
+                        hintText: loc.translate('enterYourLocation'),
                         controller: _locationController,
                         keyboardType: TextInputType.streetAddress,
                         textInputAction: TextInputAction.next,
                         validator: _validateLocation,
                       ),
                       SizedBox(height: 16.h),
-                      _buildFieldLabel(theme, 'Problem details'),
+                      _buildFieldLabel(theme, loc.translate('problemDetails')),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Describe your query here....',
+                        hintText: loc.translate('describeQueryHere'),
                         controller: _problemDetailsController,
                         keyboardType: TextInputType.multiline,
                         textInputAction: TextInputAction.newline,
@@ -151,7 +154,7 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: state.isLoading ? () {} : _onSubmit,
-                title: 'Submit',
+                title: loc.translate('submit'),
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
                 isLoading: state.isLoading,

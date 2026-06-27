@@ -56,6 +56,11 @@ class ApiConstants {
   static const String providerProfileUpdate =
       "$apiVersion/provider/profile/update";
 
+  static const String providerNotification =
+      "$apiVersion/provider/notifications";
+  static const String providerNotificationMarkAllRead =
+      "$apiVersion/provider/notifications/mark-all-read";
+
   // family
   static const String familyHeader = "$apiVersion/family/home/header";
   static const String familyHome = "$apiVersion/family/home/feed";

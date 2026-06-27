@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/model/notification.dart';
 import 'package:familyside/provider/family/family_notification_provider.dart';
 import 'package:familyside/view/family/notification/widgets/notification_skeleton.dart';
@@ -136,14 +137,16 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         .read(familyNotificationProvider.notifier)
         .markAllAsRead();
     if (mounted && !success) {
+      final loc = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to mark all as read')),
+        SnackBar(content: Text(loc.translate('failedToMarkAllRead'))),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final notificationState = ref.watch(familyNotificationProvider);
     final unreadCount = notificationState.asData?.value.unreadCount ?? 0;
 
@@ -155,12 +158,12 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               child: CustomAppBar(
-                title: 'Notifications',
+                title: loc.translate('notifications'),
                 trailing: unreadCount > 0
                     ? GestureDetector(
                         onTap: _onMarkAllAsRead,
                         child: Text(
-                          'Mark all as read',
+                          loc.translate('markAllAsRead'),
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
@@ -191,7 +194,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                             ),
                             SizedBox(height: 12.h),
                             Text(
-                              'Failed to load notifications',
+                              loc.translate('failedToLoadNotifications'),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: AppColors.mutedIcon,
@@ -202,7 +205,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                             ElevatedButton.icon(
                               onPressed: _onRefresh,
                               icon: const Icon(Icons.refresh, size: 18),
-                              label: const Text('Retry'),
+                              label: Text(loc.translate('retry')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryLight,
                                 foregroundColor: Colors.white,
@@ -233,7 +236,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                                 ),
                                 SizedBox(height: 12.h),
                                 Text(
-                                  'No notifications yet',
+                                  loc.translate('noNotifications'),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: AppColors.mutedIcon,

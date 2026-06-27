@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/create_gift_card_preview.dart';
@@ -75,6 +76,7 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
     return Container(
@@ -106,7 +108,7 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
                       Text('🎁', style: TextStyle(fontSize: 20.sp)),
                       SizedBox(width: 8.w),
                       Text(
-                        'Create Gift Card',
+                        loc.translate('create'),
                         style: TextStyle(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
@@ -129,8 +131,8 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
               Divider(height: 1.h, color: AppColors.divider),
               SizedBox(height: 20.h),
               _LabeledTextField(
-                label: 'Your name',
-                hintText: 'Enter Your name',
+                label: loc.translate('name'),
+                hintText: loc.translate('enterYourName'),
                 controller: _nameController,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -141,8 +143,8 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
               ),
               SizedBox(height: 16.h),
               _LabeledTextField(
-                label: 'Personal message (optional)',
-                hintText: 'write message here....',
+                label: loc.translate('description'),
+                hintText: loc.translate('writeMessageHere'),
                 controller: _messageController,
                 maxLines: 4,
                 minLines: 3,
@@ -160,7 +162,7 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: _onCancel,
-                      title: 'Cancel',
+                      title: loc.translate('cancel'),
                       color: colors.primary.withValues(alpha: 0.1),
                       textColor: colors.primary,
                     ),
@@ -169,7 +171,7 @@ class _CreateGiftBottomSheetState extends State<CreateGiftBottomSheet> {
                   Expanded(
                     child: CustomElevatedButton(
                       onPressed: _onCreate,
-                      title: 'Create',
+                      title: loc.translate('create'),
                       color: colors.primary,
                       textColor: colors.onPrimary,
                     ),

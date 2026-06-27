@@ -10,6 +10,7 @@ import 'package:familyside/view/family/search/widgets/search_promo_banner.dart';
 import 'package:familyside/view/family/search/widgets/search_toolbar.dart';
 import 'package:familyside/view/widgets/event_card.dart';
 
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -110,6 +111,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final searchState = ref.watch(searchProviderProvider);
     final searchResultsAsync = _searchQuery.isNotEmpty
         ? ref.watch(searchResultsProvider(query: _searchQuery))
@@ -204,7 +206,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                   ref.read(searchProviderProvider.notifier)
                                       .fetchSearchData(),
                               icon: const Icon(Icons.refresh, size: 18),
-                              label: const Text('Retry'),
+                              label: Text(loc.translate('retry')),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primaryLight,
                                 foregroundColor: Colors.white,
@@ -228,6 +230,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildSearchResults(AsyncValue<List<GiftApiItem>>? asyncValue) {
+    final loc = AppLocalizations.of(context);
     if (asyncValue == null) return const SizedBox.shrink();
 
     return asyncValue.when(
@@ -276,7 +279,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                   SizedBox(height: 12.h),
                   Text(
-                    'No results found for "$_searchQuery"',
+                    '${loc.translate('noResultsFor')} "$_searchQuery"',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppColors.mutedIcon,
@@ -317,7 +320,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 distance: item.distanceKm != null
                     ? '${item.distanceKm!.toStringAsFixed(2)} km'
                     : 'N/A',
-                ageRange: item.ageRange ?? 'All ages',
+                ageRange: item.ageRange ?? loc.translate('allAges'),
                 tag: item.itemType,
                 onTap: () {
                   final route = item.itemType == 'event'

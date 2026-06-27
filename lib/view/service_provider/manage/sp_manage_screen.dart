@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,6 +66,7 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
   }
 
   Widget _buildList(String type) {
+    final loc = AppLocalizations.of(context);
     final asyncItems = ref.watch(manageItemsProvider(type));
     return RefreshIndicator(
       onRefresh: () async {
@@ -98,7 +100,7 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
                   ),
                   SizedBox(height: 8.h),
                   Text(
-                    'Pull down to retry',
+                    loc.translate('pullDownToRetry'),
                     style: TextStyle(color: AppColors.grey, fontSize: 12.sp),
                   ),
                 ],
@@ -155,6 +157,7 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -164,7 +167,7 @@ class _SpManageScreenState extends ConsumerState<SpManageScreen>
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 0),
               child: Text(
-                'Manage',
+                loc.translate('manage'),
                 style: TextStyle(
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w700,

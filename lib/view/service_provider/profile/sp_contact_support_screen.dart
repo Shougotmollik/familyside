@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
@@ -25,6 +26,7 @@ class _SpContactSupportScreenState extends State<SpContactSupportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -35,7 +37,7 @@ class _SpContactSupportScreenState extends State<SpContactSupportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CustomAppBar(title: 'Contact Support'),
+                    CustomAppBar(title: loc.translate('contactSupport')),
                     SizedBox(height: 28.h),
                     // Info card
                     Container(
@@ -60,7 +62,7 @@ class _SpContactSupportScreenState extends State<SpContactSupportScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'We\'re here to help',
+                                  loc.translate('wereHereToHelp'),
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
                                         fontWeight: FontWeight.w600,
@@ -69,7 +71,7 @@ class _SpContactSupportScreenState extends State<SpContactSupportScreen> {
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  'Our team typically responds within 24 hours.',
+                                  loc.translate('teamRespondsWithin24'),
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(color: AppColors.lightText),
                                 ),
@@ -80,18 +82,18 @@ class _SpContactSupportScreenState extends State<SpContactSupportScreen> {
                       ),
                     ),
                     SizedBox(height: 28.h),
-                    _label('Subject'),
+                    _label(loc.translate('subject')),
                     SizedBox(height: 8.h),
                     AuthTextFormField(
-                      hintText: 'Enter subject',
+                      hintText: loc.translate('enterSubject'),
                       controller: _subjectCtrl,
                       textInputAction: TextInputAction.next,
                     ),
                     SizedBox(height: 16.h),
-                    _label('Message'),
+                    _label(loc.translate('message')),
                     SizedBox(height: 8.h),
                     AuthTextFormField(
-                      hintText: 'Describe your issue...',
+                      hintText: loc.translate('describeIssue'),
                       controller: _messageCtrl,
                       maxLines: 6,
                       minLines: 5,
@@ -104,7 +106,7 @@ class _SpContactSupportScreenState extends State<SpContactSupportScreen> {
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: () {},
-                title: 'Send Message',
+                title: loc.translate('sendMessage'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),

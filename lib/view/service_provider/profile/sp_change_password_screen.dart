@@ -9,6 +9,7 @@ import 'package:familyside/utils/form_validator.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 
 class SpChangePasswordScreen extends ConsumerStatefulWidget {
   const SpChangePasswordScreen({super.key});
@@ -40,6 +41,7 @@ class _SpChangePasswordScreenState extends ConsumerState<SpChangePasswordScreen>
   Future<void> _updatePassword() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final loc = AppLocalizations.of(context);
     final success = await ref.read(spProfileProvider.notifier).changePassword(
           currentPassword: _currentCtrl.text,
           newPassword: _newCtrl.text,
@@ -49,14 +51,14 @@ class _SpChangePasswordScreenState extends ConsumerState<SpChangePasswordScreen>
 
     if (success) {
       AppSnackbar.show(
-        message: 'Password changed successfully',
+        message: loc.translate('passwordChangedSuccessfully'),
         type: SnackType.success,
       );
       context.pop();
     } else {
       final error = ref.read(spProfileProvider).error;
       AppSnackbar.show(
-        message: error?.toString() ?? 'Failed to change password',
+        message: error?.toString() ?? loc.translate('failedToChangePasswordSp'),
         type: SnackType.error,
       );
     }
@@ -68,6 +70,7 @@ class _SpChangePasswordScreenState extends ConsumerState<SpChangePasswordScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final pw = _newCtrl.text;
     final state = ref.watch(spProfileProvider);
     return Scaffold(
@@ -82,12 +85,12 @@ class _SpChangePasswordScreenState extends ConsumerState<SpChangePasswordScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const CustomAppBar(title: 'Change Password'),
+                      CustomAppBar(title: loc.translate('changePassword')),
                       SizedBox(height: 32.h),
                       _label('Current password'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter current password',
+                        hintText: loc.translate('enterCurrentPassword'),
                         controller: _currentCtrl,
                         isPassword: true,
                         textInputAction: TextInputAction.next,
@@ -98,17 +101,17 @@ class _SpChangePasswordScreenState extends ConsumerState<SpChangePasswordScreen>
                       _label('New password'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter new password',
+                        hintText: loc.translate('enterNewPasswordHint'),
                         controller: _newCtrl,
                         isPassword: true,
                         textInputAction: TextInputAction.next,
                         validator: FormValidator.validatePassword,
                       ),
                       SizedBox(height: 16.h),
-                      _label('Confirm new password'),
+                      _label(loc.translate('confirmNewPassword')),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Confirm new password',
+                        hintText: loc.translate('confirmNewPasswordHint'),
                         controller: _confirmCtrl,
                         isPassword: true,
                         textInputAction: TextInputAction.done,
@@ -141,7 +144,7 @@ class _SpChangePasswordScreenState extends ConsumerState<SpChangePasswordScreen>
               child: CustomElevatedButton(
                 onPressed: state.isLoading ? () {} : _updatePassword,
                 isLoading: state.isLoading,
-                title: 'Update',
+                title: loc.translate('update'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -66,6 +67,7 @@ class _SpPasswordResetSuccessScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: AnimatedBuilder(
@@ -83,7 +85,7 @@ class _SpPasswordResetSuccessScreenState
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
-                        child: _buildLogoSection(theme),
+                        child: _buildLogoSection(theme, loc),
                       ),
                     ),
                     SizedBox(height: 48.h),
@@ -101,8 +103,8 @@ class _SpPasswordResetSuccessScreenState
                       position: _slideAnimation,
                       child: Column(
                         children: [
-                          Text(
-                            "Congratulations!",
+                           Text(
+                             loc.translate('congratulations'),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.headlineLarge?.copyWith(
                               fontWeight: FontWeight.w700,
@@ -111,8 +113,8 @@ class _SpPasswordResetSuccessScreenState
                             ),
                           ),
                           SizedBox(height: 12.h),
-                          Text(
-                            "Password Reset successful! You'll be redirected to the sign in screen now",
+                           Text(
+                             loc.translate('passwordResetSuccess'),
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: AppColors.lightText,
@@ -131,7 +133,7 @@ class _SpPasswordResetSuccessScreenState
                           context
                               .pushReplacement(RouterPath.spLoginScreen);
                         },
-                        title: "Sign In",
+                        title: loc.translate('signIn'),
                         color: theme.colorScheme.primary,
                         textColor: theme.colorScheme.onPrimary,
                       ),
@@ -147,7 +149,7 @@ class _SpPasswordResetSuccessScreenState
     );
   }
 
-  Widget _buildLogoSection(ThemeData theme) {
+  Widget _buildLogoSection(ThemeData theme, AppLocalizations loc) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -161,7 +163,7 @@ class _SpPasswordResetSuccessScreenState
         ),
         SizedBox(width: 10.w),
         Text(
-          'Familyside',
+          loc.translate('brandName'),
           style: theme.textTheme.headlineMedium?.copyWith(
             fontFamily: 'Quando',
             fontSize: 22.sp,

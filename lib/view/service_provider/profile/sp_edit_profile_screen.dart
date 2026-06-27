@@ -14,6 +14,7 @@ import 'package:familyside/utils/image_picker.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 
 class SpEditProfileScreen extends ConsumerStatefulWidget {
   const SpEditProfileScreen({super.key});
@@ -62,6 +63,7 @@ class _SpEditProfileScreenState extends ConsumerState<SpEditProfileScreen> {
   Future<void> _updateProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final loc = AppLocalizations.of(context);
     final success = await ref
         .read(spProfileProvider.notifier)
         .updateProfile(
@@ -74,13 +76,13 @@ class _SpEditProfileScreenState extends ConsumerState<SpEditProfileScreen> {
 
     if (success) {
       AppSnackbar.show(
-        message: 'Profile updated successfully',
+        message: loc.translate('profileUpdatedSuccessfully'),
         type: SnackType.success,
       );
       if (context.mounted) context.pop();
     } else {
       AppSnackbar.show(
-        message: 'Failed to update profile',
+        message: loc.translate('failedToUpdateProfileSp'),
         type: SnackType.error,
       );
     }
@@ -88,6 +90,7 @@ class _SpEditProfileScreenState extends ConsumerState<SpEditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final state = ref.watch(spProfileProvider);
     return Scaffold(
       body: SafeArea(
@@ -101,33 +104,33 @@ class _SpEditProfileScreenState extends ConsumerState<SpEditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const CustomAppBar(title: 'Edit Profile'),
+                      CustomAppBar(title: loc.translate('editProfile')),
                       SizedBox(height: 32.h),
                       Center(child: _buildAvatar()),
                       SizedBox(height: 32.h),
                       _label('Full Name'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your name',
+                        hintText: loc.translate('enterName'),
                         controller: _nameCtrl,
                         validator: FormValidator.validateName,
                         textInputAction: TextInputAction.next,
                       ),
                       SizedBox(height: 16.h),
-                      _label('Email'),
+                      _label(loc.translate('email')),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your email',
+                        hintText: loc.translate('enterEmail'),
                         controller: _emailCtrl,
                         readOnly: true,
                         keyboardType: TextInputType.emailAddress,
                         validator: FormValidator.validateEmail,
                       ),
                       SizedBox(height: 16.h),
-                      _label('Location'),
+                      _label(loc.translate('location')),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter location',
+                        hintText: loc.translate('enterLocation'),
                         controller: _locationCtrl,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
@@ -157,7 +160,7 @@ class _SpEditProfileScreenState extends ConsumerState<SpEditProfileScreen> {
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: state.isLoading ? () {} : _updateProfile,
-                title: 'Update',
+                title: loc.translate('update'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
                 isLoading: state.isLoading,

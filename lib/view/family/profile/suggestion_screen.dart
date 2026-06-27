@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/suggestion_item.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
@@ -35,6 +36,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.border,
       body: SafeArea(
@@ -42,7 +44,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 0),
-              child: const CustomAppBar(title: 'Suggested'),
+              child: CustomAppBar(title: loc.translate('suggested')),
             ),
             Expanded(
               child: _isLoading
@@ -73,6 +75,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
   }
 
   Widget _buildEmptyState() {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +87,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
           ),
           SizedBox(height: 16.h),
           Text(
-            'No suggestions yet',
+            loc.translate('noSuggestionsYet'),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: AppColors.text,
               fontWeight: FontWeight.w500,
@@ -92,7 +95,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
           ),
           SizedBox(height: 8.h),
           Text(
-            'Suggestions will appear here once available',
+            loc.translate('suggestionsAppearHere'),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.lightText,
             ),

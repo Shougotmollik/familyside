@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -100,6 +101,7 @@ class _SpUploadImageScreenState extends ConsumerState<SpUploadImageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -109,10 +111,10 @@ class _SpUploadImageScreenState extends ConsumerState<SpUploadImageScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: 10.h),
-              const CustomAppBar(title: "Profile"),
+              CustomAppBar(title: loc.translate('profile')),
               SizedBox(height: 30.h),
-              Text(
-                'Upload your image',
+                Text(
+                  loc.translate('uploadYourImage'),
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -154,7 +156,7 @@ class _SpUploadImageScreenState extends ConsumerState<SpUploadImageScreen> {
               const Spacer(flex: 2),
               CustomElevatedButton(
                 onPressed: _uploadImage,
-                title: 'Continue',
+                title: loc.translate('continueText'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
                 isLoading: _isUploading,
@@ -164,7 +166,7 @@ class _SpUploadImageScreenState extends ConsumerState<SpUploadImageScreen> {
                 onPressed: () {
                   context.pushReplacement(RouterPath.spMainNavBarScreen);
                 },
-                title: 'Skip',
+                title: loc.translate('skip'),
                 color: Colors.transparent,
                 textColor: AppColors.primaryLight,
               ),

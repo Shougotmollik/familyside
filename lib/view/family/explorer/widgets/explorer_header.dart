@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -25,11 +26,12 @@ class ExplorerHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: Text(
-            'Explore',
+            loc.translate('explore'),
             style: TextStyle(
               fontSize: 24.sp,
               fontWeight: FontWeight.bold,
@@ -99,7 +101,9 @@ class ExplorerHeader extends StatelessWidget {
               containerHeight: 40.w,
               containerWidth: 40.w,
               borderRadius: 8.r,
-              backgroundColor: hasFilters ? AppColors.primaryLight : AppColors.surface,
+              backgroundColor: hasFilters
+                  ? AppColors.primaryLight
+                  : AppColors.surface,
               iconColor: hasFilters ? Colors.white : Colors.black,
               iconWidth: 20.w,
               iconHeight: 20.h,

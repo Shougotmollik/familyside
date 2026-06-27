@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,15 +8,21 @@ class ExplorerTabBar extends StatelessWidget {
     super.key,
     required this.controller,
     this.onTap,
+    this.tabs,
   });
 
   final TabController controller;
   final ValueChanged<int>? onTap;
-
-  static const List<String> tabs = ['Activity', 'Events', 'Gifts'];
+  final List<String>? tabs;
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final tabLabels = tabs ?? [
+      loc.translate('activity'),
+      loc.translate('events'),
+      loc.translate('gifts'),
+    ];
     return TabBar(
       controller: controller,
       onTap: onTap,
@@ -35,7 +42,7 @@ class ExplorerTabBar extends StatelessWidget {
         fontSize: 14.sp,
         fontWeight: FontWeight.w400,
       ),
-      tabs: tabs.map((label) => Tab(text: label)).toList(),
+      tabs: tabLabels.map((label) => Tab(text: label)).toList(),
     );
   }
 }

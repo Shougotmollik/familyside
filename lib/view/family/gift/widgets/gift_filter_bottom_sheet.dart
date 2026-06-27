@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_filter_result_model.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
@@ -70,6 +71,7 @@ class _GiftFilterBottomSheetState extends State<GiftFilterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
@@ -92,8 +94,8 @@ class _GiftFilterBottomSheetState extends State<GiftFilterBottomSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Filter Result',
+                  Text(
+                    loc.translate('applyFilter'),
                   style: TextStyle(
                     fontSize: 22.sp,
                     fontWeight: FontWeight.bold,
@@ -143,14 +145,14 @@ class _GiftFilterBottomSheetState extends State<GiftFilterBottomSheet> {
             SizedBox(height: 32.h),
             CustomElevatedButton(
               onPressed: _applyFilter,
-              title: 'Apply Filter',
+              title: loc.translate('applyFilter'),
               color: AppColors.primaryLight,
               textColor: Colors.white,
             ),
             SizedBox(height: 12.h),
             CustomElevatedButton(
               onPressed: _clearAll,
-              title: 'Clear all',
+              title: loc.translate('clearAll'),
               color: AppColors.primaryLight.withValues(alpha: 0.1),
               textColor: AppColors.primaryLight,
             ),

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,30 +18,30 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   int _currentPage = 0;
   double _pageOffset = 0;
 
-  final List<Onboarding> onboardingList = [
-    Onboarding(
-      title: 'Find Activities for Your Kids',
-      description:
-          'Discover doctors, playgrounds, nurseries and family services near you.',
-      image: 'assets/image/onboarding 1.jpg',
-    ),
-    Onboarding(
-      title: 'Personalized Suggestions',
-      description: 'Get recommendations based on your child’s age.',
-      image: 'assets/image/onboarding 2.jpg',
-    ),
-    Onboarding(
-      title: 'Trusted Parent Community',
-      description: 'Read reviews from parents and share your experience.',
-      image: 'assets/image/onboarding 3.jpg',
-    ),
-    Onboarding(
-      title: 'Expert Care & Support',
-      description:
-          'Connect with certified professionals for your family’s well-being.',
-      image: 'assets/image/onboarding 4.jpg',
-    ),
-  ];
+  List<Onboarding> _buildOnboardingList(AppLocalizations loc) {
+    return [
+      Onboarding(
+        title: loc.translate('onboarding1Title'),
+        description: loc.translate('onboarding1Description'),
+        image: 'assets/image/onboarding 1.jpg',
+      ),
+      Onboarding(
+        title: loc.translate('onboarding2Title'),
+        description: loc.translate('onboarding2Description'),
+        image: 'assets/image/onboarding 2.jpg',
+      ),
+      Onboarding(
+        title: loc.translate('onboarding3Title'),
+        description: loc.translate('onboarding3Description'),
+        image: 'assets/image/onboarding 3.jpg',
+      ),
+      Onboarding(
+        title: loc.translate('onboarding4Title'),
+        description: loc.translate('onboarding4Description'),
+        image: 'assets/image/onboarding 4.jpg',
+      ),
+    ];
+  }
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   void _showRoleSelectionBottomSheet() {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -90,7 +92,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
               ),
               Text(
-                'Choose Your Role',
+                loc.translate('chooseYourRole'),
                 style: theme.textTheme.headlineLarge?.copyWith(
                   color: Colors.white,
                   fontSize: 28.sp,
@@ -98,7 +100,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               ),
               SizedBox(height: 12.h),
               Text(
-                'Discover doctors, playgrounds, nurseries and family services near you.',
+                loc.translate('roleDescription'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: Colors.white.withOpacity(0.7),
@@ -121,7 +123,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                   ),
                   child: Text(
-                    'Family/Parent',
+                    loc.translate('familyParent'),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
@@ -145,7 +147,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                   ),
                   child: Text(
-                    'Service Provider',
+                    loc.translate('serviceProvider'),
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
@@ -164,6 +166,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
+    final onboardingList = _buildOnboardingList(loc);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -264,7 +268,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
                 SizedBox(width: 10.w),
                 Text(
-                  'Familyside',
+                                  loc.translate('brandName'),
                   style: theme.textTheme.headlineMedium?.copyWith(
                     color: Colors.white,
                     fontFamily: 'Quando',
@@ -327,8 +331,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     ),
                     child: Text(
                       _currentPage == onboardingList.length - 1
-                          ? "Get Started"
-                          : "Let's Connect",
+                          ? loc.translate('getStarted')
+                          : loc.translate('letsConnect'),
                       style: TextStyle(
                         fontSize: 17.sp,
                         fontWeight: FontWeight.bold,
@@ -340,7 +344,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 GestureDetector(
                   onTap: _showRoleSelectionBottomSheet,
                   child: Text(
-                    'Skip',
+                    loc.translate('skip'),
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.6),
                       fontSize: 16.sp,

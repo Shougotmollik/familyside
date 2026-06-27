@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,6 +35,7 @@ class _FamilyMainNavBarScreenState extends State<FamilyMainNavBarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -64,11 +66,11 @@ class _FamilyMainNavBarScreenState extends State<FamilyMainNavBarScreen> {
             ),
             child: Row(
               children: [
-                _buildNavItem(0, 'Home', 'assets/icon/Home.svg'),
-                _buildNavItem(1, 'Explore', 'assets/icon/explore.svg'),
-                _buildNavItem(2, 'Search', 'assets/icon/search.svg'),
-                _buildNavItem(3, 'Gift', 'assets/icon/gift.svg'),
-                _buildNavItem(4, 'Profile', 'assets/icon/profile.svg'),
+                _buildNavItem(0, loc.translate('home'), 'assets/icon/Home.svg'),
+                _buildNavItem(1, loc.translate('explore'), 'assets/icon/explore.svg'),
+                _buildNavItem(2, loc.translate('search'), 'assets/icon/search.svg'),
+                _buildNavItem(3, loc.translate('gift'), 'assets/icon/gift.svg'),
+                _buildNavItem(4, loc.translate('profile'), 'assets/icon/profile.svg'),
               ],
             ),
           ),

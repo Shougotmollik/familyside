@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/child_info_provider.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
@@ -131,6 +132,7 @@ class _UpdateChildInformationScreenState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(childInfoProvider);
+    final loc = AppLocalizations.of(context);
 
     if (!_dueDateSynced && state.selectedDueDate != null) {
       _dueDateController.text = _formatDate(state.selectedDueDate!);
@@ -153,7 +155,7 @@ class _UpdateChildInformationScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const CustomAppBar(title: 'Child Information'),
+                    CustomAppBar(title: loc.translate('childInformation')),
                     SizedBox(height: 20.h),
                     TypeToggleWidget(
                       isExpecting: state.isExpecting,
@@ -183,7 +185,7 @@ class _UpdateChildInformationScreenState
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: _isLoading ? () {} : () => _handleSave(state),
-                title: 'Save',
+                title: loc.translate('save'),
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
                 isLoading: _isLoading,
@@ -196,11 +198,12 @@ class _UpdateChildInformationScreenState
   }
 
   Widget _buildExpectingForm() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Expected Due Date',
+          loc.translate('expectedDueDate'),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.text,
             fontWeight: FontWeight.w400,
@@ -211,7 +214,7 @@ class _UpdateChildInformationScreenState
           onTap: _selectDueDate,
           child: AbsorbPointer(
             child: AuthTextFormField(
-              hintText: 'dd/mm/yyyy',
+              hintText: loc.translate('ddmmyyyy'),
               controller: _dueDateController,
             ),
           ),
@@ -235,6 +238,7 @@ class _UpdateChildInformationScreenState
   }
 
   Widget _buildEmptyState() {
+    final loc = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 40.h, horizontal: 20.w),
@@ -261,7 +265,7 @@ class _UpdateChildInformationScreenState
           ),
           SizedBox(height: 16.h),
           Text(
-            'No kids added yet',
+            loc.translate('noKidsAddedYet'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.text,
               fontWeight: FontWeight.w500,
@@ -269,7 +273,7 @@ class _UpdateChildInformationScreenState
           ),
           SizedBox(height: 4.h),
           Text(
-            'Add your children to update your profile',
+            loc.translate('addChildrenToUpdate'),
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
@@ -292,7 +296,7 @@ class _UpdateChildInformationScreenState
                   Icon(Icons.add, color: AppColors.primaryLight, size: 18.sp),
                   SizedBox(width: 8.w),
                   Text(
-                    'Add Child',
+                    loc.translate('addChild'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.primaryLight,
                       fontWeight: FontWeight.w500,
@@ -308,11 +312,12 @@ class _UpdateChildInformationScreenState
   }
 
   Widget _buildKidsList(ChildInfoState state) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Added Kids (${state.kids.length})',
+          '${loc.translate('addedKids')} (${state.kids.length})',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: AppColors.text,
             fontWeight: FontWeight.w500,
@@ -328,6 +333,7 @@ class _UpdateChildInformationScreenState
   }
 
   Widget _buildKidCard(int index, ChildModel kid) {
+    final loc = AppLocalizations.of(context);
     final state = ref.read(childInfoProvider);
     final isEditing = state.editingKidIndex == index;
 
@@ -371,7 +377,7 @@ class _UpdateChildInformationScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  kid.name.isNotEmpty ? kid.name : 'Child ${index + 1}',
+                  kid.name.isNotEmpty ? kid.name : '${loc.translate('childLabel')} ${index + 1}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.text,
                     fontWeight: FontWeight.w500,
@@ -380,7 +386,7 @@ class _UpdateChildInformationScreenState
                 Text(
                   kid.dob != null
                       ? 'DOB: ${_formatDate(kid.dob!)}'
-                      : 'No DOB set',
+                      : loc.translate('noDobSet'),
                   style: Theme.of(
                     context,
                   ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
@@ -495,6 +501,7 @@ class _UpdateChildInformationScreenState
   }
 
   Widget _buildBottomButtons(ChildInfoState state) {
+    final loc = AppLocalizations.of(context);
     if (!state.showForm) {
       return GestureDetector(
         onTap: () {
@@ -513,7 +520,7 @@ class _UpdateChildInformationScreenState
               Icon(Icons.add, color: AppColors.primaryLight, size: 20.sp),
               SizedBox(width: 8.w),
               Text(
-                'Add more kids',
+                    loc.translate('addMoreKids'),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.primaryLight,
                   fontWeight: FontWeight.w500,
@@ -569,7 +576,7 @@ class _UpdateChildInformationScreenState
               ),
               child: Center(
                 child: Text(
-                  'Cancel',
+                  loc.translate('cancel'),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.text,
                     fontWeight: FontWeight.w500,
@@ -651,15 +658,16 @@ class _UpdateChildInformationScreenState
   }
 
   void _showDeleteDialog(int index) {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Child'),
-        content: const Text('Are you sure you want to remove this child?'),
+        title: Text(loc.translate('deleteChild')),
+        content: Text(loc.translate('areYouSureRemoveChild')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(loc.translate('cancel')),
           ),
           TextButton(
             onPressed: () {
@@ -677,6 +685,7 @@ class _UpdateChildInformationScreenState
   }
 
   Future<void> _handleSave(ChildInfoState childState) async {
+    final loc = AppLocalizations.of(context);
     if (childState.isExpecting) {
       if (childState.selectedDueDate == null) {
         ScaffoldMessenger.of(
@@ -716,7 +725,7 @@ class _UpdateChildInformationScreenState
 
     if (success) {
       AppSnackbar.show(
-        message: 'Child information updated successfully',
+        message: loc.translate('childInfoUpdatedSuccess'),
         type: SnackType.success,
       );
       if (context.mounted) context.pop();

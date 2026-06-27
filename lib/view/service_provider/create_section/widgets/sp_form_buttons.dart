@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -18,6 +19,7 @@ class SpFormButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Column(
       children: [
         // Cancel — ghost button
@@ -32,7 +34,7 @@ class SpFormButtons extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                'Cancel',
+                loc.translate('cancel'),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.primaryLight,
                       fontWeight: FontWeight.w500,

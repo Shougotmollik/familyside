@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/gift_item_compact_preview.dart';
@@ -17,6 +18,7 @@ class ShareGiftCardDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Dialog(
       backgroundColor: AppColors.surfaceLight,
       shape: RoundedRectangleBorder(
@@ -29,7 +31,7 @@ class ShareGiftCardDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Share Gift Card',
+              '${loc.translate('share')} ${loc.translate('gift')}',
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
@@ -51,7 +53,7 @@ class ShareGiftCardDialog extends StatelessWidget {
                 onShare?.call();
                 Navigator.pop(context);
               },
-              title: 'Share Gift',
+              title: '${loc.translate('share')} ${loc.translate('gift')}',
               color: AppColors.primaryLight,
               textColor: Colors.white,
             ),

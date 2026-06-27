@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,10 +74,11 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
   }
 
   Future<void> _submitReview() async {
+    final loc = AppLocalizations.of(context);
     if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a category'),
+        SnackBar(
+          content: Text(loc.translate('pleaseSelectCategory')),
           backgroundColor: AppColors.error,
         ),
       );
@@ -103,8 +105,8 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
 
     if (result.ok) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Review submitted successfully!'),
+        SnackBar(
+          content: Text(loc.translate('reviewSubmittedSuccess')),
           backgroundColor: AppColors.secondaryLight,
         ),
       );
@@ -113,7 +115,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            result.error ?? 'Failed to submit review. Please try again.',
+            result.error ?? loc.translate('reviewSubmitFailed'),
           ),
           backgroundColor: AppColors.error,
         ),
@@ -123,6 +125,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -143,7 +146,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                   ),
                   SizedBox(width: 12.w),
                   Text(
-                    'Write review',
+                    loc.translate('writeReview'),
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
@@ -177,7 +180,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                       SizedBox(height: 16.h),
 
                       // Tag wrap chips
-                      _buildSectionHeader('Tag'),
+                      _buildSectionHeader(loc.translate('tag')),
                       SizedBox(height: 12.h),
                       Wrap(
                         spacing: 8.w,
@@ -222,7 +225,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                       SizedBox(height: 24.h),
 
                       // Select recommendation
-                      _buildSectionHeader('Select recommendation'),
+                      _buildSectionHeader(loc.translate('selectRecommendation')),
                       SizedBox(height: 12.h),
                       Wrap(
                         spacing: 8.w,
@@ -263,7 +266,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                       SizedBox(height: 24.h),
 
                       // Write Review field
-                      _buildSectionHeader('Write Review'),
+                      _buildSectionHeader(loc.translate('writeReview')),
                       SizedBox(height: 12.h),
                       TextFormField(
                         controller: _reviewController,
@@ -334,7 +337,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                       SizedBox(height: 24.h),
 
                       // Add Photos
-                      _buildPhotoUploader(),
+                      _buildPhotoUploader(loc),
                       SizedBox(height: 40.h),
 
                       // Actions: Cancel & Submit
@@ -349,7 +352,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              'Cancel',
+                              loc.translate('cancel'),
                               style: TextStyle(
                                 color: AppColors.primaryLight,
                                 fontSize: 15.sp,
@@ -382,7 +385,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                                     ),
                                   )
                                 : Text(
-                                    'Submit',
+                                    loc.translate('submit'),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 15.sp,
@@ -415,14 +418,14 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
     );
   }
 
-  Widget _buildPhotoUploader() {
+  Widget _buildPhotoUploader(AppLocalizations loc) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Add Photos ',
+              loc.translate('addPhotos'),
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
@@ -430,7 +433,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
               ),
             ),
             Text(
-              '(Optional)',
+              loc.translate('optional'),
               style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
@@ -465,7 +468,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
                     ),
                     SizedBox(height: 8.h),
                     Text(
-                      'Click to upload photos',
+                      loc.translate('clickToUploadPhotos'),
                       style: TextStyle(
                         fontSize: 14.sp,
                         color: AppColors.text.withOpacity(0.7),

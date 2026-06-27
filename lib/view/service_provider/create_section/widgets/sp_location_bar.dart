@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -30,6 +31,7 @@ class SpLocationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF3F3F3),
@@ -45,7 +47,7 @@ class SpLocationBar extends StatelessWidget {
                 color: AppColors.text,
               ),
               decoration: InputDecoration(
-                hintText: 'Enter your location',
+                hintText: loc.translate('enterYourLocationHint'),
                 hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 14.sp,
                   color: AppColors.lightText,

@@ -1,5 +1,6 @@
 class RouterPath {
   static const String splashScreen = '/';
+  static const String languageSelectionScreen = '/languageSelectionScreen';
   static const String onBoardingScreen = '/onBoardingScreen';
 
   // Family Auth Routes
@@ -70,4 +71,5 @@ class RouterPath {
   static const String spPaymentScreen = '/spPaymentScreen';
   static const String spItemDetailsScreen = '/spItemDetailsScreen';
   static const String spMainNavBarScreen = '/spMainNavBarScreen';
+  static const String spNotificationScreen = '/spNotificationScreen';
 }

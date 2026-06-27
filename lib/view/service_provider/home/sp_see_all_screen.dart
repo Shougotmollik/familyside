@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/service_provider/sp_home_provider.dart';
 import 'package:familyside/model/provider_feed.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +20,15 @@ class SpSeeAllScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     final state = ref.watch(spHomeProviderProvider);
     
     // Get the latest items from provider if available, otherwise fallback to initial items
     final currentItems = state.maybeWhen(
       data: (data) {
         final feed = data['feed'] as ProviderFeed;
-        if (title == 'Upcoming events') return feed.upcomingEvents;
-        if (title == 'Top service') return feed.topServices;
+        if (title == loc.translate('upcomingEvents')) return feed.upcomingEvents;
+        if (title == loc.translate('topService')) return feed.topServices;
         return items;
       },
       orElse: () => items,

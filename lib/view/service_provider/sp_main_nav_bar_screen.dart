@@ -5,6 +5,7 @@ import 'package:familyside/view/service_provider/manage/sp_manage_screen.dart';
 import 'package:familyside/view/service_provider/profile/sp_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -34,6 +35,7 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: Container(
@@ -58,15 +60,15 @@ class _SpMainNavBarScreenState extends State<SpMainNavBarScreen> {
             ),
             child: Row(
               children: [
-                _buildNavItem(0, 'Home', "assets/icon/Home.svg"),
-                _buildNavItem(1, 'Manage', "assets/icon/hugeicons_work.svg"),
-                _buildNavItem(2, 'Create', "assets/icon/add-outline.svg"),
+                _buildNavItem(0, loc.translate('home'), "assets/icon/Home.svg"),
+                _buildNavItem(1, loc.translate('manage'), "assets/icon/hugeicons_work.svg"),
+                _buildNavItem(2, loc.translate('create'), "assets/icon/add-outline.svg"),
                 _buildNavItem(
                   3,
-                  'Analytics',
+                  loc.translate('analytics'),
                   "assets/icon/hugeicons_activity.svg",
                 ),
-                _buildNavItem(4, 'Profile', "assets/icon/profile.svg"),
+                _buildNavItem(4, loc.translate('profile'), "assets/icon/profile.svg"),
               ],
             ),
           ),

@@ -16,6 +16,7 @@ import 'package:familyside/view/service_provider/create_section/widgets/sp_locat
 import 'package:familyside/view/service_provider/create_section/widgets/sp_photo_upload_box.dart';
 import 'package:familyside/view/service_provider/create_section/widgets/sp_tag_selector.dart';
 import 'package:familyside/view/widgets/auth_text_form_field.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -202,12 +203,13 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
   }
 
   Future<void> _pickOpeningDays() async {
+    final loc = AppLocalizations.of(context);
     List<String> tempSelected = List.from(_selectedOpeningDays);
     await showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          title: const Text('Select Opening Days'),
+          title: Text(loc.translate('selectOpeningDays')),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -234,7 +236,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
                 setState(() => _selectedOpeningDays = List.from(tempSelected));
                 Navigator.of(ctx).pop();
               },
-              child: const Text('Done'),
+              child: Text(loc.translate('done')),
             ),
           ],
         ),
@@ -457,6 +459,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -514,11 +517,11 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
                             : 'Gift Name',
                   ),
                   AuthTextFormField(
-                    hintText: 'Enter ${widget.type} name',
+                    hintText: loc.translate('enterItemName'),
                     controller: _nameController,
                   ),
 
-                  const SpFormLabel('Category'),
+                    SpFormLabel(loc.translate('category')),
                   ref.watch(_categoriesProvider).when(
                     loading: () => const SizedBox(
                       height: 50,
@@ -547,7 +550,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
 
                   if (widget.type == 'activity' &&
                       _selectedCategoryInterest != null) ...[
-                    const SpFormLabel('Sub-category'),
+                    SpFormLabel(loc.translate('subCategoriesLabel')),
                     SizedBox(height: 8.h),
                     ref
                         .watch(
@@ -574,15 +577,15 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
                     SizedBox(height: 16.h),
                   ],
 
-                  const SpFormLabel('Tag'),
+                  SpFormLabel(loc.translate('tags')),
                   SizedBox(height: 8.h),
                   _buildTagSection(),
                   SizedBox(height: 16.h),
 
                   SpFormLabel(
                     widget.type == 'activity'
-                        ? 'Activity Price'
-                        : 'Enter amount',
+                        ? loc.translate('activityPrice')
+                        : loc.translate('enterAmount'),
                     isRequired: true,
                   ),
                   AuthTextFormField(
@@ -592,27 +595,27 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
                   ),
 
                   if (widget.type == 'activity') ...[
-                    const SpFormLabel('Website'),
+                    SpFormLabel(loc.translate('website')),
                     AuthTextFormField(
-                      hintText: 'Enter website link',
+                      hintText: loc.translate('enterWebsiteLink'),
                       controller: _websiteController,
                       keyboardType: TextInputType.url,
                     ),
-                    const SpFormLabel("What's App Number"),
+                    SpFormLabel(loc.translate('whatsappNumber')),
                     AuthTextFormField(
-                      hintText: 'Enter phone number',
+                      hintText: loc.translate('enterPhoneNumber'),
                       controller: _whatsappController,
                       keyboardType: TextInputType.phone,
                     ),
-                    const SpFormLabel('Email'),
+                    SpFormLabel(loc.translate('email')),
                     AuthTextFormField(
-                      hintText: 'Enter your email address',
+                      hintText: loc.translate('enterYourEmailAddress'),
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                     ),
-                    const SpFormLabel('Instagram Link'),
+                    SpFormLabel(loc.translate('instagramLink')),
                     AuthTextFormField(
-                      hintText: 'Enter instagram link',
+                      hintText: loc.translate('enterInstagramLink'),
                       controller: _instagramController,
                     ),
                     Row(
@@ -622,7 +625,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SpFormLabel('Opening Days'),
+                              SpFormLabel(loc.translate('openingDays')),
                               SizedBox(
                                 height: 44.h,
                                 child: _buildOpeningDaysField(),
@@ -635,7 +638,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SpFormLabel('Opening Hours'),
+                              SpFormLabel(loc.translate('openingHours')),
                               SizedBox(
                                 height: 44.h,
                                 child: _buildTimeField(
@@ -701,7 +704,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
 
                   const SpFormLabel('Description'),
                   AuthTextFormField(
-                    hintText: 'Enter Description...',
+                    hintText: loc.translate('enterDescription'),
                     controller: _descriptionController,
                     maxLines: 5,
                     minLines: 4,
@@ -722,6 +725,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
   }
 
   Widget _buildTagSection() {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -739,7 +743,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
               onChanged: (_) => setState(() {}),
               style: TextStyle(fontSize: 14.sp, color: AppColors.text),
               decoration: InputDecoration(
-                hintText: 'Search or add tags...',
+                hintText: loc.translate('searchOrAddTags'),
                 hintStyle: TextStyle(
                   fontSize: 14.sp,
                   color: AppColors.lightText,
@@ -803,11 +807,12 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
   }
 
   Widget _buildDefaultTags() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Popular tags',
+          loc.translate('popularTags'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,
@@ -835,7 +840,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
               ),
               SizedBox(width: 4.w),
               Text(
-                '${_selectedTags.length} selected',
+                '${_selectedTags.length} ${loc.translate('selectedCount')}',
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -850,6 +855,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
   }
 
   Widget _buildSearchResults() {
+    final loc = AppLocalizations.of(context);
     final query = _tagSearchController.text.trim();
     if (_filteredTags.isEmpty) {
       return GestureDetector(
@@ -922,7 +928,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Suggestions',
+          loc.translate('suggestions'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,
@@ -944,6 +950,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
   }
 
   Widget _buildOpeningDaysField() {
+    final loc = AppLocalizations.of(context);
     return GestureDetector(
       onTap: _pickOpeningDays,
       child: Container(
@@ -962,7 +969,7 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
           alignment: Alignment.centerLeft,
           child: _selectedOpeningDays.isEmpty
               ? Text(
-                  'Select days',
+                  loc.translate('selectDays'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.lightText,
                     fontSize: 11.sp,
@@ -1035,12 +1042,13 @@ class _SpEditBottomSheetState extends ConsumerState<SpEditBottomSheet> {
   }
 
   Widget _buildPhotosSection() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
-            text: 'Add Photos ',
+            text: loc.translate('addPhotos'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.text,
               fontWeight: FontWeight.w400,

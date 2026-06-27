@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/env.dart';
@@ -45,6 +46,7 @@ class _ActivityDetailsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final detailsState = ref.watch(activityDetailsProviderProvider);
 
     return Scaffold(
@@ -61,7 +63,7 @@ class _ActivityDetailsScreenState
                 onPressed: () => ref
                     .read(activityDetailsProviderProvider.notifier)
                     .fetchDetails(widget.itemId),
-                child: const Text('Retry'),
+                child: Text(loc.translate('retry')),
               ),
             ],
           ),
@@ -73,13 +75,13 @@ class _ActivityDetailsScreenState
               if (mounted) setState(() => _isSaved = details.isSaved);
             });
           }
-          return _buildDetailsContent(details);
+          return _buildDetailsContent(details, loc);
         },
       ),
     );
   }
 
-  Widget _buildDetailsContent(ActivityDetails details) {
+  Widget _buildDetailsContent(ActivityDetails details, AppLocalizations loc) {
     final hasLocation = details.lat != 0.0 || details.lng != 0.0;
     final position = LatLng(details.lat, details.lng);
 
@@ -96,13 +98,13 @@ class _ActivityDetailsScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (details.description.isNotEmpty) ...[
-                      Text('Description',
+                      Text(loc.translate('description'),
                           style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
                               color: AppColors.text)),
                       SizedBox(height: 8.h),
-                      _buildDescription(details.description),
+                      _buildDescription(details.description, loc),
                       SizedBox(height: 20.h),
                     ],
                     _buildActionIcons(details),
@@ -114,16 +116,17 @@ class _ActivityDetailsScreenState
                     _buildAddressRow(details),
                     SizedBox(height: 24.h),
                     if (details.relatedEvents.isNotEmpty) ...[
-                      _buildSectionHeader('Events',
+                      _buildSectionHeader(loc.translate('events'),
                           onSeeAll: details.relatedEvents.length > 2
                               ? () => context.push(
                                   RouterPath.familyRecommendationScreen,
                                   extra: ListScreenConfig(
-                                      title: 'Events',
+                                      title: loc.translate('events'),
                                       items: details.relatedEvents
                                           .map(_apiItemToRecommended)
                                           .toList()))
-                              : null),
+                              : null,
+                          loc: loc),
                       SizedBox(height: 12.h),
                       ...details.relatedEvents.take(2).map((item) => EventCard(
                           imagePath: item.imageUrl ?? '',
@@ -141,16 +144,17 @@ class _ActivityDetailsScreenState
                       SizedBox(height: 8.h),
                     ],
                     if (details.giftIdeas.isNotEmpty) ...[
-                      _buildSectionHeader('Gift ideas',
+                      _buildSectionHeader(loc.translate('giftIdeas'),
                           onSeeAll: details.giftIdeas.length > 3
                               ? () => context.push(
                                   RouterPath.familyRecommendationScreen,
                                   extra: ListScreenConfig(
-                                      title: 'Gift ideas',
+                                      title: loc.translate('giftIdeas'),
                                       items: details.giftIdeas
                                           .map(_apiItemToRecommended)
                                           .toList()))
-                              : null),
+                              : null,
+                          loc: loc),
                       SizedBox(height: 12.h),
                       SizedBox(
                         height: 160.h,
@@ -165,7 +169,7 @@ class _ActivityDetailsScreenState
                     ],
                     if (details.reviews.isNotEmpty) ...[
                       Row(children: [
-                        Text('Reviews',
+                        Text(loc.translate('reviews'),
                             style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w700,
@@ -223,7 +227,7 @@ class _ActivityDetailsScreenState
                   borderRadius: BorderRadius.circular(30.r),
                 ),
                 child: Center(
-                  child: Text('Leave a review',
+                  child: Text(loc.translate('leaveReview'),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 15.sp,
@@ -380,7 +384,7 @@ class _ActivityDetailsScreenState
     );
   }
 
-  Widget _buildDescription(String description) {
+  Widget _buildDescription(String description, AppLocalizations loc) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -396,7 +400,7 @@ class _ActivityDetailsScreenState
         if (description.length > 150)
           GestureDetector(
             onTap: () => setState(() => _descExpanded = !_descExpanded),
-            child: Text(_descExpanded ? 'Show less' : 'Read more',
+            child: Text(_descExpanded ? loc.translate('showLess') : loc.translate('readMore'),
                 style: TextStyle(
                     fontSize: 13.sp,
                     color: AppColors.primaryLight,
@@ -491,7 +495,7 @@ class _ActivityDetailsScreenState
     ]);
   }
 
-  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
+  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll, AppLocalizations? loc}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -503,7 +507,7 @@ class _ActivityDetailsScreenState
         if (onSeeAll != null)
           GestureDetector(
             onTap: onSeeAll,
-            child: Text('See All',
+            child: Text(loc?.translate('seeAll') ?? 'See All',
                 style: TextStyle(
                     fontSize: 13.sp,
                     color: AppColors.primaryLight,

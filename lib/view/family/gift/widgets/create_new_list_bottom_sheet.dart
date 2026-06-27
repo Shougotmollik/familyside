@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/family/gift_provider.dart';
 import 'package:familyside/utils/app_snackbar.dart';
@@ -11,16 +12,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CreateNewListBottomSheet extends ConsumerStatefulWidget {
-  final String title;
-  final String submitLabel;
+  final String? title;
+  final String? submitLabel;
   final String? initialName;
   final String? initialOccasion;
   final String? initialImagePath;
 
   const CreateNewListBottomSheet({
     super.key,
-    this.title = 'Create new list',
-    this.submitLabel = 'Submit',
+    this.title,
+    this.submitLabel,
     this.initialName,
     this.initialOccasion,
     this.initialImagePath,
@@ -40,11 +41,11 @@ class _CreateNewListBottomSheetState
   bool _isLoading = false;
 
   static const _occasions = [
-    'Birthday',
-    'Christmas',
-    'Special',
-    'General',
-    'Anniversary',
+    'birthday',
+    'christmas',
+    'special',
+    'general',
+    'anniversary',
   ];
 
   @override
@@ -79,6 +80,7 @@ class _CreateNewListBottomSheetState
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -108,7 +110,7 @@ class _CreateNewListBottomSheetState
       } else {
         setState(() => _isLoading = false);
         AppSnackbar.show(
-          message: 'Failed to create list. Please try again.',
+          message: loc.translate('failedToCreateList'),
           type: SnackType.error,
         );
       }
@@ -124,6 +126,7 @@ class _CreateNewListBottomSheetState
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
@@ -150,7 +153,7 @@ class _CreateNewListBottomSheetState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.title,
+                    widget.title ?? loc.translate('createNewList'),
                     style: TextStyle(
                       fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
@@ -181,13 +184,13 @@ class _CreateNewListBottomSheetState
                 enabled: !_isLoading,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a list name';
+                    return loc.translate('pleaseEnterListName');
                   }
                   return null;
                 },
                 style: TextStyle(fontSize: 14.sp, color: AppColors.text),
                 decoration: InputDecoration(
-                  hintText: 'Name of the list',
+                  hintText: loc.translate('nameOfTheList'),
                   hintStyle: TextStyle(
                     fontSize: 14.sp,
                     color: AppColors.lightText,
@@ -227,7 +230,7 @@ class _CreateNewListBottomSheetState
 
               // Occasion selector
               Text(
-                'For the occassion',
+                loc.translate('forTheOccasion'),
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -261,7 +264,7 @@ class _CreateNewListBottomSheetState
                             borderRadius: BorderRadius.circular(20.r),
                           ),
                           child: Text(
-                            occasion,
+                            loc.translate(occasion),
                             style: TextStyle(
                               color: isSelected
                                   ? Colors.white
@@ -281,7 +284,7 @@ class _CreateNewListBottomSheetState
               SizedBox(height: 32.h),
               CustomElevatedButton(
                 onPressed: _submit,
-                title: _isLoading ? 'Creating...' : widget.submitLabel,
+                title: _isLoading ? loc.translate('sending') : (widget.submitLabel ?? loc.translate('submit')),
                 isLoading: _isLoading,
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
@@ -294,6 +297,7 @@ class _CreateNewListBottomSheetState
   }
 
   Widget _buildImageUploader() {
+    final loc = AppLocalizations.of(context);
     return GestureDetector(
       onTap: _isLoading ? null : _pickImage,
       child: Container(
@@ -346,7 +350,7 @@ class _CreateNewListBottomSheetState
                               ),
                               SizedBox(width: 4.w),
                               Text(
-                                'Tap to change',
+                                loc.translate('tapToChange'),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12.sp,
@@ -368,7 +372,7 @@ class _CreateNewListBottomSheetState
                       ),
                       SizedBox(height: 8.h),
                       Text(
-                        'Upload list cover image',
+                        loc.translate('uploadListCoverImage'),
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
@@ -377,7 +381,7 @@ class _CreateNewListBottomSheetState
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        'PNG, JPG',
+                        loc.translate('pngJpg'),
                         style: TextStyle(
                           fontSize: 12.sp,
                           color: AppColors.lightText,

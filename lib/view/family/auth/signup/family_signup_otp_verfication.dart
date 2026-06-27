@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +56,7 @@ class _FamilySignupOtpVerificationScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     final defaultPinTheme = PinTheme(
       width: 56.w,
       height: 56.h,
@@ -105,7 +107,7 @@ class _FamilySignupOtpVerificationScreenState
               _buildLogoSection(theme),
               SizedBox(height: 32.h),
               Text(
-                "OTP Verification",
+                loc.translate('otpVerification'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.w700,
@@ -115,7 +117,7 @@ class _FamilySignupOtpVerificationScreenState
               ),
               SizedBox(height: 8.h),
               Text(
-                "Enter the 6-digit code sent to your email",
+                loc.translate('enterOtpCode'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.lightText,
@@ -142,7 +144,7 @@ class _FamilySignupOtpVerificationScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Didn't receive the code? ",
+                    loc.translate('didntReceiveCode'),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: AppColors.lightText,
                       fontSize: 14.sp,
@@ -151,7 +153,7 @@ class _FamilySignupOtpVerificationScreenState
                   GestureDetector(
                     onTap: _onResend,
                     child: Text(
-                      _isResending ? "Sending..." : "Resend",
+                      _isResending ? loc.translate('sending') : loc.translate('resend'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: _isResending
                             ? AppColors.lightText
@@ -166,7 +168,7 @@ class _FamilySignupOtpVerificationScreenState
               SizedBox(height: 48.h),
               CustomElevatedButton(
                 onPressed: _onVerify,
-                title: "Verify",
+                title: loc.translate('verify'),
                 color: theme.colorScheme.primary,
                 textColor: theme.colorScheme.onPrimary,
                 isLoading: ref.watch(authProvider).isLoading,
@@ -180,6 +182,7 @@ class _FamilySignupOtpVerificationScreenState
   }
 
   Widget _buildLogoSection(ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -193,7 +196,7 @@ class _FamilySignupOtpVerificationScreenState
         ),
         SizedBox(width: 10.w),
         Text(
-          'Familyside',
+          loc.translate('brandName'),
           style: theme.textTheme.headlineMedium?.copyWith(
             fontFamily: 'Quando',
             fontSize: 22.sp,

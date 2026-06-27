@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -49,6 +50,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
@@ -73,7 +75,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 _buildLogoSection(theme),
                 SizedBox(height: 32.h),
                 Text(
-                  "Reset Password",
+                  loc.translate('resetPassword'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -83,7 +85,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "Enter your new password",
+                  loc.translate('enterNewPassword'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.lightText,
@@ -92,7 +94,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 ),
                 SizedBox(height: 48.h),
                 Text(
-                  "New Password",
+                  loc.translate('newPassword'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -101,7 +103,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter new password",
+                  hintText: loc.translate('enterNewPasswordHint'),
                   controller: _passwordController,
                   isPassword: true,
                   textInputAction: TextInputAction.next,
@@ -114,7 +116,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 ),
                 SizedBox(height: 16.h),
                 Text(
-                  "Confirm Password",
+                  loc.translate('confirmPassword'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -123,7 +125,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Confirm new password",
+                  hintText: loc.translate('confirmNewPassword'),
                   controller: _confirmPasswordController,
                   isPassword: true,
                   textInputAction: TextInputAction.done,
@@ -141,7 +143,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
                 SizedBox(height: 48.h),
                 CustomElevatedButton(
                   onPressed: _onReset,
-                  title: "Reset Password",
+                  title: loc.translate('resetPassword'),
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
                   isLoading: ref.watch(authProvider).isLoading,
@@ -156,6 +158,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
   }
 
   Widget _buildLogoSection(ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -169,7 +172,7 @@ class _FamilyResetPasswordScreenState extends ConsumerState<FamilyResetPasswordS
         ),
         SizedBox(width: 10.w),
         Text(
-          'Familyside',
+          loc.translate('brandName'),
           style: theme.textTheme.headlineMedium?.copyWith(
             fontFamily: 'Quando',
             fontSize: 22.sp,

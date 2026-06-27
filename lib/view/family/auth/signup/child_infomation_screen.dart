@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/model/child_info.dart' as model;
 import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(childInfoProvider);
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -73,7 +75,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           child: Column(
             children: [
-              CustomAppBar(title: 'Tell us about your Child'),
+              CustomAppBar(title: loc.translate('tellUsAboutChild')),
               SizedBox(height: 20.h),
               TypeToggleWidget(
                 isExpecting: state.isExpecting,
@@ -87,18 +89,17 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _buildExpectingForm(),
-                      SizedBox(height: 24.h),
-                      _buildKidsForm(state),
+                      if (state.isExpecting) _buildExpectingForm(),
+                      if (!state.isExpecting) _buildKidsForm(state),
                     ],
                   ),
                 ),
               ),
-              _buildBottomButtons(state),
+              if (!state.isExpecting) _buildBottomButtons(state),
               SizedBox(height: 16.h),
               CustomElevatedButton(
                 onPressed: () => _handleContinue(state),
-                title: 'Continue',
+                title: loc.translate('continueText'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),
@@ -111,6 +112,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Widget _buildExpectingForm() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -126,7 +128,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
           onTap: _selectDueDate,
           child: AbsorbPointer(
             child: AuthTextFormField(
-              hintText: 'dd/mm/yyyy',
+                  hintText: loc.translate('ddmmyyyy'),
               controller: _dueDateController,
             ),
           ),
@@ -150,6 +152,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Widget _buildEmptyState() {
+    final loc = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 40.h, horizontal: 20.w),
@@ -176,7 +179,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
           ),
           SizedBox(height: 16.h),
           Text(
-            'No kids added yet',
+            loc.translate('noKidsAdded'),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: AppColors.text,
               fontWeight: FontWeight.w500,
@@ -184,7 +187,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
           ),
           SizedBox(height: 4.h),
           Text(
-            'Add your children to continue',
+            loc.translate('addChildrenToContinue'),
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: AppColors.lightText),
@@ -207,7 +210,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                   Icon(Icons.add, color: AppColors.primaryLight, size: 18.sp),
                   SizedBox(width: 8.w),
                   Text(
-                    'Add Child',
+                    loc.translate('addChild'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.primaryLight,
                       fontWeight: FontWeight.w500,
@@ -243,6 +246,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Widget _buildKidCard(int index, ChildModel kid) {
+    final loc = AppLocalizations.of(context);
     final state = ref.read(childInfoProvider);
     final isEditing = state.editingKidIndex == index;
 
@@ -314,7 +318,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
             onPressed: () {
               if (state.showForm) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please save or cancel first')),
+                  SnackBar(content: Text(loc.translate('pleaseSaveOrCancel'))),
                 );
                 return;
               }
@@ -322,7 +326,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
               ref.read(childInfoProvider.notifier).openEditForm(index);
             },
             child: Text(
-              'Edit',
+              loc.translate('edit'),
               style: TextStyle(color: AppColors.primaryLight, fontSize: 12.sp),
             ),
           ),
@@ -336,6 +340,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Widget _buildKidForm(ChildInfoState state) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -348,7 +353,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
         ),
         SizedBox(height: 8.h),
         AuthTextFormField(
-          hintText: 'Enter child\'s name',
+          hintText: loc.translate('enterChildName'),
           controller: _childNameController,
         ),
         SizedBox(height: 8.h),
@@ -371,7 +376,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                     onTap: _selectKidDOB,
                     child: AbsorbPointer(
                       child: AuthTextFormField(
-                        hintText: 'dd/mm/yyyy',
+              hintText: loc.translate('ddmmyyyy'),
                         controller: _dobController,
                       ),
                     ),
@@ -393,7 +398,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                   ),
                   SizedBox(height: 8.h),
                   CustomDropdown(
-                    hintText: 'boy',
+                    hintText: loc.translate('boy'),
                     value: _selectedGender,
                     items: const ['boy', 'girl'],
                     onChanged: (value) {
@@ -410,6 +415,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Widget _buildBottomButtons(ChildInfoState state) {
+    final loc = AppLocalizations.of(context);
     if (!state.showForm) {
       return Row(
         children: [
@@ -432,7 +438,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                     Icon(Icons.add, color: AppColors.primaryLight, size: 20.sp),
                     SizedBox(width: 8.w),
                     Text(
-                      'Add more kids',
+                      loc.translate('addMoreKids'),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.primaryLight,
                         fontWeight: FontWeight.w500,
@@ -459,8 +465,8 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                   ),
                 ),
                 child: Center(
-                  child: Text(
-                    'Skip',
+                  child:                     Text(
+                    loc.translate('skip'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.text,
                       fontWeight: FontWeight.w500,
@@ -488,7 +494,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
               ),
               child: Center(
                 child: Text(
-                  'Save',
+                  loc.translate('save'),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -518,7 +524,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
               ),
               child: Center(
                 child: Text(
-                  'Cancel',
+                  loc.translate('cancel'),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.text,
                     fontWeight: FontWeight.w500,
@@ -603,15 +609,16 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   void _showDeleteDialog(int index) {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Child'),
-        content: const Text('Are you sure you want to remove this child?'),
+        title: Text(loc.translate('deleteChild')),
+        content: Text(loc.translate('areYouSureRemoveChild')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(loc.translate('cancel')),
           ),
           TextButton(
             onPressed: () {
@@ -621,7 +628,7 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
                 _clearForm();
               }
             },
-            child: Text('Delete', style: TextStyle(color: AppColors.error)),
+            child: Text(loc.translate('delete'), style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -629,18 +636,20 @@ class _ChildInfomationScreenState extends ConsumerState<ChildInfomationScreen> {
   }
 
   Future<void> _handleContinue(ChildInfoState state) async {
+    final loc = AppLocalizations.of(context);
     if (state.showForm) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please save or cancel the current form'),
+        SnackBar(
+          content: Text(loc.translate('pleaseSaveOrCancelCurrentForm')),
         ),
       );
       return;
     }
 
     final children = state.kids
+        .where((k) => k.name.trim().isNotEmpty)
         .map((k) => model.Child(
-              name: k.name,
+              name: k.name.trim(),
               dob: k.dob?.toIso8601String() ?? '',
               gender: k.gender ?? '',
             ))

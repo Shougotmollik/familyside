@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/interest.dart';
 import 'package:familyside/provider/service_provider/sp_create_provider.dart';
@@ -66,6 +67,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Future<void> _autoFillFromFlyer() async {
+    final loc = AppLocalizations.of(context);
     showImagePickerOptions(context, (source) async {
       File? file;
       if (source == ImageSource.camera) {
@@ -93,7 +95,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
       if (result == null) {
         AppSnackbar.show(
-          message: 'Failed to parse flyer. Please try again.',
+          message: loc.translate('flyerParseFailed'),
           type: SnackType.error,
         );
         return;
@@ -104,6 +106,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   void _applyFlyerData(Map<String, dynamic> data, File flyerImage) {
+    final loc = AppLocalizations.of(context);
     if (data['name'] != null) {
       _nameController.text = data['name'].toString();
     }
@@ -142,19 +145,20 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     });
 
     AppSnackbar.show(
-      message: 'Flyer parsed successfully! Review and submit.',
+      message: loc.translate('flyerParsedSuccess'),
       type: SnackType.success,
     );
   }
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context);
     if (_nameController.text.isEmpty ||
         _dateController.text.isEmpty ||
         _amountController.text.isEmpty ||
         _selectedPhotos.isEmpty ||
         _selectedCategoryInterest == null) {
       AppSnackbar.show(
-        message: 'Please fill all required fields',
+        message: loc.translate('pleaseFillAllRequired'),
         type: SnackType.warning,
       );
       return;
@@ -167,7 +171,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           date: _dateController.text,
           location: _locationController.text,
           categoryId: _selectedCategoryInterest!.id,
-          price: int.parse(_amountController.text),
+          price: double.tryParse(_amountController.text)?.toInt() ?? 0,
           time: _timeController.text,
           image: _selectedPhotos.first,
           tags: _selectedTags,
@@ -177,12 +181,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     if (success && mounted) {
       Navigator.of(context).pop();
       AppSnackbar.show(
-        message: 'Event created successfully',
+        message: loc.translate('eventCreatedSuccess'),
         type: SnackType.success,
       );
     } else if (mounted) {
       AppSnackbar.show(
-        message: 'Failed to create event',
+        message: loc.translate('failedToCreateEvent'),
         type: SnackType.error,
       );
     }
@@ -262,6 +266,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final state = ref.watch(spCreateProvider);
 
     return Scaffold(
@@ -278,45 +283,33 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     children: [
                       SizedBox(height: 8.h),
                       CustomAppBar(
-                        title: 'Add event',
+                        title: loc.translate('addEvent'),
                         trailing: GestureDetector(
                           onTap: _isFlyerLoading ? null : _autoFillFromFlyer,
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 8.h,
+                              horizontal: 8.w,
+                              vertical: 6.h,
                             ),
                             decoration: BoxDecoration(
-                              // gradient: LinearGradient(
-                              //   colors: [
-                              //     AppColors.primaryLight.withValues(alpha: 0.08),
-                              //     AppColors.primaryLight.withValues(alpha: 0.15),
-                              //   ],
-                              // ),
                               color: AppColors.primaryLight,
-                              borderRadius: BorderRadius.circular(8.r),
-                              border: Border.all(
-                                color: AppColors.primaryLight.withValues(
-                                  alpha: 0.3,
-                                ),
-                                width: 1.w,
-                              ),
+                              borderRadius: BorderRadius.circular(6.r),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   '\u2728',
-                                  style: TextStyle(fontSize: 14.sp),
+                                  style: TextStyle(fontSize: 12.sp),
                                 ),
                                 SizedBox(width: 4.w),
                                 Text(
-                                  'Auto-fill from Flyer',
+                                  loc.translate('autoFillFromFlyer'),
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
                                         color: AppColors.onPrimaryLight,
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 11.sp,
+                                        fontSize: 10.sp,
                                       ),
                                 ),
                               ],
@@ -326,7 +319,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ),
                       SizedBox(height: 20.h),
                       Text(
-                        'Add New Event',
+                        loc.translate('addNewEvent'),
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(
                               fontWeight: FontWeight.w700,
@@ -335,7 +328,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        'Fill all the necessary details for adding a new event',
+                        loc.translate('addEventSubtitle'),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.lightText,
                         ),
@@ -356,9 +349,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         ),
                         SizedBox(height: 16.h),
 
-                        const SpFormLabel('Event Name'),
+                        SpFormLabel(loc.translate('eventName')),
                         AuthTextFormField(
-                          hintText: 'Enter your event name',
+                          hintText: loc.translate('enterYourEventName'),
                           controller: _nameController,
                         ),
 
@@ -406,7 +399,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                     color: AppColors.text,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: 'Search or add tags...',
+                                    hintText: loc.translate('searchOrAddTags'),
                                     hintStyle: TextStyle(
                                       fontSize: 14.sp,
                                       color: AppColors.lightText,
@@ -464,9 +457,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         ),
                         SizedBox(height: 16.h),
 
-                        SpFormLabel('Enter amount', isRequired: true),
+                        SpFormLabel(loc.translate('enterAmount'), isRequired: true),
                         AuthTextFormField(
-                          hintText: '\$00',
+                          hintText: loc.translate('enterAmountHint'),
                           controller: _amountController,
                           keyboardType: TextInputType.number,
                         ),
@@ -477,12 +470,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SpFormLabel('Date'),
+                                  SpFormLabel(loc.translate('date')),
                                   GestureDetector(
                                     onTap: _pickDate,
                                     child: AbsorbPointer(
                                       child: AuthTextFormField(
-                                        hintText: 'yyyy-mm-dd',
+                                        hintText: loc.translate('enterDateHint'),
                                         controller: _dateController,
                                       ),
                                     ),
@@ -495,12 +488,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SpFormLabel('Time'),
+                                  SpFormLabel(loc.translate('time')),
                                   GestureDetector(
                                     onTap: _pickTime,
                                     child: AbsorbPointer(
                                       child: AuthTextFormField(
-                                        hintText: 'hh:mm',
+                                        hintText: loc.translate('enterTimeHint'),
                                         controller: _timeController,
                                       ),
                                     ),
@@ -513,7 +506,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
                         RichText(
                           text: TextSpan(
-                            text: 'Add Photos ',
+                            text: loc.translate('addPhotos'),
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
                                   color: AppColors.text,
@@ -521,7 +514,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                                 ),
                             children: [
                               TextSpan(
-                                text: '(Optional)',
+                                text: loc.translate('optional'),
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(color: AppColors.lightText),
                               ),
@@ -537,9 +530,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                         ),
                         SizedBox(height: 16.h),
 
-                        const SpFormLabel('Description'),
+                        SpFormLabel(loc.translate('description')),
                         AuthTextFormField(
-                          hintText: 'Enter Description...',
+                          hintText: loc.translate('enterDescription'),
                           controller: _descriptionController,
                           maxLines: 5,
                           minLines: 4,
@@ -550,7 +543,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                           onCancel: () => Navigator.of(context).maybePop(),
                           onSubmit: _submit,
                           isLoading: state.isLoading,
-                          submitLabel: 'Submit event',
+                          submitLabel: loc.translate('submitEvent'),
                         ),
                         SizedBox(height: 24.h),
                       ],
@@ -587,7 +580,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ),
                       SizedBox(height: 16.h),
                       Text(
-                        'AI is reading your flyer...',
+                        loc.translate('aiReadingFlyer'),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 14.sp,
@@ -595,7 +588,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                       ),
                       SizedBox(height: 4.h),
                       Text(
-                        'This may take a few seconds',
+                        loc.translate('aiMayTakeSeconds'),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.lightText,
                           fontSize: 12.sp,
@@ -612,11 +605,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Widget _buildDefaultTags() {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Popular tags',
+          loc.translate('popularTags'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,
@@ -638,6 +632,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   }
 
   Widget _buildSearchResults() {
+    final loc = AppLocalizations.of(context);
     final query = _tagSearchController.text.trim();
     if (_filteredTags.isEmpty) {
       return GestureDetector(
@@ -710,7 +705,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Suggestions',
+          loc.translate('suggestions'),
           style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w600,

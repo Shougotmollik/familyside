@@ -8,6 +8,7 @@ import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/provider/service_provider/sp_home_provider.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
 import 'package:familyside/view/service_provider/home/widgets/sp_event_card.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -32,6 +33,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final state = ref.watch(spHomeProviderProvider);
 
     return Scaffold(
@@ -59,12 +61,12 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                             color: Colors.red, size: 48.sp),
                         SizedBox(height: 16.h),
                         Text(
-                          'Failed to load data',
+                          loc.translate('failedToLoadData'),
                           style: TextStyle(fontSize: 16.sp),
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'Pull down to refresh',
+                          loc.translate('pullDownToRefresh'),
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: AppColors.grey,
@@ -80,9 +82,9 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
               final feed = data['feed'] as ProviderFeed;
               final header = data['header'] as SpHomeHeader? ??
                   SpHomeHeader(
-                    name: 'User',
+                    name: loc.translate('user'),
                     profileImageUrl: null,
-                    location: 'Location not set',
+                    location: loc.translate('locationNotSet'),
                     unreadNotifications: 0,
                   );
               return SingleChildScrollView(
@@ -94,13 +96,13 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                     _buildHeader(header),
                     SizedBox(height: 24.h),
                     _buildSectionHeader(
-                      'Upcoming events',
+                      loc.translate('upcomingEvents'),
                       onSeeAll: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => SpSeeAllScreen(
-                              title: 'Upcoming events',
+                              title: loc.translate('upcomingEvents'),
                               items: feed.upcomingEvents,
                             ),
                           ),
@@ -114,7 +116,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                         padding: EdgeInsets.symmetric(vertical: 20.h),
                         alignment: Alignment.center,
                         child: Text(
-                          'No upcoming events found',
+                          loc.translate('noUpcomingEvents'),
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 14.sp,
@@ -140,13 +142,13 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                           ),
                     SizedBox(height: 8.h),
                     _buildSectionHeader(
-                      'Top service',
+                      loc.translate('topService'),
                       onSeeAll: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => SpSeeAllScreen(
-                              title: 'Top service',
+                              title: loc.translate('topService'),
                               items: feed.topServices,
                             ),
                           ),
@@ -160,7 +162,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                         padding: EdgeInsets.symmetric(vertical: 20.h),
                         alignment: Alignment.center,
                         child: Text(
-                          'No top services found',
+                          loc.translate('noTopServices'),
                           style: TextStyle(
                             color: AppColors.grey,
                             fontSize: 14.sp,
@@ -196,6 +198,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
   }
 
   Widget _buildHeader(SpHomeHeader header) {
+    final loc = AppLocalizations.of(context);
     return Row(
       children: [
         // Avatar
@@ -220,7 +223,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Welcome back ${header.name.split(' ').first}',
+                '${loc.translate('welcomeBack')} ${header.name.split(' ').first}',
                 style: TextStyle(
                   fontSize: 17.sp,
                   fontWeight: FontWeight.bold,
@@ -258,7 +261,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
           children: [
             CustomIconButton(
               assetPath: 'assets/logo/notification.svg',
-              onTap: () => context.push(RouterPath.familyNotificationScreen),
+              onTap: () => context.push(RouterPath.spNotificationScreen),
             ),
             if (header.unreadNotifications > 0)
               Positioned(
@@ -287,6 +290,7 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
   }
 
   Widget _buildSectionHeader(String title, {required VoidCallback onSeeAll}) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -300,8 +304,8 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
         ),
         GestureDetector(
           onTap: onSeeAll,
-          child: Text(
-            'See All',
+            child: Text(
+              loc.translate('seeAll'),
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,

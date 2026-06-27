@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,6 +42,7 @@ class SpManageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -352,7 +354,7 @@ class SpManageCard extends StatelessWidget {
                               Icon(Icons.add, color: Colors.white, size: 14.sp),
                               SizedBox(width: 4.w),
                               Text(
-                                'Edit',
+                                loc.translate('edit'),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 13.sp,

@@ -1,6 +1,9 @@
 import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
+import 'package:familyside/core/localization/language_provider.dart';
 import 'package:familyside/model/provider_profile_data.dart';
 import 'package:familyside/provider/service_provider/sp_profile_provider.dart';
+import 'package:familyside/view/widgets/language_picker_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,32 +19,32 @@ class SpProfileScreen extends ConsumerWidget {
 
   static const List<_SettingItem> _settings = [
     _SettingItem(
-      title: 'Change Password',
+      title: 'changePassword',
       iconPath: 'assets/icon/password.svg',
       routePath: RouterPath.spChangePasswordScreen,
     ),
     _SettingItem(
-      title: 'Edit Profile',
+      title: 'editProfile',
       iconPath: 'assets/icon/edit_profile.svg',
       routePath: RouterPath.spEditProfileScreen,
     ),
     _SettingItem(
-      title: 'Subscription',
+      title: 'subscription',
       iconPath: 'assets/icon/subscriptions.svg',
       routePath: RouterPath.spSubscriptionScreen,
     ),
     _SettingItem(
-      title: 'Privacy policy',
+      title: 'privacyPolicy',
       iconPath: 'assets/icon/privacy.svg',
       routePath: RouterPath.spPrivacyPolicyScreen,
     ),
     _SettingItem(
-      title: 'Contact Support',
+      title: 'contactSupport',
       iconPath: 'assets/icon/customer-service.svg',
       routePath: RouterPath.spContactSupportScreen,
     ),
     _SettingItem(
-      title: 'Your Suggestions',
+      title: 'yourSuggestions',
       iconPath: 'assets/icon/feedback.svg',
       routePath: RouterPath.spSuggestionScreen,
     ),
@@ -49,12 +52,15 @@ class SpProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     final profileAsync = ref.watch(spProfileProvider);
 
     return Scaffold(
       backgroundColor: AppColors.profileHeaderBackground,
       body: profileAsync.when(
-        data: (profile) => Column(
+        data: (profile) => RefreshIndicator(
+          onRefresh: () => ref.refresh(spProfileProvider.future),
+          child: Column(
           children: [
             _SpProfileHeader(profile: profile),
             Expanded(
@@ -67,6 +73,7 @@ class SpProfileScreen extends ConsumerWidget {
                   ),
                 ),
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,6 +84,8 @@ class SpProfileScreen extends ConsumerWidget {
                       SizedBox(height: 16.h),
                       _GeneralSettingsSection(settings: _settings),
                       SizedBox(height: 16.h),
+                      _LanguageSection(),
+                      SizedBox(height: 16.h),
                       _LogoutSection(),
                     ],
                   ),
@@ -85,9 +94,10 @@ class SpProfileScreen extends ConsumerWidget {
             ),
           ],
         ),
+        ),
         error: (err, stack) {
-          debugPrint('Error: $err');
-          return const Center(child: Text('Error loading profile'));
+          debugPrint('Sorry!: $err');
+          return Center(child: Text(loc.translate('errorLoadingProfile')));
         },
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
@@ -101,6 +111,7 @@ class _SpProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -114,7 +125,7 @@ class _SpProfileHeader extends StatelessWidget {
               _AvatarWithBadge(theme: theme, imageUrl: profile?.imageUrl),
               SizedBox(height: 12.h),
               Text(
-                profile?.name ?? 'Loading...',
+                profile?.name ?? loc.translate('loading'),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.text,
@@ -169,6 +180,7 @@ class _AvatarWithBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       height: (_size + 14).h,
@@ -217,7 +229,7 @@ class _AvatarWithBadge extends StatelessWidget {
                   ),
                   SizedBox(width: 6.w),
                   Text(
-                    'Local Contributor',
+                    loc.translate('localContributor'),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w600,
@@ -274,6 +286,7 @@ class _SpStatsRow extends StatelessWidget {
 class _ContributeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Container(
       width: double.infinity,
@@ -286,7 +299,7 @@ class _ContributeSection extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Contribute and Grow Your Level',
+            loc.translate('contributeAndGrow'),
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w500,
               color: AppColors.text,
@@ -296,17 +309,17 @@ class _ContributeSection extends StatelessWidget {
           Row(
             children: [
               _ContributeButton(
-                label: 'Add Event',
+                label: loc.translate('addEventButton'),
                 onTap: () => context.push(RouterPath.spCreateEventScreen),
               ),
               SizedBox(width: 8.w),
               _ContributeButton(
-                label: 'Add Activity',
+                label: loc.translate('addActivityButton'),
                 onTap: () => context.push(RouterPath.spCreateActivityScreen),
               ),
               SizedBox(width: 8.w),
               _ContributeButton(
-                label: 'Leave Review',
+                label: loc.translate('leaveReview'),
                 onTap: () => context.push(RouterPath.familyWriteReviewScreen),
               ),
             ],
@@ -358,6 +371,7 @@ class _GeneralSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
@@ -371,7 +385,7 @@ class _GeneralSettingsSection extends StatelessWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
             child: Text(
-              'General settings',
+              loc.translate('generalSettings'),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
@@ -384,7 +398,7 @@ class _GeneralSettingsSection extends StatelessWidget {
             return Column(
               children: [
                 _SettingTile(
-                  title: item.title,
+                  title: loc.translate(item.title),
                   iconPath: item.iconPath,
                   routePath: item.routePath,
                 ),
@@ -455,11 +469,71 @@ class _SettingTile extends StatelessWidget {
   }
 }
 
+class _LanguageSection extends ConsumerWidget {
+  const _LanguageSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
+    final currentLocale = ref.watch(languageProvider);
+    final languageName =
+        currentLocale.languageCode == 'it' ? 'Italiano' : 'English';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => showLanguagePicker(context, ref),
+          borderRadius: BorderRadius.circular(16.r),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            child: Row(
+              children: [
+                Icon(Icons.language, size: 22.sp, color: AppColors.text),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    loc.translate('language'),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.text,
+                    ),
+                  ),
+                ),
+                Text(
+                  languageName,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.lightText,
+                    fontSize: 13.sp,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 22.sp,
+                  color: AppColors.mutedIcon,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LogoutSection extends ConsumerWidget {
   const _LogoutSection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
@@ -479,7 +553,7 @@ class _LogoutSection extends ConsumerWidget {
                 Icon(Icons.logout, size: 22.sp, color: AppColors.error),
                 SizedBox(width: 12.w),
                 Text(
-                  'Log Out',
+                  loc.translate('logOut'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.error,
@@ -494,6 +568,7 @@ class _LogoutSection extends ConsumerWidget {
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -510,7 +585,7 @@ class _LogoutSection extends ConsumerWidget {
               Icon(Icons.logout, size: 48.sp, color: AppColors.error),
               SizedBox(height: 16.h),
               Text(
-                'Log Out',
+                loc.translate('logOut'),
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
@@ -519,7 +594,7 @@ class _LogoutSection extends ConsumerWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Are you sure you want to log out?',
+                loc.translate('areYouSureLogOut'),
                 style: TextStyle(fontSize: 14.sp, color: AppColors.lightText),
               ),
               SizedBox(height: 32.h),
@@ -527,14 +602,14 @@ class _LogoutSection extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: _DialogButton(
-                      label: 'Cancel',
+                      label: loc.translate('cancel'),
                       onTap: () => Navigator.of(ctx).pop(),
                     ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
                     child: _DialogButton(
-                      label: 'Log Out',
+                      label: loc.translate('logOut'),
                       isDestructive: true,
                       onTap: () async {
                         Navigator.of(ctx).pop();

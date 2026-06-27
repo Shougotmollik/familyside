@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/config/credential.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
 import 'package:familyside/services/local_storage.dart';
@@ -64,6 +65,7 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
   Future<void> _onUpdate() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final loc = AppLocalizations.of(context);
     final success = await ref
         .read(familyProfileProvider.notifier)
         .updateProfile(
@@ -76,13 +78,13 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
 
     if (success) {
       AppSnackbar.show(
-        message: 'Profile updated successfully',
+        message: loc.translate('profileUpdatedSuccess'),
         type: SnackType.success,
       );
       if (context.mounted) context.pop();
     } else {
       AppSnackbar.show(
-        message: 'Failed to update profile',
+        message: loc.translate('failedToUpdateProfile'),
         type: SnackType.error,
       );
     }
@@ -90,6 +92,7 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final state = ref.watch(familyProfileProvider);
 
@@ -112,7 +115,7 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
                       _buildFieldLabel(theme, 'Name'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your name',
+                        hintText: loc.translate('enterYourName'),
                         controller: _nameController,
                         keyboardType: TextInputType.name,
                         textInputAction: TextInputAction.next,
@@ -122,7 +125,7 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
                       _buildFieldLabel(theme, 'Email'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your email',
+                        hintText: loc.translate('enterYourEmailHint'),
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
@@ -133,7 +136,7 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
                       _buildFieldLabel(theme, 'Location'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter your location',
+                        hintText: loc.translate('enterYourLocationHint'),
                         controller: _locationController,
                         keyboardType: TextInputType.streetAddress,
                         textInputAction: TextInputAction.done,
@@ -154,7 +157,7 @@ class _FamilyEditProfileScreenState extends ConsumerState<FamilyEditProfileScree
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: state.isLoading ? () {} : _onUpdate,
-                title: 'Update',
+                title: loc.translate('update'),
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
                 isLoading: state.isLoading,

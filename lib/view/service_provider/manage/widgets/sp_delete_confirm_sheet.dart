@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -9,6 +10,7 @@ class SpDeleteConfirmSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -49,7 +51,7 @@ class SpDeleteConfirmSheet extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           Text(
-            'Are you sure you want to delete?',
+            loc.translate('areYouSureDelete'),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.text,
@@ -70,7 +72,7 @@ class SpDeleteConfirmSheet extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'Cancel',
+                        loc.translate('cancel'),
                         style: TextStyle(
                           color: AppColors.primaryLight,
                           fontWeight: FontWeight.w500,
@@ -96,7 +98,7 @@ class SpDeleteConfirmSheet extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'Delete',
+                        loc.translate('delete'),
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,

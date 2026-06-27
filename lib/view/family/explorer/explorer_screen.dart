@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_api_item.dart';
@@ -40,7 +41,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: ExplorerTabBar.tabs.length,
+      length: 3,
       vsync: this,
     );
     _tabController.addListener(_onTabChanged);
@@ -140,7 +141,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
     if (result != null && mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Added to ${result.list.name}')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).translate('addedToList') + ' ${result.list.name}')));
     }
   }
 
@@ -191,6 +192,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final explorerState = ref.watch(explorerProviderProvider);
 
     return Scaffold(
@@ -240,7 +242,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
                         SizedBox(height: 16.h),
                         ElevatedButton(
                           onPressed: () => _fetchForTab(_tabController.index),
-                          child: const Text('Retry'),
+                          child: Text(loc.translate('retry')),
                         ),
                       ],
                     ),
@@ -253,7 +255,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
                           height: 300.h,
                           child: Center(
                             child: Text(
-                              'No ${ExplorerTabBar.tabs[_tabController.index].toLowerCase()} found',
+                              loc.translate('nothingFound'),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 color: AppColors.grey,
@@ -385,7 +387,7 @@ class _ExplorerScreenState extends ConsumerState<ExplorerScreen>
                 border: Border.all(color: AppColors.lightText),
               ),
               child: Text(
-                'Clear all',
+                AppLocalizations.of(context).translate('clearAll'),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,

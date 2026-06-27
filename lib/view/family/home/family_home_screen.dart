@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/view/widgets/custom_icon_button.dart';
@@ -201,6 +202,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }
 
   Widget _buildActiveFilterChips() {
+    final loc = AppLocalizations.of(context);
     final chips = <Widget>[];
 
     if (_currentFilters!.location.isNotEmpty) {
@@ -245,7 +247,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                 border: Border.all(color: AppColors.lightText),
               ),
               child: Text(
-                'Clear all',
+                loc.translate('clearAll'),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -301,6 +303,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final homeState = ref.watch(homeProviderProvider);
 
     return Scaffold(
@@ -336,12 +339,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                         _buildCategoriesSection(feed.categories),
                       SizedBox(height: 24.h),
                       if (_selectedCategory == 'All') ...[
-                        _buildSectionHeader('Recommended for You', () {
+                        _buildSectionHeader(loc.translate('recommendedForYou'), () {
                           if (feed != null && feed.recommended.isNotEmpty) {
                             context.push(
                               RouterPath.familyRecommendationScreen,
                               extra: ListScreenConfig(
-                                title: 'Recommended for You',
+                                title: loc.translate('recommendedForYou'),
                                 items: feed.recommended
                                     .map(_mapToRecommended)
                                     .toList(),
@@ -351,7 +354,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                         }),
                         SizedBox(height: 12.h),
                         if (feed == null || feed.recommended.isEmpty)
-                          _buildEmptyState('No recommended items found')
+                          _buildEmptyState(loc.translate('noRecommendedItems'))
                         else
                           ...feed.recommended.take(2).map((item) {
                             final mapped = _mapToRecommended(item);
@@ -373,12 +376,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                             );
                           }),
                         SizedBox(height: 24.h),
-                        _buildSectionHeader('Events Near You', () {
+                        _buildSectionHeader(loc.translate('eventsNearYou'), () {
                           if (feed != null && feed.eventsNearYou.isNotEmpty) {
                             context.push(
                               RouterPath.familyRecommendationScreen,
                               extra: ListScreenConfig(
-                                title: 'Events Near You',
+                                title: loc.translate('eventsNearYou'),
                                 items: feed.eventsNearYou
                                     .map(_mapToRecommended)
                                     .toList(),
@@ -388,7 +391,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                         }),
                         SizedBox(height: 12.h),
                         if (feed == null || feed.eventsNearYou.isEmpty)
-                          _buildEmptyState('No events found near you')
+                          _buildEmptyState(loc.translate('noEventsNearYou'))
                         else
                           ...feed.eventsNearYou.take(2).map((item) {
                             final mapped = _mapToRecommended(item);
@@ -411,7 +414,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                           }),
                       ] else ...[
                         Text(
-                          "Sub-categories",
+                          loc.translate('subCategories'),
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
@@ -420,7 +423,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                         ),
                         SizedBox(height: 16.h),
                         if (subCategories.isEmpty)
-                          const Center(child: Text("No sub-categories found"))
+                          Center(child: Text(loc.translate('noSubCategories')))
                         else
                           ...subCategories.map(
                             (sub) => SubCategoryCard(
@@ -451,6 +454,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }
 
   Widget _buildSearchSection(FamilyHomeFeed? feed) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -459,7 +463,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
             Expanded(
               child: SearchBarWidget(
                 controller: searchController,
-                hintText: "Search...",
+                hintText: loc.translate('searchHint'),
                 onChanged: _onSearchChanged,
               ),
             ),
@@ -524,6 +528,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }
 
   Widget _buildProfileHeader(BuildContext context, SpHomeHeader? header) {
+    final loc = AppLocalizations.of(context);
     return Row(
       children: [
         ClipOval(
@@ -581,7 +586,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
               SizedBox(height: 4.h),
               _buildLocationRow(
                 context,
-                header?.location ?? "Location not set",
+                header?.location ?? loc.translate('locationNotSet'),
               ),
             ],
           ),
@@ -663,11 +668,12 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }
 
   Widget _buildCategoriesSection(List<FamilyHomeCategory> apiCategories) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Categories",
+          loc.translate('categories'),
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
@@ -743,6 +749,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   }
 
   Widget _buildSectionHeader(String title, VoidCallback onSeeAllTap) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -757,7 +764,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
         GestureDetector(
           onTap: onSeeAllTap,
           child: Text(
-            "See All",
+            loc.translate('seeAll'),
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,

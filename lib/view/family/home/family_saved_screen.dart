@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_api_item.dart';
@@ -68,6 +69,7 @@ class _FamilySavedScreenState extends ConsumerState<FamilySavedScreen>
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final savedState = ref.watch(savedItemsProviderProvider);
 
     return Scaffold(
@@ -83,7 +85,7 @@ class _FamilySavedScreenState extends ConsumerState<FamilySavedScreen>
                 SizedBox(height: 16.h),
                 ElevatedButton(
                   onPressed: _fetchAllTabs,
-                  child: const Text('Retry'),
+                    child: Text(loc.translate('retry')),
                 ),
               ],
             ),
@@ -114,7 +116,7 @@ class _FamilySavedScreenState extends ConsumerState<FamilySavedScreen>
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        'Saved',
+                        loc.translate('saved'),
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
@@ -140,10 +142,10 @@ class _FamilySavedScreenState extends ConsumerState<FamilySavedScreen>
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
                   ),
-                  tabs: const [
-                    Tab(text: 'Activity'),
-                    Tab(text: 'Events'),
-                    Tab(text: 'Gifts'),
+                  tabs: [
+                    Tab(text: loc.translate('activity')),
+                    Tab(text: loc.translate('events')),
+                    Tab(text: loc.translate('gifts')),
                   ],
                 ),
                 Expanded(

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/env.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
@@ -46,14 +47,15 @@ class _LocationInfoScreenState extends ConsumerState<LocationInfoScreen> {
   }
 
   Future<void> _onContinue() async {
-    if (_selectedLocation == null) {
-      AppSnackbar.show(message: 'Please select your location');
+    final locationText = _locationController.text.trim();
+    if (locationText.isEmpty) {
+      AppSnackbar.show(message: 'Please enter your location');
       return;
     }
     await ref.read(onboardingProvider.notifier).setLocation(
-      locationName: _selectedLocation!.name,
-      lat: _selectedLocation!.position.latitude,
-      lng: _selectedLocation!.position.longitude,
+      locationName: locationText,
+      lat: _selectedLocation?.position.latitude ?? 0,
+      lng: _selectedLocation?.position.longitude ?? 0,
     );
     if (mounted) {
       context.push(RouterPath.familyUploadImageScreen);
@@ -62,6 +64,7 @@ class _LocationInfoScreenState extends ConsumerState<LocationInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -75,10 +78,10 @@ class _LocationInfoScreenState extends ConsumerState<LocationInfoScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 10.h),
-                      const CustomAppBar(title: "Location"),
+                      CustomAppBar(title: loc.translate('location')),
                       SizedBox(height: 30.h),
                       Text(
-                        "Enter your location",
+                        loc.translate('enterYourLocation'),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.text,
@@ -99,7 +102,7 @@ class _LocationInfoScreenState extends ConsumerState<LocationInfoScreen> {
                                 controller: _locationController,
                                 enabled: true,
                                 decoration: InputDecoration(
-                                  hintText: 'Enter your location',
+                                  hintText: loc.translate('enterYourLocation'),
                                   hintStyle: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
@@ -154,7 +157,7 @@ class _LocationInfoScreenState extends ConsumerState<LocationInfoScreen> {
               padding: EdgeInsets.all(20.w),
               child: CustomElevatedButton(
                 onPressed: _onContinue,
-                title: 'Continue',
+                title: loc.translate('continueText'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),

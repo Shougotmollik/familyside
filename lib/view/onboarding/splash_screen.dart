@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/services/local_storage.dart';
 import 'package:flutter/material.dart';
@@ -34,12 +35,13 @@ class _SplashScreenState extends State<SplashScreen> {
           context.go(RouterPath.familyMainNavBarScreen);
       }
     } else {
-      context.go(RouterPath.onBoardingScreen);
+      context.go(RouterPath.languageSelectionScreen);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: Center(
@@ -66,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 100.h,
               ),
               Text(
-                'FamilySide',
+                loc.translate('brandName'),
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w400,

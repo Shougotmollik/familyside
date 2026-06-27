@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/role_selection_button.dart';
@@ -18,6 +19,7 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
@@ -39,7 +41,8 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Familyside',
+                  loc.translate('brandName'),
+
                 style: TextStyle(
                   fontFamily: 'Quando',
                   fontSize: 28.sp,
@@ -51,7 +54,7 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
               SizedBox(
                 width: 280.w,
                 child: Text(
-                  'What Would You Like to Create?',
+                  loc.translate('whatWouldYouLikeToCreate'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     color: Colors.black,
@@ -63,7 +66,7 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
               SizedBox(
                 width: 340.w,
                 child: Text(
-                  "Select whether you want to create an activity or an event.",
+                  loc.translate('selectCreateType'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w400,
@@ -73,7 +76,7 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
               ),
               SizedBox(height: 40.h),
               RoleSelectionButton(
-                title: 'Activities',
+                title: loc.translate('activities'),
                 icon: 'assets/icon/hugeicons_work.svg',
                 isSelected: _selectedOption == 'Activities',
                 onTap: () {
@@ -83,7 +86,7 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
               ),
               SizedBox(height: 16.h),
               RoleSelectionButton(
-                title: 'Events',
+                title: loc.translate('events'),
                 icon: 'assets/icon/activity_icon.svg',
                 isSelected: _selectedOption == 'Events',
                 onTap: () {
@@ -93,7 +96,7 @@ class _SpCreateScreenState extends State<SpCreateScreen> {
               ),
               SizedBox(height: 16.h),
               RoleSelectionButton(
-                title: 'Gift',
+                title: loc.translate('gift'),
                 icon: 'assets/icon/gift_icon.svg',
                 isSelected: _selectedOption == 'Gift',
                 onTap: () {

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/model/interest.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -90,6 +91,7 @@ class _InterestScreenState extends ConsumerState<InterestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight, 
       body: SafeArea(
@@ -99,10 +101,10 @@ class _InterestScreenState extends ConsumerState<InterestScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10.h),
-              const CustomAppBar(title: 'Interests'),
+              CustomAppBar(title: loc.translate('interests')),
               SizedBox(height: 30.h),
               Text(
-                'What activities does your\nchild enjoy?',
+                loc.translate('whatActivitiesChildEnjoy'),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.text,
@@ -113,7 +115,7 @@ class _InterestScreenState extends ConsumerState<InterestScreen> {
               SizedBox(height: 24.h),
               SearchBarWidget(
                 controller: _searchController,
-                hintText: 'Enter your interest',
+                hintText: loc.translate('enterYourInterest'),
                 onChanged: _onSearchChanged,
                 onClear: _onSearchClear,
               ),
@@ -124,7 +126,7 @@ class _InterestScreenState extends ConsumerState<InterestScreen> {
                     : _filteredInterests.isEmpty
                         ? Center(
                             child: Text(
-                              _searchQuery.isEmpty ? 'No interests available' : 'No results found',
+                              _searchQuery.isEmpty ? loc.translate('noInterestsAvailable') : 'No results found',
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: AppColors.lightText,
                               ),
@@ -146,7 +148,7 @@ class _InterestScreenState extends ConsumerState<InterestScreen> {
               ),
               CustomElevatedButton(
                 onPressed: _onContinue,
-                title: 'Continue',
+                title: loc.translate('continueText'),
                 color: AppColors.primaryLight,
                 textColor: Colors.white,
               ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/utils/image_viewer.dart';
 import 'package:flutter/material.dart';
@@ -311,6 +312,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
   Widget _searchWidget() {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Align(
       alignment: Alignment.topCenter,
       child: Padding(
@@ -361,7 +363,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                     ),
                     SizedBox(width: 12.w),
                     Text(
-                      'Search ...',
+                      loc.translate('searchDots'),
                       style: TextStyle(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 14.sp,
@@ -489,6 +491,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
   Widget _selectedPositionDetailsWidget() {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Align(
       alignment: Alignment.bottomCenter,
       child: SafeArea(
@@ -593,7 +596,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                           borderRadius: BorderRadius.circular(24.r),
                         ),
                         child: Text(
-                          'Cancel',
+                          loc.translate('cancel'),
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
@@ -649,6 +652,7 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     Widget buildWidget = SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -867,6 +871,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
 
   Widget _searchWidget() {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return SafeArea(
       bottom: false,
       child: Row(
@@ -924,7 +929,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
                         ),
                         isDense: true,
                         border: InputBorder.none,
-                        hintText: 'Search ...',
+                        hintText: loc.translate('searchDots'),
                         contentPadding: EdgeInsets.all(0),
                       ),
                     ),
@@ -1026,6 +1031,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: Container(
@@ -1061,7 +1067,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
                       GestureDetector(
                         onTap: _removeAllHistory,
                         child: Text(
-                          'Clear All',
+                          loc.translate('clearAll'),
                           style: TextStyle(
                             color: theme.colorScheme.primary,
                             fontSize: 14.sp,

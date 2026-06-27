@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 
@@ -41,6 +42,7 @@ class SpPrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -51,7 +53,7 @@ class SpPrivacyPolicyScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8.h),
-                  const CustomAppBar(title: 'Privacy Policy'),
+                  CustomAppBar(title: loc.translate('privacyPolicy')),
                   SizedBox(height: 8.h),
                 ],
               ),

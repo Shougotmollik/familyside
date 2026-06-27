@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
 import 'package:familyside/view/family/gift/widgets/gift_item_compact_preview.dart';
@@ -51,6 +52,7 @@ class _AddToGiftListBottomSheetState extends State<AddToGiftListBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
@@ -73,7 +75,7 @@ class _AddToGiftListBottomSheetState extends State<AddToGiftListBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Add to gift list',
+                loc.translate('addToGiftList'),
                 style: TextStyle(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
@@ -103,7 +105,7 @@ class _AddToGiftListBottomSheetState extends State<AddToGiftListBottomSheet> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 32.h),
                 child: Text(
-                  'No list added yet',
+                  loc.translate('noGiftListsYet'),
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: AppColors.lightText,
@@ -168,7 +170,7 @@ class _AddToGiftListBottomSheetState extends State<AddToGiftListBottomSheet> {
           ],
           CustomElevatedButton(
             onPressed: _handleCreateList,
-            title: 'Create list',
+            title: loc.translate('createList'),
             color: AppColors.primaryLight,
             textColor: Colors.white,
           ),

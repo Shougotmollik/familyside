@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
 import 'package:familyside/utils/app_snackbar.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
@@ -44,6 +45,7 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
   Future<void> _onUpdate() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final loc = AppLocalizations.of(context);
     final success = await ref
         .read(familyProfileProvider.notifier)
         .changePassword(
@@ -55,13 +57,13 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
 
     if (success) {
       AppSnackbar.show(
-        message: 'Password changed successfully',
+        message: loc.translate('passwordChangedSuccess'),
         type: SnackType.success,
       );
       if (context.mounted) context.pop();
     } else {
       AppSnackbar.show(
-        message: 'Failed to change password',
+        message: loc.translate('failedToChangePassword'),
         type: SnackType.error,
       );
     }
@@ -79,6 +81,7 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final newPassword = _newPasswordController.text;
     final state = ref.watch(familyProfileProvider);
@@ -95,12 +98,12 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const CustomAppBar(title: 'Change password'),
+                      CustomAppBar(title: loc.translate('changePasswordLower')),
                       SizedBox(height: 32.h),
                       _buildFieldLabel(theme, 'Current password'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter current password',
+                        hintText: loc.translate('enterCurrentPassword'),
                         controller: _currentPasswordController,
                         isPassword: true,
                         textInputAction: TextInputAction.next,
@@ -115,7 +118,7 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
                       _buildFieldLabel(theme, 'New password'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Enter new password',
+                        hintText: loc.translate('enterNewPasswordHint'),
                         controller: _newPasswordController,
                         isPassword: true,
                         textInputAction: TextInputAction.next,
@@ -125,7 +128,7 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
                       _buildFieldLabel(theme, 'New confirm password'),
                       SizedBox(height: 8.h),
                       AuthTextFormField(
-                        hintText: 'Confirm new password',
+                        hintText: loc.translate('confirmNewPasswordHint'),
                         controller: _confirmPasswordController,
                         isPassword: true,
                         textInputAction: TextInputAction.done,
@@ -173,7 +176,7 @@ class _FamilyChangePasswordScreenState extends ConsumerState<FamilyChangePasswor
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
               child: CustomElevatedButton(
                 onPressed: state.isLoading ? () {} : _onUpdate,
-                title: 'Update',
+                title: loc.translate('update'),
                 color: AppColors.primaryLight,
                 textColor: AppColors.onPrimaryLight,
                 isLoading: state.isLoading,

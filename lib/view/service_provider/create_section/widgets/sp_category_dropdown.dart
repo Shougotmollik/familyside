@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -25,6 +26,7 @@ class SpCategoryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return DropdownButtonFormField<String>(
       value: value,
       onChanged: onChanged,
@@ -37,7 +39,7 @@ class SpCategoryDropdown extends StatelessWidget {
         context,
       ).textTheme.bodyMedium?.copyWith(fontSize: 14.sp, color: AppColors.text),
       decoration: InputDecoration(
-        hintText: 'Select category',
+        hintText: loc.translate('selectCategory'),
         hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontSize: 14.sp,
           color: AppColors.lightText,

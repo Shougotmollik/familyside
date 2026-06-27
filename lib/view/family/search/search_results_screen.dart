@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/family/search_provider.dart';
@@ -20,26 +21,28 @@ class SearchResultsScreen extends ConsumerWidget {
         categoryId = config.categoryId,
         title = config.title;
 
-  String get _displayTitle {
+  String _displayTitle(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     if (title != null) return title!;
     if (mode != null) {
       switch (mode) {
         case 'for_you':
-          return 'For You';
+          return loc.translate('forYou');
         case 'near_you':
-          return 'Near You';
+          return loc.translate('nearYou');
         case 'gifts':
-          return 'Gifts';
+          return loc.translate('gifts');
         case 'events':
-          return 'Events';
+          return loc.translate('events');
       }
     }
-    if (categoryId != null) return 'Category';
-    return 'Search Results';
+    if (categoryId != null) return loc.translate('category');
+    return loc.translate('searchResult');
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     final resultsAsync = ref.watch(
       searchResultsProvider(mode: mode, categoryId: categoryId),
     );
@@ -51,7 +54,7 @@ class SearchResultsScreen extends ConsumerWidget {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-              child: CustomAppBar(title: _displayTitle),
+              child: CustomAppBar(title: _displayTitle(context)),
             ),
             Expanded(
               child: resultsAsync.when(
@@ -87,7 +90,7 @@ class SearchResultsScreen extends ConsumerWidget {
                             ),
                           ),
                           icon: const Icon(Icons.refresh, size: 18),
-                          label: const Text('Retry'),
+                          label: Text(loc.translate('retry')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryLight,
                             foregroundColor: Colors.white,
@@ -110,7 +113,7 @@ class SearchResultsScreen extends ConsumerWidget {
                           ),
                           SizedBox(height: 12.h),
                           Text(
-                            'No results found',
+                            loc.translate('noResultsMatchSearch'),
                             style: TextStyle(
                               color: AppColors.mutedIcon,
                               fontSize: 16.sp,
@@ -142,7 +145,7 @@ class SearchResultsScreen extends ConsumerWidget {
                         distance: item.distanceKm != null
                             ? '${item.distanceKm!.toStringAsFixed(2)} km'
                             : 'N/A',
-                        ageRange: item.ageRange ?? 'All ages',
+                        ageRange: item.ageRange ?? loc.translate('allAges'),
                         tag: item.itemType,
                         onTap: () {
                           final route = item.itemType == 'event'

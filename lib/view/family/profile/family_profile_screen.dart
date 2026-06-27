@@ -1,9 +1,12 @@
 import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
+import 'package:familyside/core/localization/language_provider.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/family_profile_data.dart';
 import 'package:familyside/provider/auth_provider.dart';
 import 'package:familyside/provider/family/family_profile_provider.dart';
+import 'package:familyside/view/widgets/language_picker_bottom_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/view/family/profile/widgets/profile_stat_card.dart';
@@ -16,32 +19,32 @@ class FamilyProfileScreen extends ConsumerWidget {
 
   static const List<_ProfileSettingItem> _settings = [
     _ProfileSettingItem(
-      title: 'Change Password',
+      titleKey: 'changePassword',
       iconPath: "assets/icon/password.svg",
       routePath: RouterPath.familyChangePasswordScreen,
     ),
     _ProfileSettingItem(
-      title: 'Edit Profile',
+      titleKey: 'editProfile',
       iconPath: "assets/icon/edit_profile.svg",
       routePath: RouterPath.familyEditProfileScreen,
     ),
     _ProfileSettingItem(
-      title: 'Child Information',
+      titleKey: 'childInformation',
       iconPath: "assets/icon/child_info.svg",
       routePath: RouterPath.familyUpdateChildInformationScreen,
     ),
     _ProfileSettingItem(
-      title: 'Privacy policy',
+      titleKey: 'privacyPolicy',
       iconPath: "assets/icon/privacy.svg",
       routePath: RouterPath.spPrivacyPolicyScreen,
     ),
     _ProfileSettingItem(
-      title: 'Contact Support',
+      titleKey: 'contactSupport',
       iconPath: "assets/icon/customer-service.svg",
       routePath: RouterPath.familyContactSupportScreen,
     ),
     _ProfileSettingItem(
-      title: 'Your Suggestions',
+      titleKey: 'yourSuggestions',
       iconPath: 'assets/icon/feedback.svg',
       routePath: RouterPath.familySuggestionScreen,
     ),
@@ -78,6 +81,8 @@ class FamilyProfileScreen extends ConsumerWidget {
                         SizedBox(height: 24.h),
                         _GeneralSettingsSection(settings: _settings),
                         SizedBox(height: 16.h),
+                        _LanguageSection(),
+                        SizedBox(height: 16.h),
                         const _LogoutSection(),
                       ],
                     ),
@@ -89,7 +94,8 @@ class FamilyProfileScreen extends ConsumerWidget {
         ),
         error: (err, stack) {
           debugPrint('Error: $err');
-          return const Center(child: Text('Error loading profile'));
+          final loc = AppLocalizations.of(context);
+          return Center(child: Text(loc.translate('errorLoadingProfile')));
         },
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
@@ -275,6 +281,7 @@ class _ProfileStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return SizedBox(
       height: 130.h,
       child: Row(
@@ -282,24 +289,24 @@ class _ProfileStatsRow extends StatelessWidget {
         children: [
           ProfileStatCard(
             iconPath: "assets/icon/star.svg",
-            label: 'Reviews',
+            label: loc.translate('reviews'),
             value: (metrics?.reviewsCount ?? 0).toString(),
             onTap: () =>
                 GoRouter.of(context).push(RouterPath.familyMyReviewsScreen),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/activity.svg",
-            label: 'Activities',
+            label: loc.translate('activities'),
             value: (metrics?.activitiesCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/invited_family.svg",
-            label: 'Invited Family',
+            label: loc.translate('invitedFamily'),
             value: (metrics?.invitedFamilyCount ?? 0).toString(),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/wrapped-gift.svg",
-            label: 'Gifts Shared',
+            label: loc.translate('giftsShared'),
             value: (metrics?.giftsSharedCount ?? 0).toString(),
           ),
         ],
@@ -316,6 +323,7 @@ class _GeneralSettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -329,7 +337,7 @@ class _GeneralSettingsSection extends StatelessWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
             child: Text(
-              'General settings',
+              loc.translate('generalSettings'),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
@@ -342,7 +350,7 @@ class _GeneralSettingsSection extends StatelessWidget {
             return Column(
               children: [
                 _ProfileSettingsTile(
-                  title: item.title,
+                  titleKey: item.titleKey,
                   iconPath: item.iconPath,
                   routePath: item.routePath,
                 ),
@@ -364,12 +372,12 @@ class _GeneralSettingsSection extends StatelessWidget {
 }
 
 class _ProfileSettingsTile extends StatelessWidget {
-  final String title;
+  final String titleKey;
   final String iconPath;
   final String? routePath;
 
   const _ProfileSettingsTile({
-    required this.title,
+    required this.titleKey,
     required this.iconPath,
     this.routePath,
   });
@@ -377,6 +385,7 @@ class _ProfileSettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
 
     return Material(
       color: Colors.transparent,
@@ -395,7 +404,7 @@ class _ProfileSettingsTile extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(
-                  title,
+                  loc.translate(titleKey),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.text,
@@ -416,15 +425,74 @@ class _ProfileSettingsTile extends StatelessWidget {
 }
 
 class _ProfileSettingItem {
-  final String title;
+  final String titleKey;
   final String iconPath;
   final String? routePath;
 
   const _ProfileSettingItem({
-    required this.title,
+    required this.titleKey,
     required this.iconPath,
     this.routePath,
   });
+}
+
+class _LanguageSection extends ConsumerWidget {
+  const _LanguageSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
+    final currentLocale = ref.watch(languageProvider);
+    final languageName =
+        currentLocale.languageCode == 'it' ? 'Italiano' : 'English';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => showLanguagePicker(context, ref),
+          borderRadius: BorderRadius.circular(16.r),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            child: Row(
+              children: [
+                Icon(Icons.language, size: 22.sp, color: AppColors.text),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    loc.translate('language'),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.text,
+                    ),
+                  ),
+                ),
+                Text(
+                  languageName,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.lightText,
+                    fontSize: 13.sp,
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 22.sp,
+                  color: AppColors.mutedIcon,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _LogoutSection extends ConsumerWidget {
@@ -433,6 +501,7 @@ class _LogoutSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -451,7 +520,7 @@ class _LogoutSection extends ConsumerWidget {
                 Icon(Icons.logout, size: 22.sp, color: AppColors.error),
                 SizedBox(width: 12.w),
                 Text(
-                  'Log Out',
+                  loc.translate('logOut'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: AppColors.error,
@@ -466,6 +535,7 @@ class _LogoutSection extends ConsumerWidget {
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
@@ -482,7 +552,7 @@ class _LogoutSection extends ConsumerWidget {
               Icon(Icons.logout, size: 48.sp, color: AppColors.error),
               SizedBox(height: 16.h),
               Text(
-                'Log Out',
+                loc.translate('logOut'),
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
@@ -491,7 +561,7 @@ class _LogoutSection extends ConsumerWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Are you sure you want to log out?',
+                loc.translate('areYouSureLogOut'),
                 style: TextStyle(fontSize: 14.sp, color: AppColors.lightText),
               ),
               SizedBox(height: 24.h),
@@ -500,14 +570,14 @@ class _LogoutSection extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: _DialogButton(
-                      label: 'Cancel',
+                      label: loc.translate('cancel'),
                       onTap: () => Navigator.of(ctx).pop(),
                     ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
                     child: _DialogButton(
-                      label: 'Log Out',
+                      label: loc.translate('logOut'),
                       isDestructive: true,
                       onTap: () async {
                         Navigator.of(ctx).pop();

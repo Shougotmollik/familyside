@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_api_item.dart';
 import 'package:familyside/model/gift_list_response.dart';
@@ -65,6 +66,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -73,7 +75,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: CustomAppBar(title: _detail?.name ?? 'Gift List'),
+              child: CustomAppBar(title: _detail?.name ?? loc.translate('giftList')),
             ),
             Expanded(child: _buildBody()),
             Padding(
@@ -91,6 +93,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
   }
 
   Widget _buildBody() {
+    final loc = AppLocalizations.of(context);
     if (_isLoading) {
       return const _DetailSkeleton();
     }
@@ -111,7 +114,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
                 ),
                 SizedBox(height: 12.h),
                 Text(
-                  'Failed to load list items',
+                  loc.translate('failedToLoadListItems'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.mutedIcon,
@@ -122,7 +125,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
                 ElevatedButton.icon(
                   onPressed: _loadData,
                   icon: const Icon(Icons.refresh, size: 18),
-                  label: const Text('Retry'),
+                  label: Text(loc.translate('retry')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryLight,
                     foregroundColor: Colors.white,
@@ -147,7 +150,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         children: [
           SizedBox(height: 8.h),
-          Text('Your gift list', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
+          Text(loc.translate('yourGiftList'), style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600)),
           SizedBox(height: 6.h),
           Text(
             '${items.length} gift(s) in this list',
@@ -167,7 +170,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      'No gifts in this list yet',
+                      loc.translate('noGiftsInList'),
                       style: TextStyle(
                         color: AppColors.mutedIcon,
                         fontSize: 16.sp,
@@ -222,7 +225,7 @@ class _GiftListDetailScreenState extends ConsumerState<GiftListDetailScreen> {
       await _loadData(showSkeleton: false);
     } else {
       AppSnackbar.show(
-        message: 'Failed to remove gift. Please try again.',
+        message: AppLocalizations.of(context).translate('failedToRemoveGift'),
         type: SnackType.error,
       );
     }
@@ -359,6 +362,7 @@ class _DeleteConfirmSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -408,7 +412,7 @@ class _DeleteConfirmSheet extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
           Text(
-            'Are you sure you want to remove\n"$itemName" from this list?',
+            loc.translate('removeGiftFromList'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14.sp,
@@ -429,7 +433,7 @@ class _DeleteConfirmSheet extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'Cancel',
+                        loc.translate('cancel'),
                         style: TextStyle(
                           color: AppColors.primaryLight,
                           fontWeight: FontWeight.w500,

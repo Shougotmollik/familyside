@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/provider/family/explorer_provider.dart';
@@ -208,7 +209,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
                 border: Border.all(color: AppColors.lightText),
               ),
               child: Text(
-                'Clear all',
+                AppLocalizations.of(context).translate('clearAll'),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -420,6 +421,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final mapState = ref.watch(explorerMapProviderProvider);
 
     return Scaffold(
@@ -439,7 +441,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
               ),
               SizedBox(height: 16.h),
               Text(
-                'Could not load map data',
+                loc.translate('error'),
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: AppColors.text,
@@ -472,7 +474,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
-                child: const Text('Retry'),
+                child: Text(loc.translate('retry')),
               ),
             ],
           ),
@@ -575,7 +577,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
                             child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16.w),
                               child: Text(
-                                'No places found in this category',
+                                loc.translate('noPlacesFound'),
                                 style: TextStyle(
                                   fontSize: 14.sp,
                                   color: AppColors.grey,
@@ -629,7 +631,7 @@ class _ExplorerMapScreenState extends ConsumerState<ExplorerMapScreen> {
                                                 BorderRadius.circular(4.r),
                                           ),
                                           child: Text(
-                                            'No location',
+                                            loc.translate('noLocation'),
                                             style: TextStyle(
                                               fontSize: 9.sp,
                                               color: Colors.orange.shade800,

@@ -12,6 +12,7 @@ import 'package:familyside/view/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/event_card.dart';
@@ -267,6 +268,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
   }
 
   Widget _buildResultCount() {
+    final loc = AppLocalizations.of(context);
     return Row(
       children: [
         Text(
@@ -281,7 +283,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
           GestureDetector(
             onTap: _clearSearch,
             child: Text(
-              'Clear search',
+              loc.translate('clearSearch'),
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
@@ -296,6 +298,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
   // ─── Body ──────────────────────────────────────────────────────────
 
   Widget _buildBody() {
+    final loc = AppLocalizations.of(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -324,7 +327,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
                   ElevatedButton.icon(
                     onPressed: _fetchItems,
                     icon: const Icon(Icons.refresh, size: 18),
-                    label: const Text('Retry'),
+                    label: Text(loc.translate('retry')),
                   ),
                 ],
               ),
@@ -354,7 +357,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 32.w),
                     child: Text(
-                      _emptyMessage ?? 'No items found',
+                      _emptyMessage ?? loc.translate('noItemsFound'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14.sp,
@@ -389,7 +392,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
                   ),
                   SizedBox(height: 16.h),
                   Text(
-                    'No results match your search',
+                    loc.translate('noResultsMatchSearch'),
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.grey,
@@ -400,12 +403,12 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
                   if (_searchQuery.isNotEmpty)
                     TextButton(
                       onPressed: _clearSearch,
-                      child: const Text('Clear search'),
+                      child: Text(loc.translate('clearSearch')),
                     ),
                   if (_hasActiveFilters)
                     TextButton(
                       onPressed: _clearFilters,
-                      child: const Text('Clear filters'),
+                      child: Text(loc.translate('clearFilters')),
                     ),
                 ],
               ),
@@ -460,6 +463,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
   // ─── Filter Chips ──────────────────────────────────────────────────
 
   Widget _buildActiveFilterChips() {
+    final loc = AppLocalizations.of(context);
     final chips = <Widget>[];
 
     if (_currentFilters!.distance.isNotEmpty && _currentFilters!.distance != '1 km') {
@@ -511,7 +515,7 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
                 border: Border.all(color: AppColors.lightText),
               ),
               child: Text(
-                'Clear all',
+                loc.translate('clearAll'),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -560,12 +564,13 @@ class _SubCategoryListScreenState extends ConsumerState<SubCategoryListScreen> {
   // ─── Search Section ────────────────────────────────────────────────
 
   Widget _buildSearchSection() {
+    final loc = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: SearchBarWidget(
             controller: searchController,
-            hintText: 'Search...',
+            hintText: loc.translate('searchHint'),
             onChanged: _onSearchChanged,
           ),
         ),

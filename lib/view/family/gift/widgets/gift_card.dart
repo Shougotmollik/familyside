@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -93,6 +94,7 @@ class _GiftImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Stack(
       children: [
         ClipRRect(
@@ -155,7 +157,7 @@ class _GiftImage extends StatelessWidget {
                       Icon(Icons.card_giftcard, color: Colors.white, size: 12.sp),
                       SizedBox(width: 4.w),
                       Text(
-                        'Gift',
+                        loc.translate('gift'),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 10.sp,
@@ -214,6 +216,7 @@ class _GiftCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -291,7 +294,7 @@ class _GiftCardContent extends StatelessWidget {
                       Icon(Icons.add, color: Colors.white, size: 14.sp),
                       SizedBox(width: 4.w),
                       Text(
-                        'Add to Gift list',
+                        loc.translate('addToGiftList'),
                         style: TextStyle(
                           fontSize: 11.sp,
                           fontWeight: FontWeight.w600,

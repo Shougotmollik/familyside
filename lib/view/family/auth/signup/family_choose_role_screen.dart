@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:familyside/view/widgets/role_selection_button.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class _FamilyChooseRoleScreenState extends ConsumerState<FamilyChooseRoleScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -49,7 +51,7 @@ class _FamilyChooseRoleScreenState extends ConsumerState<FamilyChooseRoleScreen>
               ),
               SizedBox(height: 8.h),
               Text(
-                'Familyside',
+                loc.translate('brandName'),
                 style: TextStyle(
                   fontFamily: 'Quando',
                   fontSize: 28.sp,
@@ -59,7 +61,7 @@ class _FamilyChooseRoleScreenState extends ConsumerState<FamilyChooseRoleScreen>
               ),
               SizedBox(height: 20.h),
               Text(
-                'Choose Your Role',
+                loc.translate('chooseYourRole'),
                 style: theme.textTheme.headlineMedium?.copyWith(
                   color: Colors.black,
                   fontWeight: FontWeight.w600,
@@ -67,21 +69,21 @@ class _FamilyChooseRoleScreenState extends ConsumerState<FamilyChooseRoleScreen>
               ),
               SizedBox(height: 50.h),
               RoleSelectionButton(
-                title: 'Mother',
+                title: loc.translate('mother'),
                 icon: 'assets/logo/mother.svg',
                 isSelected: _selectedRole == 'Mother',
                 onTap: () => _onRoleSelected('Mother'),
               ),
               SizedBox(height: 16.h),
               RoleSelectionButton(
-                title: 'Father',
+                title: loc.translate('father'),
                 icon: 'assets/logo/father.svg',
                 isSelected: _selectedRole == 'Father',
                 onTap: () => _onRoleSelected('Father'),
               ),
               SizedBox(height: 16.h),
               RoleSelectionButton(
-                title: 'Relative',
+                title: loc.translate('relative'),
                 icon: 'assets/logo/relative.svg',
                 isSelected: _selectedRole == 'Relative',
                 onTap: () => _onRoleSelected('Relative'),

@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +47,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: theme.colorScheme.surface,
@@ -70,7 +72,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
                 _buildLogoSection(theme),
                 SizedBox(height: 32.h),
                 Text(
-                  "Forgot Password",
+                  loc.translate('forgotPasswordTitle'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -80,7 +82,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "Enter your email to reset your password",
+                  loc.translate('enterEmailToReset'),
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: AppColors.lightText,
@@ -89,7 +91,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
                 ),
                 SizedBox(height: 48.h),
                 Text(
-                  "Email",
+                  loc.translate('email'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.text,
@@ -98,7 +100,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
                 ),
                 SizedBox(height: 8.h),
                 AuthTextFormField(
-                  hintText: "Enter your email",
+                  hintText: loc.translate('enterEmail'),
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
@@ -113,7 +115,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
                 SizedBox(height: 48.h),
                 CustomElevatedButton(
                   onPressed: _onSend,
-                  title: "Send OTP",
+                  title: loc.translate('sendOtp'),
                   color: theme.colorScheme.primary,
                   textColor: theme.colorScheme.onPrimary,
                   isLoading: ref.watch(authProvider).isLoading,
@@ -128,6 +130,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
   }
 
   Widget _buildLogoSection(ThemeData theme) {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -141,7 +144,7 @@ class _ForgotPasswordScreenState extends ConsumerState<FamilyForgotPasswordScree
         ),
         SizedBox(width: 10.w),
         Text(
-          'Familyside',
+          loc.translate('brandName'),
           style: theme.textTheme.headlineMedium?.copyWith(
             fontFamily: 'Quando',
             fontSize: 22.sp,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_api_item.dart';
@@ -111,7 +112,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
     final folderId = int.tryParse(result.list.id);
     if (folderId == null) {
       AppSnackbar.show(
-        message: 'Could not add to this list. Please try again.',
+        message: AppLocalizations.of(context).translate('couldNotAddToList'),
         type: SnackType.error,
       );
       return;
@@ -130,7 +131,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
       );
     } else {
       AppSnackbar.show(
-        message: 'Failed to add gift to list. Please try again.',
+        message: AppLocalizations.of(context).translate('failedToAddGift'),
         type: SnackType.error,
       );
     }
@@ -144,7 +145,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
     final items = _giftItems.map(_toGiftItemModel).toList();
     context.push(
       RouterPath.familyGiftAllScreen,
-      extra: GiftAllScreenConfig(title: 'All Gifts', items: items),
+      extra: GiftAllScreenConfig(title: AppLocalizations.of(context).translate('allGifts'), items: items),
     );
   }
 
@@ -229,6 +230,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final giftState = ref.watch(giftProviderProvider);
 
     return Scaffold(
@@ -254,7 +256,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
                       filters: _currentFilters,
                       category: _selectedCategory,
                     ),
-                    child: const Text('Retry'),
+                    child: Text(loc.translate('retry')),
                   ),
                 ],
               ),
@@ -298,6 +300,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Widget _buildProfileHeader({required SpHomeHeader? header}) {
+    final loc = AppLocalizations.of(context);
     return Row(
       children: [
         ClipOval(
@@ -352,7 +355,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
               Row(
                 children: [
                   Text(
-                    header?.location ?? 'Location not set',
+                    header?.location ?? loc.translate('locationNotSet'),
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w400,
@@ -380,6 +383,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Widget _buildHeaderActions() {
+    final loc = AppLocalizations.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -392,7 +396,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
               borderRadius: BorderRadius.circular(8.r),
             ),
             child: Text(
-              'My list',
+              loc.translate('myGiftList'),
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
@@ -419,6 +423,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Widget _buildSearchSection() {
+    final loc = AppLocalizations.of(context);
     final hasFilters = _currentFilters?.hasAnyFilter ?? false;
     final filterCount = [
       _currentFilters?.recipient,
@@ -432,7 +437,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
         Expanded(
           child: SearchBarWidget(
             controller: _searchController,
-            hintText: 'Search Planner...',
+            hintText: loc.translate('searchPlanner'),
             onChanged: _onSearchChanged,
           ),
         ),
@@ -476,6 +481,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Widget _buildActiveFilterChips() {
+    final loc = AppLocalizations.of(context);
     final filters = <String>[
       if (_currentFilters?.recipient != null) _currentFilters!.recipient!,
       if (_currentFilters?.forWhom != null) _currentFilters!.forWhom!,
@@ -529,7 +535,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
                 border: Border.all(color: AppColors.lightText),
               ),
               child: Text(
-                'Clear all',
+                loc.translate('clearAll'),
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w500,
@@ -575,13 +581,14 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Widget _buildCategoriesSection(List<GiftApiCategory> apiCategories) {
+    final loc = AppLocalizations.of(context);
     final displayCategories = ['All', ...apiCategories.map((c) => c.name)];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Categories',
+          Text(
+            loc.translate('categories'),
           style: TextStyle(
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
@@ -640,14 +647,15 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
   }
 
   Widget _buildSearchResultSection(List<GiftApiItem> items) {
+    final loc = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Search Result',
+              Text(
+                loc.translate('searchResult'),
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.bold,
@@ -658,7 +666,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
               GestureDetector(
                 onTap: _openAllGiftsScreen,
                 child: Text(
-                  'See All',
+                  loc.translate('seeAll'),
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -676,7 +684,7 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
             alignment: Alignment.center,
             child: Text(
               _selectedCategory == 'All'
-                  ? 'No gifts found'
+                  ? loc.translate('noGiftsFound')
                   : 'No gifts in "$_selectedCategory"',
               style: TextStyle(
                 fontSize: 14.sp,

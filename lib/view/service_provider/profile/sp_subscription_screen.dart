@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -64,74 +65,75 @@ class _SpSubscriptionScreenState extends State<SpSubscriptionScreen> {
 
   static final List<_Plan> _plans = [
     _Plan(
-      tab: 'Free',
-      name: 'Free',
+      tab: 'free',
+      name: 'free',
       price: '\$0',
-      subtitle: 'Start Simple',
+      subtitle: 'startSimple',
       cardColor: Colors.white,
       buttonColor: AppColors.primaryLight,
-      buttonLabel: 'Start For Free',
+      buttonLabel: 'startForFree',
       mainFeatures: [
-        'Create your business profile',
-        'Basic info and photos',
-        'Basic Visibility',
+        'createBusinessProfile',
+        'basicInfoAndPhotos',
+        'basicVisibility',
       ],
     ),
     _Plan(
-      tab: 'Smart',
-      name: 'Smart',
+      tab: 'smart',
+      name: 'smart',
       price: '\$29',
-      subtitle: 'Grow Through Your Community',
+      subtitle: 'growThroughCommunity',
       cardColor: const Color(0xFFFFF8EE),
       buttonColor: const Color(0xFFE8A838),
-      buttonLabel: 'Go Premium',
+      buttonLabel: 'goPremium',
       mainFeatures: [
-        'All premium features',
-        'Maximum visibility',
-        'Events & Gifts',
-        'Direct contact',
+        'allPremiumFeatures',
+        'maximumVisibility',
+        'eventsAndGifts',
+        'directContact',
       ],
       communitySection: const _CommunitySection(
-        title: 'Join By Contributing To The Community',
-        subtitle: 'By Offering Benefits to Top Contributors',
+        title: 'joinByContributing',
+        subtitle: 'offeringBenefitsToContributors',
         items: [
-          'They discover your business',
-          'They recommend it',
-          'They bring new customers',
+          'theyDiscoverBusiness',
+          'theyRecommend',
+          'theyBringCustomers',
         ],
       ),
       benefitsSection: const _BenefitsSection(
-        title: 'Benefits For Them, Growth For You',
+        title: 'benefitsForThemGrowthForYou',
         items: [
-          'Free Coffee Or Drink',
-          'Free Dessert',
-          'Free Trial',
-          'Special Discount (10% - 20%)',
-          'Small Gift for kids',
-          'Family Offers',
-          'Early Access',
+          'freeCoffeeOrDrink',
+          'freeDessert',
+          'freeTrial',
+          'specialDiscount',
+          'smallGiftForKids',
+          'familyOffers',
+          'earlyAccess',
         ],
       ),
     ),
     _Plan(
-      tab: 'Premium',
-      name: 'Premium',
+      tab: 'premium',
+      name: 'premium',
       price: '\$39',
-      subtitle: 'Start Simple',
+      subtitle: 'startSimple',
       cardColor: Colors.white,
       buttonColor: AppColors.primaryLight,
-      buttonLabel: 'Go Premium',
+      buttonLabel: 'goPremium',
       mainFeatures: [
-        'All features included',
-        'Maximum visibility',
-        'Events & Gifts',
-        'Direct contact',
+        'allFeaturesIncluded',
+        'maximumVisibility',
+        'eventsAndGifts',
+        'directContact',
       ],
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final plan = _plans[_selected];
 
     return Scaffold(
@@ -152,7 +154,7 @@ class _SpSubscriptionScreenState extends State<SpSubscriptionScreen> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Familyside',
+                loc.translate('brandName'),
                 style: TextStyle(
                   fontFamily: 'Quando',
                   fontSize: 18.sp,
@@ -162,7 +164,7 @@ class _SpSubscriptionScreenState extends State<SpSubscriptionScreen> {
               ),
               SizedBox(height: 20.h),
               Text(
-                'Grow With Your Local\nFamily Community',
+                loc.translate('growWithLocalFamily'),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 22.sp,
@@ -173,7 +175,7 @@ class _SpSubscriptionScreenState extends State<SpSubscriptionScreen> {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Be discovered . Be recommended . Grow Faster',
+                loc.translate('beDiscoveredTagline'),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13.sp, color: AppColors.lightText),
               ),
@@ -203,7 +205,7 @@ class _SpSubscriptionScreenState extends State<SpSubscriptionScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              _plans[i].tab,
+                              loc.translate(_plans[i].tab),
                               style: TextStyle(
                                 fontSize: 14.sp,
                                 fontWeight: isActive
@@ -234,7 +236,7 @@ class _SpSubscriptionScreenState extends State<SpSubscriptionScreen> {
               SizedBox(height: 16.h),
 
               Text(
-                'You can change your plan anytime',
+                loc.translate('canChangePlanAnytime'),
                 style: TextStyle(fontSize: 13.sp, color: AppColors.lightText),
               ),
             ],
@@ -254,6 +256,8 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
@@ -272,7 +276,7 @@ class _PlanCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            plan.name,
+            loc.translate(plan.name),
             style: TextStyle(
               fontSize: 18.sp,
               fontWeight: FontWeight.w500,
@@ -289,7 +293,7 @@ class _PlanCard extends StatelessWidget {
             ),
           ),
           Text(
-            plan.subtitle,
+            loc.translate(plan.subtitle),
             style: TextStyle(fontSize: 13.sp, color: AppColors.lightText),
           ),
           SizedBox(height: 16.h),
@@ -334,7 +338,7 @@ class _PlanCard extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  plan.buttonLabel,
+                  loc.translate(plan.buttonLabel),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 15.sp,
@@ -350,6 +354,7 @@ class _PlanCard extends StatelessWidget {
   }
 
   List<Widget> _featureList(BuildContext context, List<String> features) {
+    final loc = AppLocalizations.of(context);
     return features
         .map(
           (f) => Padding(
@@ -368,7 +373,7 @@ class _PlanCard extends StatelessWidget {
                 SizedBox(width: 10.w),
                 Expanded(
                   child: Text(
-                    f,
+                    loc.translate(f),
                     style: TextStyle(fontSize: 14.sp, color: AppColors.text),
                   ),
                 ),
@@ -395,6 +400,7 @@ class _SectionBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: bgColor == Colors.transparent
@@ -408,7 +414,7 @@ class _SectionBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            loc.translate(title),
             style: TextStyle(
               fontSize: 15.sp,
               fontWeight: FontWeight.w700,
@@ -418,7 +424,7 @@ class _SectionBlock extends StatelessWidget {
           if (subtitle != null) ...[
             SizedBox(height: 4.h),
             Text(
-              subtitle!,
+              loc.translate(subtitle!),
               style: TextStyle(fontSize: 12.sp, color: AppColors.lightText),
             ),
           ],
@@ -440,7 +446,7 @@ class _SectionBlock extends StatelessWidget {
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
-                      item,
+                      loc.translate(item),
                       style: TextStyle(fontSize: 13.sp, color: AppColors.text),
                     ),
                   ),

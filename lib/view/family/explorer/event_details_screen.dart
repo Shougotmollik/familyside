@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/env.dart';
@@ -42,6 +43,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final detailsState = ref.watch(activityDetailsProviderProvider);
 
     return Scaffold(
@@ -58,7 +60,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                 onPressed: () => ref
                     .read(activityDetailsProviderProvider.notifier)
                     .fetchDetails(widget.itemId),
-                child: const Text('Retry'),
+                child: Text(loc.translate('retry')),
               ),
             ],
           ),
@@ -70,13 +72,13 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
               if (mounted) setState(() => _isSaved = details.isSaved);
             });
           }
-          return _buildDetailsContent(details);
+          return _buildDetailsContent(details, loc);
         },
       ),
     );
   }
 
-  Widget _buildDetailsContent(ActivityDetails details) {
+  Widget _buildDetailsContent(ActivityDetails details, AppLocalizations loc) {
     final hasLocation = details.lat != 0.0 || details.lng != 0.0;
     final position = LatLng(details.lat, details.lng);
 
@@ -94,7 +96,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                   children: [
                     if (details.description.isNotEmpty) ...[
                       Text(
-                        'Description',
+                        loc.translate('description'),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
@@ -102,7 +104,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                         ),
                       ),
                       SizedBox(height: 8.h),
-                      _buildDescription(details.description),
+                      _buildDescription(details.description, loc),
                       SizedBox(height: 20.h),
                     ],
                     // @codebuf: website, instagram, whatsapp, call, direction not needed for events
@@ -116,18 +118,19 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                     SizedBox(height: 24.h),
                     if (details.relatedEvents.isNotEmpty) ...[
                       _buildSectionHeader(
-                        'Related Events',
+                        loc.translate('relatedEvents'),
                         onSeeAll: details.relatedEvents.length > 2
                             ? () => context.push(
                                 RouterPath.familyRecommendationScreen,
                                 extra: ListScreenConfig(
-                                  title: 'Related Events',
+                                  title: loc.translate('relatedEvents'),
                                   items: details.relatedEvents
                                       .map(_apiItemToRecommended)
                                       .toList(),
                                 ),
                               )
                             : null,
+                        loc: loc,
                       ),
                       SizedBox(height: 12.h),
                       ...details.relatedEvents
@@ -152,18 +155,19 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                     ],
                     if (details.giftIdeas.isNotEmpty) ...[
                       _buildSectionHeader(
-                        'Gift ideas',
+                        loc.translate('giftIdeas'),
                         onSeeAll: details.giftIdeas.length > 3
                             ? () => context.push(
                                 RouterPath.familyRecommendationScreen,
                                 extra: ListScreenConfig(
-                                  title: 'Gift ideas',
+                                  title: loc.translate('giftIdeas'),
                                   items: details.giftIdeas
                                       .map(_apiItemToRecommended)
                                       .toList(),
                                 ),
                               )
                             : null,
+                        loc: loc,
                       ),
                       SizedBox(height: 12.h),
                       SizedBox(
@@ -181,7 +185,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                       Row(
                         children: [
                           Text(
-                            'Reviews',
+                            loc.translate('reviews'),
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
@@ -250,7 +254,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    'Leave a review',
+                    loc.translate('leaveReview'),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 15.sp,
@@ -471,7 +475,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
     );
   }
 
-  Widget _buildDescription(String description) {
+  Widget _buildDescription(String description, AppLocalizations loc) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -491,7 +495,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           GestureDetector(
             onTap: () => setState(() => _descExpanded = !_descExpanded),
             child: Text(
-              _descExpanded ? 'Show less' : 'Read more',
+              _descExpanded ? loc.translate('showLess') : loc.translate('readMore'),
               style: TextStyle(
                 fontSize: 13.sp,
                 color: AppColors.primaryLight,
@@ -560,7 +564,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
+  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll, AppLocalizations? loc}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -576,7 +580,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           GestureDetector(
             onTap: onSeeAll,
             child: Text(
-              'See All',
+              loc?.translate('seeAll') ?? 'See All',
               style: TextStyle(
                 fontSize: 13.sp,
                 color: AppColors.primaryLight,

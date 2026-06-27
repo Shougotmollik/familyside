@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_api_item.dart';
 import 'package:familyside/model/gift_item_model.dart';
@@ -65,13 +66,14 @@ class GiftFlow {
     required String listName,
     required String occasion,
   }) {
+    final loc = AppLocalizations.of(context);
     return showModalBottomSheet<CreateNewListResult>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => CreateNewListBottomSheet(
-        title: 'Edit list Details',
-        submitLabel: 'Save',
+        title: loc.translate('editListDetails'),
+        submitLabel: loc.translate('save'),
         initialName: listName,
         initialOccasion: occasion,
       ),
@@ -160,7 +162,7 @@ class _PickGiftBottomSheetState extends ConsumerState<_PickGiftBottomSheet> {
       Navigator.of(context).pop();
     } else {
       AppSnackbar.show(
-        message: 'Failed to add gift. Please try again.',
+        message: AppLocalizations.of(context).translate('failedToAddGift'),
         type: SnackType.error,
       );
     }
@@ -170,6 +172,7 @@ class _PickGiftBottomSheetState extends ConsumerState<_PickGiftBottomSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final loc = AppLocalizations.of(context);
 
     return Container(
       constraints: BoxConstraints(maxHeight: 0.75.sh),
@@ -190,7 +193,7 @@ class _PickGiftBottomSheetState extends ConsumerState<_PickGiftBottomSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Add gift to list',
+                loc.translate('addGiftToList'),
                 style: TextStyle(
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
@@ -221,7 +224,7 @@ class _PickGiftBottomSheetState extends ConsumerState<_PickGiftBottomSheet> {
                               ),
                               SizedBox(height: 12.h),
                               Text(
-                                'All items are already in this list',
+                                loc.translate('allItemsAlreadyInList'),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 15.sp,

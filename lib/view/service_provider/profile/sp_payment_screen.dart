@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/view/widgets/custom_app_bar.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
@@ -91,14 +92,16 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
   }
 
   void _onSubmit() {
+    final loc = AppLocalizations.of(context);
     if (!_formKey.currentState!.validate()) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Payment processing...')),
+      SnackBar(content: Text(loc.translate('paymentProcessing'))),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
@@ -115,7 +118,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const CustomAppBar(title: 'Payment method'),
+                        CustomAppBar(title: loc.translate('paymentMethod')),
                         SizedBox(height: 20.h),
 
                         Container(
@@ -137,7 +140,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Total Amount',
+                                    loc.translate('totalAmount'),
                                     style: TextStyle(
                                       color: Colors.white.withValues(alpha: 0.85),
                                       fontSize: 13.sp,
@@ -169,7 +172,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                         SizedBox(height: 24.h),
 
                         Text(
-                          'Select your payment method',
+                          loc.translate('selectPaymentMethod'),
                           style: TextStyle(
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w700,
@@ -212,19 +215,19 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                         ),
                         SizedBox(height: 24.h),
 
-                        _label('Card holder name'),
+                        _label(loc.translate('cardHolderName')),
                         SizedBox(height: 8.h),
                         TextFormField(
                           controller: _nameCtrl,
                           textCapitalization: TextCapitalization.words,
-                          decoration: _inputDecoration('Your name'),
+                          decoration: _inputDecoration(loc.translate('yourName')),
                           style: TextStyle(fontSize: 14.sp, color: AppColors.text),
                           validator: (v) =>
-                              v == null || v.trim().isEmpty ? 'Enter card holder name' : null,
+                              v == null || v.trim().isEmpty ? loc.translate('enterCardHolderName') : null,
                         ),
                         SizedBox(height: 16.h),
 
-                        _label('Card number'),
+                        _label(loc.translate('cardNumber')),
                         SizedBox(height: 8.h),
                         TextFormField(
                           controller: _cardCtrl,
@@ -233,9 +236,9 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                           decoration: _inputDecoration('1234 5678 9012 3456'),
                           style: TextStyle(fontSize: 14.sp, color: AppColors.text),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Enter card number';
+                            if (v == null || v.trim().isEmpty) return loc.translate('enterCardNumber');
                             final digits = v.replaceAll(' ', '');
-                            if (digits.length < 13) return 'Invalid card number';
+                            if (digits.length < 13) return loc.translate('invalidCardNumber');
                             return null;
                           },
                         ),
@@ -247,7 +250,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _label('Valid until'),
+                                  _label(loc.translate('validUntil')),
                                   SizedBox(height: 8.h),
                                   TextFormField(
                                     controller: _expiryCtrl,
@@ -255,8 +258,8 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                                     decoration: _inputDecoration('MM/YY'),
                                     style: TextStyle(fontSize: 14.sp, color: AppColors.text),
                                     validator: (v) {
-                                      if (v == null || v.trim().isEmpty) return 'Enter expiry date';
-                                      if (v.length < 5) return 'Invalid date';
+                                      if (v == null || v.trim().isEmpty) return loc.translate('enterExpiryDate');
+                                      if (v.length < 5) return loc.translate('invalidDate');
                                       return null;
                                     },
                                   ),
@@ -268,7 +271,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _label('CVV'),
+                                  _label(loc.translate('cvv')),
                                   SizedBox(height: 8.h),
                                   TextFormField(
                                     controller: _cvvCtrl,
@@ -281,8 +284,8 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                                     decoration: _inputDecoration('***'),
                                     style: TextStyle(fontSize: 14.sp, color: AppColors.text),
                                     validator: (v) {
-                                      if (v == null || v.trim().isEmpty) return 'Enter CVV';
-                                      if (v.length < 3) return 'Invalid CVV';
+                                      if (v == null || v.trim().isEmpty) return loc.translate('enterCvv');
+                                      if (v.length < 3) return loc.translate('invalidCvv');
                                       return null;
                                     },
                                   ),
@@ -315,7 +318,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                               ),
                               SizedBox(width: 10.w),
                               Text(
-                                'Save card data for future payments',
+                                loc.translate('saveCardForFuture'),
                                 style: TextStyle(fontSize: 13.sp, color: AppColors.lightText),
                               ),
                             ],
@@ -329,7 +332,7 @@ class _SpPaymentScreenState extends State<SpPaymentScreen> {
                   padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
                   child: CustomElevatedButton(
                     onPressed: _onSubmit,
-                    title: 'Proceed to confirm',
+                    title: loc.translate('proceedToConfirm'),
                     color: AppColors.primaryLight,
                     textColor: Colors.white,
                   ),

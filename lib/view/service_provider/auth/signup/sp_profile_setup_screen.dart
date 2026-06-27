@@ -1,3 +1,4 @@
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,11 +14,11 @@ class SpProfileSetupScreen extends ConsumerStatefulWidget {
   const SpProfileSetupScreen({super.key});
 
   @override
-  ConsumerState<SpProfileSetupScreen> createState() => _SpProfileSetupScreenState();
+  ConsumerState<SpProfileSetupScreen> createState() =>
+      _SpProfileSetupScreenState();
 }
 
 class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
-  // Each entry: { 'platform': String?, 'link': TextEditingController }
   final List<Map<String, dynamic>> _socialEntries = [];
 
   final List<String> _platforms = [
@@ -34,7 +35,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
   @override
   void initState() {
     super.initState();
-    _addEntry(); // start with one entry
+    _addEntry();
   }
 
   @override
@@ -47,10 +48,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
 
   void _addEntry() {
     setState(() {
-      _socialEntries.add({
-        'platform': null,
-        'link': TextEditingController(),
-      });
+      _socialEntries.add({'platform': null, 'link': TextEditingController()});
     });
   }
 
@@ -64,10 +62,12 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
   Future<void> _onContinue() async {
     final links = _socialEntries
         .where((e) => e['platform'] != null)
-        .map((e) => SocialLink(
-              platform: e['platform'] as String,
-              url: (e['link'] as TextEditingController).text,
-            ))
+        .map(
+          (e) => SocialLink(
+            platform: e['platform'] as String,
+            url: (e['link'] as TextEditingController).text,
+          ),
+        )
         .toList();
 
     if (links.isNotEmpty) {
@@ -81,6 +81,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -91,15 +92,15 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: 8.h),
-                  CustomAppBar(title: 'Profile setup'),
+                  CustomAppBar(title: loc.translate('profile')),
                   SizedBox(height: 24.h),
                   Text(
-                    'Help us to connect more\nabout your business',
+                    loc.translate('helpUsConnect'),
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 22.sp,
-                          color: AppColors.text,
-                        ),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 22.sp,
+                      color: AppColors.text,
+                    ),
                   ),
                   SizedBox(height: 24.h),
                 ],
@@ -112,8 +113,8 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ..._socialEntries.asMap().entries.map(
-                          (entry) => _buildSocialEntry(entry.key),
-                        ),
+                      (entry) => _buildSocialEntry(entry.key),
+                    ),
                     SizedBox(height: 8.h),
                   ],
                 ),
@@ -135,8 +136,9 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'Add more social',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          loc.translate('addMoreSocial'),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
                                 color: AppColors.primaryLight,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -148,7 +150,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
                   // Continue button
                   CustomElevatedButton(
                     onPressed: _onContinue,
-                    title: 'Continue',
+                    title: loc.translate('continueText'),
                     color: AppColors.primaryLight,
                     textColor: Colors.white,
                   ),
@@ -162,6 +164,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
   }
 
   Widget _buildSocialEntry(int index) {
+    final loc = AppLocalizations.of(context);
     final entry = _socialEntries[index];
     final bool canRemove = _socialEntries.length > 1;
 
@@ -172,11 +175,11 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Select Platform',
+              loc.translate('selectPlatform'),
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.text,
-                    fontWeight: FontWeight.w400,
-                  ),
+                color: AppColors.text,
+                fontWeight: FontWeight.w400,
+              ),
             ),
             if (canRemove)
               GestureDetector(
@@ -193,15 +196,15 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
         _buildPlatformDropdown(index, entry['platform'] as String?),
         SizedBox(height: 16.h),
         Text(
-          'Website Link',
+          loc.translate('websiteLink'),
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.text,
-                fontWeight: FontWeight.w400,
-              ),
+            color: AppColors.text,
+            fontWeight: FontWeight.w400,
+          ),
         ),
         SizedBox(height: 8.h),
         AuthTextFormField(
-          hintText: 'Enter your Business website link',
+          hintText: loc.translate('enterBusinessWebsite'),
           controller: entry['link'] as TextEditingController,
         ),
         SizedBox(height: 20.h),
@@ -210,6 +213,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
   }
 
   Widget _buildPlatformDropdown(int index, String? selectedValue) {
+    final loc = AppLocalizations.of(context);
     return DropdownButtonFormField<String>(
       value: selectedValue,
       onChanged: (value) {
@@ -217,20 +221,16 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
           _socialEntries[index]['platform'] = value;
         });
       },
-      icon: Icon(
-        Icons.keyboard_arrow_down_rounded,
-        color: AppColors.lightText,
-      ),
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontSize: 14.sp,
-            color: AppColors.text,
-          ),
+      icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.lightText),
+      style: Theme.of(
+        context,
+      ).textTheme.bodyMedium?.copyWith(fontSize: 14.sp, color: AppColors.text),
       decoration: InputDecoration(
-        hintText: 'ex. facebook, instagram',
+        hintText: loc.translate('exFacebookInstagram'),
         hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 14.sp,
-              color: AppColors.lightText,
-            ),
+          fontSize: 14.sp,
+          color: AppColors.lightText,
+        ),
         filled: true,
         fillColor: AppColors.surface,
         contentPadding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 12.w),
@@ -257,10 +257,7 @@ class _SpProfileSetupScreenState extends ConsumerState<SpProfileSetupScreen> {
         ),
       ),
       items: _platforms.map((String platform) {
-        return DropdownMenuItem<String>(
-          value: platform,
-          child: Text(platform),
-        );
+        return DropdownMenuItem<String>(value: platform, child: Text(platform));
       }).toList(),
     );
   }

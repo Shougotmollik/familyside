@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/activity_details.dart';
 import 'package:familyside/provider/family/explorer_provider.dart';
@@ -34,6 +35,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final detailsState = ref.watch(activityDetailsProviderProvider);
 
     return Scaffold(
@@ -50,7 +52,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                 onPressed: () => ref
                     .read(activityDetailsProviderProvider.notifier)
                     .fetchDetails(widget.itemId),
-                child: const Text('Retry'),
+                child: Text(loc.translate('retry')),
               ),
             ],
           ),
@@ -62,13 +64,13 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
               if (mounted) setState(() => _isSaved = details.isSaved);
             });
           }
-          return _buildDetailsContent(details);
+          return _buildDetailsContent(details, loc);
         },
       ),
     );
   }
 
-  Widget _buildDetailsContent(ActivityDetails details) {
+  Widget _buildDetailsContent(ActivityDetails details, AppLocalizations loc) {
     final priceText = '\$${details.id == 0 ? '0' : details.relatedEvents.isNotEmpty ? details.relatedEvents.first.price.toStringAsFixed(0) : '0'}';
     final descriptionText = details.description.isNotEmpty
         ? details.description
@@ -109,7 +111,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                     children: [
                       // Description
                       Text(
-                        'Description',
+                        loc.translate('description'),
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
@@ -123,7 +125,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                       // Reviews section
                       if (details.reviews.isNotEmpty) ...[
                         Row(children: [
-                          Text('Reviews',
+                          Text(loc.translate('reviews'),
                               style: TextStyle(
                                   fontSize: 16.sp,
                                   fontWeight: FontWeight.w700,
@@ -211,6 +213,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
   }
 
   Widget _buildHeroHeader(ActivityDetails details, String priceText, String locationText) {
+    final loc = AppLocalizations.of(context);
     final hasImage = details.imageUrl != null && details.imageUrl!.isNotEmpty;
     return Stack(
       children: [
@@ -257,7 +260,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      details.name.isNotEmpty ? details.name : 'Gift',
+                      details.name.isNotEmpty ? details.name : loc.translate('gift'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24.sp,
@@ -274,7 +277,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
-                      'Gift idea',
+                      loc.translate('giftIdea'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12.sp,
@@ -295,7 +298,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: Text(
-                      'Gift',
+                      loc.translate('gift'),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12.sp,
@@ -334,6 +337,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
   }
 
   Widget _buildFloatingTopBar() {
+    final loc = AppLocalizations.of(context);
     return Positioned(
       top: 0,
       left: 0,
@@ -354,7 +358,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                     icon: Icons.share_outlined,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Link copied to clipboard!')),
+                        SnackBar(content: Text(loc.translate('linkCopied'))),
                       );
                     },
                   ),
@@ -419,6 +423,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
   }
 
   Widget _buildDescriptionWidget(String text) {
+    final loc = AppLocalizations.of(context);
     final isLongText = text.length > 150;
     final showExpanded = !isLongText || _isDescriptionExpanded;
     final displayText = showExpanded ? text : '${text.substring(0, 140)}...';
@@ -441,7 +446,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                   child: GestureDetector(
                     onTap: () => setState(() => _isDescriptionExpanded = !_isDescriptionExpanded),
                     child: Text(
-                      _isDescriptionExpanded ? ' Show less' : ' Read more',
+                      _isDescriptionExpanded ? loc.translate('showLess') : loc.translate('readMore'),
                       style: TextStyle(
                         fontSize: 13.5.sp,
                         fontWeight: FontWeight.w600,
@@ -584,6 +589,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
   }
 
   Widget _buildBottomActionButton() {
+    final loc = AppLocalizations.of(context);
     return Positioned(
       bottom: 0,
       left: 0,
@@ -599,15 +605,15 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),
-                title: const Text('Claim Voucher'),
-                content: const Text(
-                  'Your voucher has been claimed and added to your wallet successfully!',
+                title: Text(loc.translate('claimVoucher')),
+                content: Text(
+                  loc.translate('voucherClaimedSuccess'),
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text(
-                      'OK',
+                    child: Text(
+                      loc.translate('ok'),
                       style: TextStyle(color: AppColors.primaryLight),
                     ),
                   ),

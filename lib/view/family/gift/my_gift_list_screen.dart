@@ -1,4 +1,5 @@
 import 'package:familyside/core/config/credential.dart';
+import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_list_response.dart';
@@ -114,6 +115,7 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: AppColors.surfaceLight,
       body: SafeArea(
@@ -121,14 +123,14 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              child: const CustomAppBar(title: 'My gift list'),
+              child: CustomAppBar(title: loc.translate('myGiftList')),
             ),
             Expanded(child: _buildBody()),
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 16.h),
               child: CustomElevatedButton(
                 onPressed: _onCreateList,
-                title: 'Create list',
+                title: loc.translate('createList'),
                 color: Theme.of(context).colorScheme.primary,
                 textColor: Theme.of(context).colorScheme.onPrimary,
               ),
@@ -140,6 +142,7 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
   }
 
   Widget _buildBody() {
+    final loc = AppLocalizations.of(context);
     if (_isLoading) {
       return const _GiftListSkeleton();
     }
@@ -160,7 +163,7 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
                 ),
                 SizedBox(height: 12.h),
                 Text(
-                  'Failed to load gift lists',
+                  loc.translate('failedToLoadGiftLists'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppColors.mutedIcon, fontSize: 16.sp),
                 ),
@@ -168,7 +171,7 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
                 ElevatedButton.icon(
                   onPressed: _loadData,
                   icon: const Icon(Icons.refresh, size: 18),
-                  label: const Text('Retry'),
+                  label: Text(loc.translate('retry')),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryLight,
                     foregroundColor: Colors.white,
@@ -203,13 +206,13 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
                 ),
                 SizedBox(height: 12.h),
                 Text(
-                  'No gift lists yet',
+                  loc.translate('noGiftListsYet'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppColors.mutedIcon, fontSize: 16.sp),
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'Create your first list to get started!',
+                  loc.translate('createFirstList'),
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppColors.mutedIcon, fontSize: 14.sp),
                 ),
@@ -228,8 +231,8 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
         children: [
           SizedBox(height: 16.h),
           GiftListSection(
-            title: 'Your gift list',
-            subtitle: 'Gifts saved inside your gift lists',
+            title: loc.translate('yourGiftList'),
+            subtitle: loc.translate('giftsSavedInsideLists'),
             badgeLabel: '$_giftListsItemCount list items',
             cards: folders
                 .map(
@@ -246,8 +249,8 @@ class _MyGiftListScreenState extends ConsumerState<MyGiftListScreen> {
           if (response.looseItems.isNotEmpty) ...[
             SizedBox(height: 24.h),
             GiftListSection(
-              title: 'Saved gifts without a list',
-              subtitle: "Gifts you saved but didn't add to any list yet",
+              title: loc.translate('savedGiftsWithoutList'),
+              subtitle: loc.translate('giftsNotInAnyList'),
               badgeLabel: '${response.looseItems.length} list items',
               cards: const [], // Loose items data not fully mapped yet
             ),

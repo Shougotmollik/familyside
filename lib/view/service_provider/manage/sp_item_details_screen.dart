@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SpItemDetailsScreen extends ConsumerStatefulWidget {
   final int itemId;
@@ -549,20 +550,56 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
     );
   }
 
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('Failed to launch URL: $url — $e');
+    }
+  }
+
+  void _openWebsite(String website) {
+    if (!website.startsWith('http://') && !website.startsWith('https://')) {
+      _launchUrl('https://$website');
+    } else {
+      _launchUrl(website);
+    }
+  }
+
+  void _openInstagram(String instagram) {
+    final username = instagram.replaceFirst('@', '').trim();
+    _launchUrl('https://instagram.com/$username');
+  }
+
+  void _openWhatsApp(String phone) {
+    final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
+    _launchUrl('https://wa.me/$cleanPhone');
+  }
+
+  void _openEmail(String email) {
+    _launchUrl('mailto:$email');
+  }
+
   // EXACTLY same as family
   Widget _buildActionIcons(SpItemDetails details) {
     final actions = <_ActionIcon>[];
     if (details.website != null && details.website!.isNotEmpty) {
-      actions.add(_ActionIcon('assets/icon/globe.svg', 'Website'));
+      actions.add(_ActionIcon('assets/icon/globe.svg', 'Website',
+          () => _openWebsite(details.website!)));
     }
     if (details.instagram != null && details.instagram!.isNotEmpty) {
-      actions.add(_ActionIcon('assets/icon/instagram.svg', 'Instagram'));
+      actions.add(_ActionIcon('assets/icon/instagram.svg', 'Instagram',
+          () => _openInstagram(details.instagram!)));
     }
     if (details.whatsapp != null && details.whatsapp!.isNotEmpty) {
-      actions.add(_ActionIcon('assets/icon/whatsapp.svg', 'WhatsApp'));
+      actions.add(_ActionIcon('assets/icon/whatsapp.svg', 'WhatsApp',
+          () => _openWhatsApp(details.whatsapp!)));
     }
     if (details.email != null && details.email!.isNotEmpty) {
-      actions.add(_ActionIcon('email', 'Email'));
+      actions.add(_ActionIcon(
+          'email', 'Email', () => _openEmail(details.email!)));
     }
 
     if (actions.isEmpty) return const SizedBox.shrink();
@@ -570,31 +607,36 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: actions.map((a) {
-        return Container(
-          height: 70.h,
-          width: 75.w,
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: a.iconPath == 'email'
-                    ? Icon(
-                        Icons.email_outlined,
-                        size: 22.sp,
-                        color: AppColors.text.withValues(alpha: 0.7),
-                      )
-                    : SvgPicture.asset(a.iconPath, width: 24.w, height: 24.w),
-              ),
-              SizedBox(height: 6.h),
-              Text(
-                a.label,
-                style: TextStyle(fontSize: 11.sp, color: AppColors.lightText),
-              ),
-            ],
+        return GestureDetector(
+          onTap: a.onTap,
+          child: Container(
+            height: 70.h,
+            width: 75.w,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: a.iconPath == 'email'
+                      ? Icon(
+                          Icons.email_outlined,
+                          size: 22.sp,
+                          color: AppColors.text.withValues(alpha: 0.7),
+                        )
+                      : SvgPicture.asset(
+                          a.iconPath, width: 24.w, height: 24.w),
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  a.label,
+                  style:
+                      TextStyle(fontSize: 11.sp, color: AppColors.lightText),
+                ),
+              ],
+            ),
           ),
         );
       }).toList(),
@@ -681,5 +723,6 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
 class _ActionIcon {
   final String iconPath;
   final String label;
-  const _ActionIcon(this.iconPath, this.label);
+  final VoidCallback? onTap;
+  const _ActionIcon(this.iconPath, this.label, [this.onTap]);
 }

@@ -17,6 +17,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ActivityDetailsScreen extends ConsumerStatefulWidget {
   final int itemId;
@@ -416,43 +417,97 @@ class _ActivityDetailsScreenState
     );
   }
 
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('Failed to launch URL: $url — $e');
+    }
+  }
+
+  void _openWebsite(String website) {
+    if (!website.startsWith('http://') && !website.startsWith('https://')) {
+      _launchUrl('https://$website');
+    } else {
+      _launchUrl(website);
+    }
+  }
+
+  void _openInstagram(String instagram) {
+    // Strip @ prefix if present
+    final username = instagram.replaceFirst('@', '').trim();
+    // Try Instagram app first, fallback to web
+    _launchUrl('https://instagram.com/$username');
+  }
+
+  void _openWhatsApp(String phone) {
+    // Remove any non-digit characters
+    final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
+    _launchUrl('https://wa.me/$cleanPhone');
+  }
+
+  void _openDirections(double lat, double lng) {
+    _launchUrl('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+  }
+
   Widget _buildActionIcons(ActivityDetails details) {
     final actions = <_ActionItem>[];
     if (details.website != null && details.website!.isNotEmpty) {
-      actions.add(_ActionItem('assets/icon/globe.svg', 'Website'));
+      actions.add(_ActionItem(
+        'assets/icon/globe.svg',
+        'Website',
+        () => _openWebsite(details.website!),
+      ));
     }
     if (details.instagram != null && details.instagram!.isNotEmpty) {
-      actions.add(_ActionItem('assets/icon/instagram.svg', 'Instagram'));
+      actions.add(_ActionItem(
+        'assets/icon/instagram.svg',
+        'Instagram',
+        () => _openInstagram(details.instagram!),
+      ));
     }
     if (details.whatsapp != null && details.whatsapp!.isNotEmpty) {
-      actions.add(_ActionItem('assets/icon/whatsapp.svg', 'WhatsApp'));
+      actions.add(_ActionItem(
+        'assets/icon/whatsapp.svg',
+        'WhatsApp',
+        () => _openWhatsApp(details.whatsapp!),
+      ));
     }
     // actions.add(_ActionItem('assets/icon/call.svg', 'Call'));
-    actions.add(_ActionItem('assets/icon/mage_direction.svg', 'Direction'));
+    actions.add(_ActionItem(
+      'assets/icon/mage_direction.svg',
+      'Direction',
+      () => _openDirections(details.lat, details.lng),
+    ));
 
     if (actions.isEmpty) return const SizedBox.shrink();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: actions.map((a) {
-        return Container(
-          height: 70.h,
-          width: 75.w,
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.border),
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                  child: SvgPicture.asset(a.iconPath,
-                      width: 24.w, height: 24.w)),
-              SizedBox(height: 6.h),
-              Text(a.label,
-                  style:
-                      TextStyle(fontSize: 11.sp, color: AppColors.lightText)),
-            ],
+        return GestureDetector(
+          onTap: a.onTap,
+          child: Container(
+            height: 70.h,
+            width: 75.w,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                    child: SvgPicture.asset(a.iconPath,
+                        width: 24.w, height: 24.w)),
+                SizedBox(height: 6.h),
+                Text(a.label,
+                    style: TextStyle(
+                        fontSize: 11.sp, color: AppColors.lightText)),
+              ],
+            ),
           ),
         );
       }).toList(),
@@ -703,5 +758,6 @@ class _ActivityDetailsScreenState
 class _ActionItem {
   final String iconPath;
   final String label;
-  const _ActionItem(this.iconPath, this.label);
+  final VoidCallback? onTap;
+  const _ActionItem(this.iconPath, this.label, [this.onTap]);
 }

@@ -14,8 +14,10 @@ import 'package:familyside/view/widgets/google_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EventDetailsScreen extends ConsumerStatefulWidget {
   final int itemId;
@@ -91,149 +93,148 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeroImage(details),
-              Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (details.description.isNotEmpty) ...[
-                      Text(
-                        loc.translate('description'),
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.text,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeroImage(details),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (details.description.isNotEmpty) ...[
+                        Text(
+                          loc.translate('description'),
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.text,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 8.h),
-                      _buildDescription(details.description, loc),
+                        SizedBox(height: 8.h),
+                        _buildDescription(details.description, loc),
+                        SizedBox(height: 20.h),
+                      ],
+                      _buildActionIcons(details),
                       SizedBox(height: 20.h),
-                    ],
-                    // @codebuf: website, instagram, whatsapp, call, direction not needed for events
-                    // _buildActionIcons(details),
-                    // SizedBox(height: 20.h),
-                    if (hasLocation) ...[
-                      _buildMiniMap(position),
-                      SizedBox(height: 8.h),
-                    ],
-                    _buildAddressRow(details),
-                    SizedBox(height: 24.h),
-                    if (details.relatedEvents.isNotEmpty) ...[
-                      _buildSectionHeader(
-                        loc.translate('relatedEvents'),
-                        onSeeAll: details.relatedEvents.length > 2
-                            ? () => context.push(
-                                RouterPath.familyRecommendationScreen,
-                                extra: ListScreenConfig(
-                                  title: loc.translate('relatedEvents'),
-                                  items: details.relatedEvents
-                                      .map(_apiItemToRecommended)
-                                      .toList(),
-                                ),
-                              )
-                            : null,
-                        loc: loc,
-                      ),
-                      SizedBox(height: 12.h),
-                      ...details.relatedEvents
-                          .take(2)
-                          .map(
-                            (item) => EventCard(
-                              imagePath: item.imageUrl ?? '',
-                              category: item.categoryName ?? '',
-                              date: item.dateLabel ?? '',
-                              title: item.name,
-                              price: item.price.toStringAsFixed(0),
-                              distance: item.distanceKm != null
-                                  ? '${item.distanceKm!.toStringAsFixed(2)} km'
-                                  : 'N/A',
-                              ageRange: item.ageRange ?? '',
-                              tag: item.isRecommended
-                                  ? 'Recommended'
-                                  : item.itemType,
-                            ),
-                          ),
-                      SizedBox(height: 8.h),
-                    ],
-                    if (details.giftIdeas.isNotEmpty) ...[
-                      _buildSectionHeader(
-                        loc.translate('giftIdeas'),
-                        onSeeAll: details.giftIdeas.length > 3
-                            ? () => context.push(
-                                RouterPath.familyRecommendationScreen,
-                                extra: ListScreenConfig(
-                                  title: loc.translate('giftIdeas'),
-                                  items: details.giftIdeas
-                                      .map(_apiItemToRecommended)
-                                      .toList(),
-                                ),
-                              )
-                            : null,
-                        loc: loc,
-                      ),
-                      SizedBox(height: 12.h),
-                      SizedBox(
-                        height: 160.h,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: details.giftIdeas.length,
-                          itemBuilder: (_, i) =>
-                              _buildGiftChip(details.giftIdeas[i]),
-                        ),
-                      ),
+                      if (hasLocation) ...[
+                        _buildMiniMap(position),
+                        SizedBox(height: 8.h),
+                      ],
+                      _buildAddressRow(details),
                       SizedBox(height: 24.h),
-                    ],
-                    if (details.reviews.isNotEmpty) ...[
-                      Row(
-                        children: [
-                          Text(
-                            loc.translate('reviews'),
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.text,
+                      if (details.relatedEvents.isNotEmpty) ...[
+                        _buildSectionHeader(
+                          loc.translate('relatedEvents'),
+                          onSeeAll: details.relatedEvents.length > 2
+                              ? () => context.push(
+                                  RouterPath.familyRecommendationScreen,
+                                  extra: ListScreenConfig(
+                                    title: loc.translate('relatedEvents'),
+                                    items: details.relatedEvents
+                                        .map(_apiItemToRecommended)
+                                        .toList(),
+                                  ),
+                                )
+                              : null,
+                          loc: loc,
+                        ),
+                        SizedBox(height: 12.h),
+                        ...details.relatedEvents
+                            .take(2)
+                            .map(
+                              (item) => EventCard(
+                                imagePath: item.imageUrl ?? '',
+                                category: item.categoryName ?? '',
+                                date: item.dateLabel ?? '',
+                                title: item.name,
+                                price: item.price.toStringAsFixed(0),
+                                distance: item.distanceKm != null
+                                    ? '${item.distanceKm!.toStringAsFixed(2)} km'
+                                    : 'N/A',
+                                ageRange: item.ageRange ?? '',
+                                tag: item.isRecommended
+                                    ? 'Recommended'
+                                    : item.itemType,
+                              ),
                             ),
+                        SizedBox(height: 8.h),
+                      ],
+                      if (details.giftIdeas.isNotEmpty) ...[
+                        _buildSectionHeader(
+                          loc.translate('giftIdeas'),
+                          onSeeAll: details.giftIdeas.length > 3
+                              ? () => context.push(
+                                  RouterPath.familyRecommendationScreen,
+                                  extra: ListScreenConfig(
+                                    title: loc.translate('giftIdeas'),
+                                    items: details.giftIdeas
+                                        .map(_apiItemToRecommended)
+                                        .toList(),
+                                  ),
+                                )
+                              : null,
+                          loc: loc,
+                        ),
+                        SizedBox(height: 12.h),
+                        SizedBox(
+                          height: 160.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: details.giftIdeas.length,
+                            itemBuilder: (_, i) =>
+                                _buildGiftChip(details.giftIdeas[i]),
                           ),
-                          if (details.averageRatingLabel.isNotEmpty) ...[
-                            SizedBox(width: 8.w),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 8.w,
-                                vertical: 3.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.secondaryLight.withValues(
-                                  alpha: 0.15,
-                                ),
-                                borderRadius: BorderRadius.circular(12.r),
-                              ),
-                              child: Text(
-                                details.averageRatingLabel,
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: AppColors.secondaryLight,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        ),
+                        SizedBox(height: 24.h),
+                      ],
+                      if (details.reviews.isNotEmpty) ...[
+                        Row(
+                          children: [
+                            Text(
+                              loc.translate('reviews'),
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.text,
                               ),
                             ),
+                            if (details.averageRatingLabel.isNotEmpty) ...[
+                              SizedBox(width: 8.w),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 3.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.secondaryLight.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Text(
+                                  details.averageRatingLabel,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: AppColors.secondaryLight,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
-                      ),
-                      SizedBox(height: 12.h),
-                      ...details.reviews.map((r) => _buildReviewCard(r)),
+                        ),
+                        SizedBox(height: 12.h),
+                        ...details.reviews.map((r) => _buildReviewCard(r)),
+                      ],
+                      SizedBox(height: 80.h),
                     ],
-                    SizedBox(height: 80.h),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-      Positioned(
+        Positioned(
           bottom: 0,
           left: 0,
           right: 0,
@@ -501,7 +502,9 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           GestureDetector(
             onTap: () => setState(() => _descExpanded = !_descExpanded),
             child: Text(
-              _descExpanded ? loc.translate('showLess') : loc.translate('readMore'),
+              _descExpanded
+                  ? loc.translate('showLess')
+                  : loc.translate('readMore'),
               style: TextStyle(
                 fontSize: 13.sp,
                 color: AppColors.primaryLight,
@@ -510,6 +513,100 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
             ),
           ),
       ],
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('Failed to launch URL: $url — $e');
+    }
+  }
+
+  void _openWebsite(String website) {
+    if (!website.startsWith('http://') && !website.startsWith('https://')) {
+      _launchUrl('https://$website');
+    } else {
+      _launchUrl(website);
+    }
+  }
+
+  void _openInstagram(String instagram) {
+    final username = instagram.replaceFirst('@', '').trim();
+    _launchUrl('https://instagram.com/$username');
+  }
+
+  void _openWhatsApp(String phone) {
+    final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
+    _launchUrl('https://wa.me/$cleanPhone');
+  }
+
+  void _openDirections(double lat, double lng) {
+    _launchUrl(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+  }
+
+  Widget _buildActionIcons(ActivityDetails details) {
+    final actions = <_EventActionItem>[];
+    if (details.website != null && details.website!.isNotEmpty) {
+      actions.add(_EventActionItem(
+        'assets/icon/globe.svg',
+        'Website',
+        () => _openWebsite(details.website!),
+      ));
+    }
+    if (details.instagram != null && details.instagram!.isNotEmpty) {
+      actions.add(_EventActionItem(
+        'assets/icon/instagram.svg',
+        'Instagram',
+        () => _openInstagram(details.instagram!),
+      ));
+    }
+    if (details.whatsapp != null && details.whatsapp!.isNotEmpty) {
+      actions.add(_EventActionItem(
+        'assets/icon/whatsapp.svg',
+        'WhatsApp',
+        () => _openWhatsApp(details.whatsapp!),
+      ));
+    }
+    actions.add(_EventActionItem(
+      'assets/icon/mage_direction.svg',
+      'Direction',
+      () => _openDirections(details.lat, details.lng),
+    ));
+
+    if (actions.isEmpty) return const SizedBox.shrink();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: actions.map((a) {
+        return GestureDetector(
+          onTap: a.onTap,
+          child: Container(
+            height: 70.h,
+            width: 75.w,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.border),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                    child: SvgPicture.asset(a.iconPath,
+                        width: 24.w, height: 24.w)),
+                SizedBox(height: 6.h),
+                Text(a.label,
+                    style: TextStyle(
+                        fontSize: 11.sp, color: AppColors.lightText)),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -570,7 +667,11 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll, AppLocalizations? loc}) {
+  Widget _buildSectionHeader(
+    String title, {
+    VoidCallback? onSeeAll,
+    AppLocalizations? loc,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -803,4 +904,11 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
       tag: item.isRecommended ? 'Recommended' : item.itemType,
     );
   }
+}
+
+class _EventActionItem {
+  final String iconPath;
+  final String label;
+  final VoidCallback? onTap;
+  const _EventActionItem(this.iconPath, this.label, [this.onTap]);
 }

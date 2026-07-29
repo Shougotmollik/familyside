@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:familyside/utils/share_helper.dart';
 
 class GiftDetailScreen extends ConsumerStatefulWidget {
   final int itemId;
@@ -22,6 +23,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
   bool _isSaved = false;
   bool _saveInProgress = false;
   bool _isDescriptionExpanded = false;
+  bool _shareInProgress = false;
 
   @override
   void initState() {
@@ -211,7 +213,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
           ),
         ),
       ),
-      _buildFloatingTopBar(),
+      _buildFloatingTopBar(details),
         _buildBottomActionButton(),
       ],
     );
@@ -341,7 +343,7 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
     );
   }
 
-  Widget _buildFloatingTopBar() {
+  Widget _buildFloatingTopBar(ActivityDetails details) {
     final loc = AppLocalizations.of(context);
     return Positioned(
       top: 0,
@@ -359,14 +361,26 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
               ),
               Row(
                 children: [
-                  _circleActionButton(
-                    icon: Icons.share_outlined,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(loc.translate('linkCopied'))),
-                      );
-                    },
-                  ),
+                  _shareInProgress
+                      ? _circleActionButtonLoading()
+                      : _circleActionButton(
+                          icon: Icons.share_outlined,
+                          onTap: () async {
+                            setState(() => _shareInProgress = true);
+                            final shareUrl = await ActivityDetailsProvider
+                                .generateShareLink(itemId: widget.itemId);
+                            if (mounted) {
+                              setState(() => _shareInProgress = false);
+                              ShareHelper.shareItem(
+                                name: details.name,
+                                description: details.description,
+                                category: loc.translate('gift'),
+                                location: details.address,
+                                shareUrl: shareUrl,
+                              );
+                            }
+                          },
+                        ),
                   SizedBox(width: 10.w),
                   _circleActionButton(
                     icon: _isSaved ? Icons.bookmark : Icons.bookmark_border_rounded,
@@ -423,6 +437,26 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
         ),
         alignment: Alignment.center,
         child: Icon(icon, color: iconColor, size: 20.sp),
+      ),
+    );
+  }
+
+  Widget _circleActionButtonLoading() {
+    return Container(
+      height: 38.w,
+      width: 38.w,
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.35),
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 18.w,
+        height: 18.w,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+          color: Colors.white,
+        ),
       ),
     );
   }

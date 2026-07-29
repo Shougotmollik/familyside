@@ -1,6 +1,7 @@
 import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/gift_item_model.dart';
+import 'package:familyside/utils/share_helper.dart';
 import 'package:familyside/view/family/gift/widgets/gift_item_compact_preview.dart';
 import 'package:familyside/view/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,15 @@ class ShareGiftCardDialog extends StatelessWidget {
             SizedBox(height: 24.h),
             CustomElevatedButton(
               onPressed: () {
-                onShare?.call();
+                if (onShare != null) {
+                  onShare!();
+                } else {
+                  ShareHelper.shareItem(
+                    name: giftItem.title,
+                    description: giftItem.description,
+                    price: '\$${giftItem.price}',
+                  );
+                }
                 Navigator.pop(context);
               },
               title: '${loc.translate('share')} ${loc.translate('gift')}',

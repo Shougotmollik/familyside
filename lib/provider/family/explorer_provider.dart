@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:familyside/core/constants/api_constant.dart';
 import 'package:familyside/model/activity_details.dart';
 import 'package:familyside/model/gift_api_item.dart';
@@ -133,6 +134,25 @@ class ActivityDetailsProvider extends _$ActivityDetailsProvider {
       }
     } catch (e, stackTrace) {
       state = AsyncError(e, stackTrace);
+    }
+  }
+
+  /// Generate a shareable link for an item.
+  /// Returns the share_url from the API, or null on failure.
+  static Future<String?> generateShareLink({required int itemId}) async {
+    try {
+      final response = await CustomHttp.post(
+        endpoint: ApiConstants.shareLink(itemId: itemId),
+        body: {},
+            );
+
+      if (response.ok && response.data != null) {
+        return response.data['data']?['share_url'] as String?;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Failed to generate share link: $e');
+      return null;
     }
   }
 

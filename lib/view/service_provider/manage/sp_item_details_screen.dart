@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/model/sp_item_details.dart';
+import 'package:familyside/provider/family/explorer_provider.dart';
 import 'package:familyside/provider/service_provider/sp_manage_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:familyside/utils/share_helper.dart';
 
 class SpItemDetailsScreen extends ConsumerStatefulWidget {
   final int itemId;
@@ -24,6 +26,7 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
   bool _descExpanded = false;
   SpItemDetails? _details;
   bool _isLoading = true;
+  bool _shareInProgress = false;
 
   @override
   void initState() {
@@ -357,6 +360,26 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
     );
   }
 
+  Widget _circleBtnLoading() {
+    return GestureDetector(
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.9),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: SizedBox(
+            width: 16.w,
+            height: 16.w,
+            child: const CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      ),
+    );
+  }
+
   // EXACTLY same hero structure as family — buttons INSIDE the hero stack
   Widget _buildHeroImage(SpItemDetails details, Color typeBadgeColor) {
     final hasImage = details.imageUrl != null && details.imageUrl!.isNotEmpty;
@@ -409,7 +432,26 @@ class _SpItemDetailsScreenState extends ConsumerState<SpItemDetailsScreen> {
                   Icons.arrow_back_ios_new_rounded,
                   () => context.pop(),
                 ),
-                _circleBtn(Icons.share_outlined, () {}),
+                _shareInProgress
+                    ? _circleBtnLoading()
+                    : _circleBtn(Icons.share_outlined, () async {
+                      setState(() => _shareInProgress = true);
+                      final shareUrl = await ActivityDetailsProvider
+                          .generateShareLink(itemId: widget.itemId);
+                      if (mounted) {
+                        setState(() => _shareInProgress = false);
+                        ShareHelper.shareItem(
+                          name: _details!.name,
+                          description: _details!.description,
+                          category: _details!.itemType,
+                          location: _details!.location,
+                          price: _details!.price > 0
+                              ? '\$${_details!.price.toStringAsFixed(0)}'
+                              : null,
+                          shareUrl: shareUrl,
+                        );
+                      }
+                    }),
               ],
             ),
           ),

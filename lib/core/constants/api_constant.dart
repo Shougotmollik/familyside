@@ -106,6 +106,9 @@ class ApiConstants {
   static const String suggestions = "$apiVersion/family/profile/suggestions";
   static const String familyReviews = "$apiVersion/family/profile/reviews";
 
+  static String shareLink({required int itemId}) =>
+      "$apiVersion/family/items/$itemId/share";
+
   static const String familySearch = "$apiVersion/family/search/init";
   static const String familySearchRecomendation =
       "$apiVersion/family/search/execute";

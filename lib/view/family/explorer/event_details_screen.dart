@@ -18,6 +18,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:familyside/utils/share_helper.dart';
 
 class EventDetailsScreen extends ConsumerStatefulWidget {
   final int itemId;
@@ -32,6 +33,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
   bool _descExpanded = false;
   bool _isSaved = false;
   bool _saveInProgress = false;
+  bool _shareInProgress = false;
 
   @override
   void initState() {
@@ -330,7 +332,23 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                 ),
                 Row(
                   children: [
-                    _circleBtn(Icons.share_outlined, () {}),
+                    _shareInProgress
+                        ? _circleBtnLoading()
+                        : _circleBtn(Icons.share_outlined, () async {
+                          setState(() => _shareInProgress = true);
+                          final shareUrl = await ActivityDetailsProvider
+                              .generateShareLink(itemId: widget.itemId);
+                          if (mounted) {
+                            setState(() => _shareInProgress = false);
+                            ShareHelper.shareItem(
+                              name: details.name,
+                              description: details.description,
+                              category: 'Event',
+                              location: details.address,
+                              shareUrl: shareUrl,
+                            );
+                          }
+                        }),
                     SizedBox(width: 8.w),
                     _buildSaveButton(),
                   ],
@@ -474,6 +492,26 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           shape: BoxShape.circle,
         ),
         child: Icon(icon, size: 18.sp, color: iconColor ?? AppColors.text),
+      ),
+    );
+  }
+
+  Widget _circleBtnLoading() {
+    return GestureDetector(
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.9),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: SizedBox(
+            width: 16.w,
+            height: 16.w,
+            child: const CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
       ),
     );
   }

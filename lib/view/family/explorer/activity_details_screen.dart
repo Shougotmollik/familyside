@@ -87,118 +87,124 @@ class _ActivityDetailsScreenState
 
     return Stack(
       children: [
-        SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeroImage(details),
-              Padding(
-                padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (details.description.isNotEmpty) ...[
-                      Text(loc.translate('description'),
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.text)),
-                      SizedBox(height: 8.h),
-                      _buildDescription(details.description, loc),
-                      SizedBox(height: 20.h),
-                    ],
-                    _buildActionIcons(details),
-                    SizedBox(height: 20.h),
-                    if (hasLocation) ...[
-                      _buildMiniMap(position),
-                      SizedBox(height: 8.h),
-                    ],
-                    _buildAddressRow(details),
-                    SizedBox(height: 24.h),
-                    if (details.relatedEvents.isNotEmpty) ...[
-                      _buildSectionHeader(loc.translate('events'),
-                          onSeeAll: details.relatedEvents.length > 2
-                              ? () => context.push(
-                                  RouterPath.familyRecommendationScreen,
-                                  extra: ListScreenConfig(
-                                      title: loc.translate('events'),
-                                      items: details.relatedEvents
-                                          .map(_apiItemToRecommended)
-                                          .toList()))
-                              : null,
-                          loc: loc),
-                      SizedBox(height: 12.h),
-                      ...details.relatedEvents.take(2).map((item) => EventCard(
-                          imagePath: item.imageUrl ?? '',
-                          category: item.categoryName ?? '',
-                          date: item.dateLabel ?? '',
-                          title: item.name,
-                          price: item.price.toStringAsFixed(0),
-                          distance: item.distanceKm != null
-                              ? '${item.distanceKm!.toStringAsFixed(2)} km'
-                              : 'N/A',
-                          ageRange: item.ageRange ?? '',
-                          tag: item.isRecommended
-                              ? 'Recommended'
-                              : item.itemType)),
-                      SizedBox(height: 8.h),
-                    ],
-                    if (details.giftIdeas.isNotEmpty) ...[
-                      _buildSectionHeader(loc.translate('giftIdeas'),
-                          onSeeAll: details.giftIdeas.length > 3
-                              ? () => context.push(
-                                  RouterPath.familyRecommendationScreen,
-                                  extra: ListScreenConfig(
-                                      title: loc.translate('giftIdeas'),
-                                      items: details.giftIdeas
-                                          .map(_apiItemToRecommended)
-                                          .toList()))
-                              : null,
-                          loc: loc),
-                      SizedBox(height: 12.h),
-                      SizedBox(
-                        height: 160.h,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: details.giftIdeas.length,
-                          itemBuilder: (_, i) =>
-                              _buildGiftChip(details.giftIdeas[i]),
-                        ),
-                      ),
-                      SizedBox(height: 24.h),
-                    ],
-                    if (details.reviews.isNotEmpty) ...[
-                      Row(children: [
-                        Text(loc.translate('reviews'),
+        RefreshIndicator(
+          onRefresh: () => ref
+              .read(activityDetailsProviderProvider.notifier)
+              .fetchDetails(widget.itemId),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeroImage(details),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (details.description.isNotEmpty) ...[
+                        Text(loc.translate('description'),
                             style: TextStyle(
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.text)),
-                        if (details.averageRatingLabel.isNotEmpty) ...[
-                          SizedBox(width: 8.w),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.w, vertical: 3.h),
-                            decoration: BoxDecoration(
-                                color: AppColors.secondaryLight
-                                    .withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12.r)),
-                            child: Text(details.averageRatingLabel,
-                                style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: AppColors.secondaryLight,
-                                    fontWeight: FontWeight.w600)),
+                        SizedBox(height: 8.h),
+                        _buildDescription(details.description, loc),
+                        SizedBox(height: 20.h),
+                      ],
+                      _buildActionIcons(details),
+                      SizedBox(height: 20.h),
+                      if (hasLocation) ...[
+                        _buildMiniMap(position),
+                        SizedBox(height: 8.h),
+                      ],
+                      _buildAddressRow(details),
+                      SizedBox(height: 24.h),
+                      if (details.relatedEvents.isNotEmpty) ...[
+                        _buildSectionHeader(loc.translate('events'),
+                            onSeeAll: details.relatedEvents.length > 2
+                                ? () => context.push(
+                                    RouterPath.familyRecommendationScreen,
+                                    extra: ListScreenConfig(
+                                        title: loc.translate('events'),
+                                        items: details.relatedEvents
+                                            .map(_apiItemToRecommended)
+                                            .toList()))
+                                : null,
+                            loc: loc),
+                        SizedBox(height: 12.h),
+                        ...details.relatedEvents.take(2).map((item) => EventCard(
+                            imagePath: item.imageUrl ?? '',
+                            category: item.categoryName ?? '',
+                            date: item.dateLabel ?? '',
+                            title: item.name,
+                            price: item.price.toStringAsFixed(0),
+                            distance: item.distanceKm != null
+                                ? '${item.distanceKm!.toStringAsFixed(2)} km'
+                                : 'N/A',
+                            ageRange: item.ageRange ?? '',
+                            tag: item.isRecommended
+                                ? 'Recommended'
+                                : item.itemType)),
+                        SizedBox(height: 8.h),
+                      ],
+                      if (details.giftIdeas.isNotEmpty) ...[
+                        _buildSectionHeader(loc.translate('giftIdeas'),
+                            onSeeAll: details.giftIdeas.length > 3
+                                ? () => context.push(
+                                    RouterPath.familyRecommendationScreen,
+                                    extra: ListScreenConfig(
+                                        title: loc.translate('giftIdeas'),
+                                        items: details.giftIdeas
+                                            .map(_apiItemToRecommended)
+                                            .toList()))
+                                : null,
+                            loc: loc),
+                        SizedBox(height: 12.h),
+                        SizedBox(
+                          height: 160.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: details.giftIdeas.length,
+                            itemBuilder: (_, i) =>
+                                _buildGiftChip(details.giftIdeas[i]),
                           ),
-                        ],
-                      ]),
-                      SizedBox(height: 12.h),
-                      ...details.reviews.map((r) => _buildReviewCard(r)),
+                        ),
+                        SizedBox(height: 24.h),
+                      ],
+                      if (details.reviews.isNotEmpty) ...[
+                        Row(children: [
+                          Text(loc.translate('reviews'),
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.text)),
+                          if (details.averageRatingLabel.isNotEmpty) ...[
+                            SizedBox(width: 8.w),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w, vertical: 3.h),
+                              decoration: BoxDecoration(
+                                  color: AppColors.secondaryLight
+                                      .withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(12.r)),
+                              child: Text(details.averageRatingLabel,
+                                  style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: AppColors.secondaryLight,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ]),
+                        SizedBox(height: 12.h),
+                        ...details.reviews.map((r) => _buildReviewCard(r)),
+                      ],
+                      SizedBox(height: 80.h),
                     ],
-                    SizedBox(height: 80.h),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         Positioned(

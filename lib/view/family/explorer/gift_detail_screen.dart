@@ -88,9 +88,13 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
 
     return Stack(
       children: [
-        SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
-          child: Column(
+        RefreshIndicator(
+          onRefresh: () => ref
+              .read(activityDetailsProviderProvider.notifier)
+              .fetchDetails(widget.itemId),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeroHeader(details, priceText, locationText),
@@ -206,7 +210,8 @@ class _GiftDetailScreenState extends ConsumerState<GiftDetailScreen> {
             ],
           ),
         ),
-        _buildFloatingTopBar(),
+      ),
+      _buildFloatingTopBar(),
         _buildBottomActionButton(),
       ],
     );

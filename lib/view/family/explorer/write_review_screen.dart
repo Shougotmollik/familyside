@@ -75,15 +75,6 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
 
   Future<void> _submitReview() async {
     final loc = AppLocalizations.of(context);
-    if (_selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(loc.translate('pleaseSelectCategory')),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
     if (!_formKey.currentState!.validate()) return;
 
     if (_isSubmitting) return;
@@ -93,7 +84,7 @@ class _WriteReviewScreenState extends ConsumerState<WriteReviewScreen> {
         .read(activityDetailsProviderProvider.notifier)
         .submitReview(
           itemId: widget.itemId,
-          categoryName: _selectedCategory!,
+          categoryName: _selectedCategory,
           recommendationLevel: _selectedRecommendation,
           comment: _reviewController.text.trim(),
           tags: _selectedTags.isNotEmpty ? _selectedTags.join(',') : null,

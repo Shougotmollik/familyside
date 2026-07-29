@@ -84,8 +84,13 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
 
     return Stack(
       children: [
-        SingleChildScrollView(
-          child: Column(
+        RefreshIndicator(
+          onRefresh: () => ref
+              .read(activityDetailsProviderProvider.notifier)
+              .fetchDetails(widget.itemId),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeroImage(details),
@@ -227,7 +232,8 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
             ],
           ),
         ),
-        Positioned(
+      ),
+      Positioned(
           bottom: 0,
           left: 0,
           right: 0,

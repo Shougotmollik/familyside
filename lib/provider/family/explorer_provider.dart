@@ -138,17 +138,19 @@ class ActivityDetailsProvider extends _$ActivityDetailsProvider {
 
   Future<CustomHttpResult> submitReview({
     required int itemId,
-    required String categoryName,
+    String? categoryName,
     required String recommendationLevel,
     required String comment,
     String? tags,
     String? photoPath,
   }) async {
     final fields = <String, String>{
-      'category_name': categoryName,
       'recommendation_level': recommendationLevel,
       'comment': comment,
     };
+    if (categoryName != null && categoryName.isNotEmpty) {
+      fields['category_name'] = categoryName;
+    }
     if (tags != null && tags.isNotEmpty) {
       fields['tags'] = tags;
     }

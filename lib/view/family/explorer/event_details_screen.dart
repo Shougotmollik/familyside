@@ -332,11 +332,7 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
                   children: [
                     _circleBtn(Icons.share_outlined, () {}),
                     SizedBox(width: 8.w),
-                    _circleBtn(
-                      _isSaved ? Icons.bookmark : Icons.bookmark_border,
-                      _saveInProgress ? null : _toggleSave,
-                      iconColor: _isSaved ? AppColors.primaryLight : null,
-                    ),
+                    _buildSaveButton(),
                   ],
                 ),
               ],
@@ -478,6 +474,39 @@ class _EventDetailsScreenState extends ConsumerState<EventDetailsScreen> {
           shape: BoxShape.circle,
         ),
         child: Icon(icon, size: 18.sp, color: iconColor ?? AppColors.text),
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return GestureDetector(
+      onTap: _saveInProgress ? null : _toggleSave,
+      child: Container(
+        width: 36.w,
+        height: 36.w,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.9),
+          shape: BoxShape.circle,
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (child, animation) {
+            final spring = CurvedAnimation(
+              parent: animation,
+              curve: const Cubic(0.175, 0.885, 0.32, 1.275),
+            );
+            return ScaleTransition(
+              scale: spring,
+              child: FadeTransition(opacity: animation, child: child),
+            );
+          },
+          child: Icon(
+            _isSaved ? Icons.bookmark : Icons.bookmark_border,
+            key: ValueKey(_isSaved),
+            size: 18.sp,
+            color: _isSaved ? AppColors.primaryLight : AppColors.text,
+          ),
+        ),
       ),
     );
   }

@@ -6,7 +6,6 @@ import 'package:familyside/provider/family/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -582,6 +581,8 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF1D1B20),
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 4.h),
               _buildLocationRow(
@@ -591,6 +592,7 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
             ],
           ),
         ),
+        SizedBox(width: 8.w),
         _buildActionButtons(header?.unreadNotifications ?? 0),
       ],
     );
@@ -599,24 +601,28 @@ class _FamilyHomeScreenState extends ConsumerState<FamilyHomeScreen> {
   Widget _buildLocationRow(BuildContext context, String location) {
     return Row(
       children: [
-        Text(
-          location,
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF6C6C6C),
+        Expanded(
+          child: Text(
+            location,
+            style: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w400,
+              color: const Color(0xFF6C6C6C),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        SizedBox(width: 4.w),
-        SvgPicture.asset(
-          "assets/logo/edit.svg",
-          height: 14.w,
-          width: 14.w,
-          colorFilter: const ColorFilter.mode(
-            AppColors.primaryLight,
-            BlendMode.srcIn,
-          ),
-        ),
+        // SizedBox(width: 4.w),
+        // SvgPicture.asset(
+        //   "assets/logo/edit.svg",
+        //   height: 14.w,
+        //   width: 14.w,
+        //   colorFilter: const ColorFilter.mode(
+        //     AppColors.primaryLight,
+        //     BlendMode.srcIn,
+        //   ),
+        // ),
       ],
     );
   }

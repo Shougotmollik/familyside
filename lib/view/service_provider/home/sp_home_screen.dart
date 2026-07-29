@@ -12,7 +12,6 @@ import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class SpHomeScreen extends ConsumerStatefulWidget {
@@ -229,32 +228,39 @@ class _SpHomeScreenState extends ConsumerState<SpHomeScreen> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.text,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 3.h),
               Row(
                 children: [
-                  Text(
-                    header.location,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: AppColors.lightText,
+                  Expanded(
+                    child: Text(
+                      header.location,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        color: AppColors.lightText,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  SizedBox(width: 4.w),
-                  SvgPicture.asset(
-                    'assets/logo/edit.svg',
-                    width: 13.w,
-                    height: 13.w,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.primaryLight,
-                      BlendMode.srcIn,
-                    ),
-                  ),
+                  // SizedBox(width: 4.w),
+                  // SvgPicture.asset(
+                  //   'assets/logo/edit.svg',
+                  //   width: 13.w,
+                  //   height: 13.w,
+                  //   colorFilter: const ColorFilter.mode(
+                  //     AppColors.primaryLight,
+                  //     BlendMode.srcIn,
+                  //   ),
+                  // ),
                 ],
               ),
             ],
           ),
         ),
+        SizedBox(width: 8.w),
         // Notification bell
         Stack(
           clipBehavior: Clip.none,

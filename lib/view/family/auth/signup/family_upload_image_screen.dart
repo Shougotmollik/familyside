@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:familyside/core/localization/app_localizations.dart';
+import 'package:familyside/provider/family/family_profile_provider.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
@@ -37,6 +38,10 @@ class _FamilyUploadImageScreenState extends ConsumerState<FamilyUploadImageScree
     if (_pickedImage == null) return;
     setState(() => _isUploading = true);
     await ref.read(onboardingProvider.notifier).profileImage(image: _pickedImage!);
+
+    // Invalidate profile provider so it re-fetches fresh data when profile tab is viewed
+    ref.invalidate(familyProfileProvider);
+
     if (mounted) {
       context.pushReplacement(RouterPath.familyMainNavBarScreen);
     }
@@ -165,6 +170,7 @@ class _FamilyUploadImageScreenState extends ConsumerState<FamilyUploadImageScree
               SizedBox(height: 16.h),
               CustomElevatedButton(
                 onPressed: () {
+                  ref.invalidate(familyProfileProvider);
                   context.pushReplacement(RouterPath.familyMainNavBarScreen);
                 },
                 title: loc.translate('skip'),

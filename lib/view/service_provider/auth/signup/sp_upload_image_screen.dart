@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/provider/onboarding_controller.dart';
+import 'package:familyside/provider/service_provider/sp_profile_provider.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/utils/image_picker.dart';
@@ -36,6 +37,10 @@ class _SpUploadImageScreenState extends ConsumerState<SpUploadImageScreen> {
     if (_pickedImage == null) return;
     setState(() => _isUploading = true);
     await ref.read(onboardingProvider.notifier).profileImage(image: _pickedImage!);
+
+    // Invalidate profile provider so it re-fetches fresh data when profile tab is viewed
+    ref.invalidate(spProfileProvider);
+
     if (mounted) {
       context.pushReplacement(RouterPath.spMainNavBarScreen);
     }
@@ -164,6 +169,7 @@ class _SpUploadImageScreenState extends ConsumerState<SpUploadImageScreen> {
               SizedBox(height: 16.h),
               CustomElevatedButton(
                 onPressed: () {
+                  ref.invalidate(spProfileProvider);
                   context.pushReplacement(RouterPath.spMainNavBarScreen);
                 },
                 title: loc.translate('skip'),

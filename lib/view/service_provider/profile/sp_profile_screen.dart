@@ -11,11 +11,28 @@ import 'package:go_router/go_router.dart';
 import 'package:familyside/core/theme/app_colors.dart';
 import 'package:familyside/core/router/router_path.dart';
 import 'package:familyside/provider/auth_provider.dart';
-import 'package:familyside/view/family/profile/widgets/profile_stat_card.dart';
 import 'package:familyside/view/family/profile/widgets/profile_svg_icon.dart';
 
-class SpProfileScreen extends ConsumerWidget {
+class SpProfileScreen extends ConsumerStatefulWidget {
   const SpProfileScreen({super.key});
+
+  @override
+  ConsumerState<SpProfileScreen> createState() => _SpProfileScreenState();
+}
+
+class _SpProfileScreenState extends ConsumerState<SpProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Auto-retry on first load: if the provider has stale/null data,
+    // refresh it after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final current = ref.read(spProfileProvider);
+      if (current is AsyncData && current.value == null) {
+        ref.invalidate(spProfileProvider);
+      }
+    });
+  }
 
   static const List<_SettingItem> _settings = [
     _SettingItem(
@@ -51,63 +68,111 @@ class SpProfileScreen extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context);
     final profileAsync = ref.watch(spProfileProvider);
 
     return Scaffold(
       backgroundColor: AppColors.profileHeaderBackground,
       body: profileAsync.when(
-        data: (profile) => RefreshIndicator(
-          onRefresh: () => ref.refresh(spProfileProvider.future),
-          child: Column(
-          children: [
-            _SpProfileHeader(profile: profile),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceLight,
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(24.r),
-                  ),
+        data: (profile) {
+          if (profile == null) {
+            return _buildNullState(context);
+          }
+          return _buildProfileContent(context, profile);
+        },
+        error: (err, stack) {
+          debugPrint('Error: $err');
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(loc.translate('errorLoadingProfile')),
+                SizedBox(height: 16.h),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(spProfileProvider.future),
+                  child: Text(loc.translate('retry')),
                 ),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // _SpStatsRow(stats: profile?.stats),
-                      // SizedBox(height: 16.h),
-                      // _ContributeSection(),
-                      SizedBox(height: 16.h),
-                      _GeneralSettingsSection(settings: _settings),
-                      SizedBox(height: 16.h),
-                      _LanguageSection(),
-                      SizedBox(height: 16.h),
-                      _LogoutSection(),
-                    ],
-                  ),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget _buildNullState(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.person_outline,
+            size: 64.sp,
+            color: AppColors.mutedIcon,
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            loc.translate('errorLoadingProfile'),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppColors.lightText,
+                ),
+          ),
+          SizedBox(height: 16.h),
+          ElevatedButton.icon(
+            onPressed: () => ref.refresh(spProfileProvider.future),
+            icon: const Icon(Icons.refresh, size: 18),
+            label: Text(loc.translate('retry')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileContent(
+      BuildContext context, ProviderProfileData profile) {
+    return RefreshIndicator(
+      onRefresh: () => ref.refresh(spProfileProvider.future),
+      child: Column(
+        children: [
+          _SpProfileHeader(profile: profile),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLight,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24.r),
+                ),
+              ),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16.h),
+                    _GeneralSettingsSection(settings: _settings),
+                    SizedBox(height: 16.h),
+                    _LanguageSection(),
+                    SizedBox(height: 16.h),
+                    _LogoutSection(),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
-        ),
-        error: (err, stack) {
-          debugPrint('Sorry!: $err');
-          return Center(child: Text(loc.translate('errorLoadingProfile')));
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _SpProfileHeader extends StatelessWidget {
-  const _SpProfileHeader({this.profile});
-  final ProviderProfileData? profile;
+  const _SpProfileHeader({required this.profile});
+  final ProviderProfileData profile;
 
   @override
   Widget build(BuildContext context) {
@@ -122,10 +187,10 @@ class _SpProfileHeader extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 28.h),
           child: Column(
             children: [
-              _AvatarWithBadge(theme: theme, imageUrl: profile?.imageUrl),
+              _AvatarWithBadge(theme: theme, imageUrl: profile.imageUrl),
               SizedBox(height: 12.h),
               Text(
-                profile?.name ?? loc.translate('loading'),
+                profile.name ?? loc.translate('loading'),
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.text,
@@ -133,7 +198,7 @@ class _SpProfileHeader extends StatelessWidget {
               ),
               SizedBox(height: 4.h),
               Text(
-                profile?.location ?? '',
+                profile.location ?? '',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.lightText,
                 ),
@@ -145,8 +210,9 @@ class _SpProfileHeader extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
                       child: LinearProgressIndicator(
-                        value: (profile?.stats?.progressPercentage ?? 0)
-                            .toDouble(),
+                        value: (profile.stats?.progressPercentage ?? 0)
+                            .toDouble()
+                            .clamp(0.0, 1.0),
                         minHeight: 8.h,
                         backgroundColor: AppColors.progressTrack,
                         color: AppColors.primaryLight,
@@ -155,7 +221,7 @@ class _SpProfileHeader extends StatelessWidget {
                   ),
                   SizedBox(width: 12.w),
                   Text(
-                    '${((profile?.stats?.progressPercentage ?? 0) * 100).toInt()}%',
+                    '${((profile.stats?.progressPercentage ?? 0) * 100).toInt()}%',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryLight,
@@ -246,124 +312,7 @@ class _AvatarWithBadge extends StatelessWidget {
   }
 }
 
-class _SpStatsRow extends StatelessWidget {
-  const _SpStatsRow({this.stats});
-  final dynamic stats;
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 130.h,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ProfileStatCard(
-            iconPath: 'assets/icon/star.svg',
-            label: 'Reviews',
-            value: (stats?.reviewsCount ?? 0).toString(),
-          ),
-          ProfileStatCard(
-            iconPath: 'assets/icon/activity.svg',
-            label: 'Activities',
-            value: (stats?.activitiesCount ?? 0).toString(),
-          ),
-          ProfileStatCard(
-            iconPath: 'assets/icon/invited_family.svg',
-            label: 'Invited Family',
-            value: (stats?.invitedFamilyCount ?? 0).toString(),
-          ),
-          ProfileStatCard(
-            iconPath: 'assets/icon/wrapped-gift.svg',
-            label: 'Gifts Shared',
-            value: (stats?.giftsSharedCount ?? 0).toString(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ContributeSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: AppColors.progressTrack.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: [
-          Text(
-            loc.translate('contributeAndGrow'),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: AppColors.text,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Row(
-            children: [
-              _ContributeButton(
-                label: loc.translate('addEventButton'),
-                onTap: () => context.push(RouterPath.spCreateEventScreen),
-              ),
-              SizedBox(width: 8.w),
-              _ContributeButton(
-                label: loc.translate('addActivityButton'),
-                onTap: () => context.push(RouterPath.spCreateActivityScreen),
-              ),
-              SizedBox(width: 8.w),
-              _ContributeButton(
-                label: loc.translate('leaveReview'),
-                onTap: () => context.push(RouterPath.familyWriteReviewScreen),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ContributeButton extends StatelessWidget {
-  const _ContributeButton({required this.label, required this.onTap});
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10.h),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              color: AppColors.primaryLight.withValues(alpha: 0.4),
-            ),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w500,
-                color: AppColors.primaryLight,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _GeneralSettingsSection extends StatelessWidget {
   const _GeneralSettingsSection({required this.settings});

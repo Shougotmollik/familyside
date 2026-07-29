@@ -14,8 +14,27 @@ import 'package:familyside/view/family/profile/widgets/profile_svg_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class FamilyProfileScreen extends ConsumerWidget {
+class FamilyProfileScreen extends ConsumerStatefulWidget {
   const FamilyProfileScreen({super.key});
+
+  @override
+  ConsumerState<FamilyProfileScreen> createState() =>
+      _FamilyProfileScreenState();
+}
+
+class _FamilyProfileScreenState extends ConsumerState<FamilyProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Auto-retry on first load: if the provider has stale/null data,
+    // refresh it after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final current = ref.read(familyProfileProvider);
+      if (current is AsyncData && current.value == null) {
+        ref.invalidate(familyProfileProvider);
+      }
+    });
+  }
 
   static const List<_ProfileSettingItem> _settings = [
     _ProfileSettingItem(
@@ -51,53 +70,105 @@ class FamilyProfileScreen extends ConsumerWidget {
   ];
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(familyProfileProvider);
 
     return Scaffold(
       backgroundColor: AppColors.profileHeaderBackground,
       body: profileAsync.when(
-        data: (profile) => RefreshIndicator(
-          onRefresh: () => ref.refresh(familyProfileProvider.future),
-          child: Column(
-            children: [
-              _ProfileHeader(profile: profile),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceLight,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(24.r),
-                    ),
-                  ),
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _ProfileStatsRow(metrics: profile?.metrics),
-                        SizedBox(height: 24.h),
-                        _GeneralSettingsSection(settings: _settings),
-                        SizedBox(height: 16.h),
-                        _LanguageSection(),
-                        SizedBox(height: 16.h),
-                        const _LogoutSection(),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        data: (profile) {
+          // If profile data came back null, show retry state
+          if (profile == null) {
+            return _buildNullState(context);
+          }
+          return _buildProfileContent(context, profile);
+        },
         error: (err, stack) {
           debugPrint('Error: $err');
           final loc = AppLocalizations.of(context);
-          return Center(child: Text(loc.translate('errorLoadingProfile')));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(loc.translate('errorLoadingProfile')),
+                SizedBox(height: 16.h),
+                ElevatedButton(
+                  onPressed: () =>
+                      ref.refresh(familyProfileProvider.future),
+                  child: Text(loc.translate('retry')),
+                ),
+              ],
+            ),
+          );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget _buildNullState(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.person_outline,
+            size: 64.sp,
+            color: AppColors.mutedIcon,
+          ),
+          SizedBox(height: 16.h),
+          Text(
+            loc.translate('errorLoadingProfile'),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppColors.lightText,
+                ),
+          ),
+          SizedBox(height: 16.h),
+          ElevatedButton.icon(
+            onPressed: () => ref.refresh(familyProfileProvider.future),
+            icon: const Icon(Icons.refresh, size: 18),
+            label: Text(loc.translate('retry')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileContent(BuildContext context, FamilyProfileData profile) {
+    return RefreshIndicator(
+      onRefresh: () => ref.refresh(familyProfileProvider.future),
+      child: Column(
+        children: [
+          _ProfileHeader(profile: profile),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceLight,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(24.r),
+                ),
+              ),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 24.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _ProfileStatsRow(metrics: profile.metrics),
+                    SizedBox(height: 24.h),
+                    _GeneralSettingsSection(settings: _settings),
+                    SizedBox(height: 16.h),
+                    _LanguageSection(),
+                    SizedBox(height: 16.h),
+                    const _LogoutSection(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -156,47 +227,6 @@ class _ProfileAvatarWithBadge extends StatelessWidget {
                     ),
                   ),
           ),
-          // if (contributorLevel.isNotEmpty)
-          //   Positioned(
-          //     bottom: 0,
-          //     left: 0,
-          //     right: 0,
-          //     child: Center(
-          //       child: Container(
-          //         padding: EdgeInsets.symmetric(
-          //           horizontal: 12.w,
-          //           vertical: 6.h,
-          //         ),
-          //         decoration: BoxDecoration(
-          //           color: AppColors.primaryLight,
-          //           borderRadius: BorderRadius.circular(20.r),
-          //           border: Border.all(
-          //             color: AppColors.profileHeaderBackground,
-          //             width: 2,
-          //           ),
-          //         ),
-          //         child: Row(
-          //           mainAxisSize: MainAxisSize.min,
-          //           children: [
-          //             ProfileSvgIcon(
-          //               iconPath: "assets/icon/coin.svg",
-          //               width: 16.w,
-          //               height: 16.h,
-          //             ),
-          //             SizedBox(width: 6.w),
-          //             Text(
-          //               contributorLevel,
-          //               style: theme.textTheme.bodyMedium?.copyWith(
-          //                 fontSize: 12.sp,
-          //                 fontWeight: FontWeight.w600,
-          //                 color: AppColors.onPrimaryLight,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
         ],
       ),
     );
@@ -204,14 +234,14 @@ class _ProfileAvatarWithBadge extends StatelessWidget {
 }
 
 class _ProfileHeader extends StatelessWidget {
-  final FamilyProfileData? profile;
+  final FamilyProfileData profile;
 
-  const _ProfileHeader({this.profile});
+  const _ProfileHeader({required this.profile});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final metrics = profile?.metrics;
+    final metrics = profile.metrics;
 
     return Container(
       width: double.infinity,
@@ -224,12 +254,12 @@ class _ProfileHeader extends StatelessWidget {
             children: [
               _ProfileAvatarWithBadge(
                 theme: theme,
-                imageUrl: profile?.profileImageUrl,
-                contributorLevel: metrics?.contributorLevel ?? '',
+                imageUrl: profile.profileImageUrl,
+                contributorLevel: metrics.contributorLevel,
               ),
               SizedBox(height: 12.h),
               Text(
-                profile?.fullName ?? '',
+                profile.fullName,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.text,
@@ -237,7 +267,7 @@ class _ProfileHeader extends StatelessWidget {
               ),
               SizedBox(height: 4.h),
               Text(
-                profile?.locationName ?? '',
+                profile.locationName,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.lightText,
                 ),
@@ -249,7 +279,7 @@ class _ProfileHeader extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(4.r),
                       child: LinearProgressIndicator(
-                        value: (metrics?.progressPct ?? 0).clamp(0.0, 1.0),
+                        value: (metrics.progressPct).clamp(0.0, 1.0),
                         minHeight: 8.h,
                         backgroundColor: AppColors.progressTrack,
                         color: AppColors.primaryLight,
@@ -258,7 +288,7 @@ class _ProfileHeader extends StatelessWidget {
                   ),
                   SizedBox(width: 12.w),
                   Text(
-                    '${((metrics?.progressPct ?? 0) * 100).toInt()}%',
+                    '${(metrics.progressPct * 100).toInt()}%',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.primaryLight,
@@ -275,9 +305,9 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _ProfileStatsRow extends StatelessWidget {
-  final FamilyProfileMetrics? metrics;
+  final FamilyProfileMetrics metrics;
 
-  const _ProfileStatsRow({this.metrics});
+  const _ProfileStatsRow({required this.metrics});
 
   @override
   Widget build(BuildContext context) {
@@ -290,24 +320,24 @@ class _ProfileStatsRow extends StatelessWidget {
           ProfileStatCard(
             iconPath: "assets/icon/star.svg",
             label: loc.translate('reviews'),
-            value: (metrics?.reviewsCount ?? 0).toString(),
+            value: metrics.reviewsCount.toString(),
             onTap: () =>
                 GoRouter.of(context).push(RouterPath.familyMyReviewsScreen),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/activity.svg",
             label: loc.translate('activities'),
-            value: (metrics?.activitiesCount ?? 0).toString(),
+            value: metrics.activitiesCount.toString(),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/invited_family.svg",
             label: loc.translate('invitedFamily'),
-            value: (metrics?.invitedFamilyCount ?? 0).toString(),
+            value: metrics.invitedFamilyCount.toString(),
           ),
           ProfileStatCard(
             iconPath: "assets/icon/wrapped-gift.svg",
             label: loc.translate('giftsShared'),
-            value: (metrics?.giftsSharedCount ?? 0).toString(),
+            value: metrics.giftsSharedCount.toString(),
           ),
         ],
       ),

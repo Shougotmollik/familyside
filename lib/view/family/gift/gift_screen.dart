@@ -22,7 +22,6 @@ import 'package:familyside/view/widgets/search_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class GiftScreen extends ConsumerStatefulWidget {
@@ -354,22 +353,15 @@ class _GiftScreenState extends ConsumerState<GiftScreen> {
               SizedBox(height: 4.h),
               Row(
                 children: [
-                  Text(
-                    header?.location ?? loc.translate('locationNotSet'),
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.lightText,
-                    ),
-                  ),
-                  SizedBox(width: 4.w),
-                  SvgPicture.asset(
-                    'assets/logo/edit.svg',
-                    height: 14.w,
-                    width: 14.w,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.primaryLight,
-                      BlendMode.srcIn,
+                  Flexible(
+                    child: Text(
+                      header?.location ?? loc.translate('locationNotSet'),
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.lightText,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

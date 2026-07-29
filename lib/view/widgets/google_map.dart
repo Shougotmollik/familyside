@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:familyside/core/localization/app_localizations.dart';
 import 'package:familyside/core/theme/app_colors.dart';
+
 import 'package:familyside/utils/image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -71,6 +72,22 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       _initialPosition = CameraPosition(
         target: widget.initialPosition!,
         zoom: 14.4746,
+      );
+
+      // Always add a marker when an initial position is provided
+      markers.add(
+        Marker(
+          markerId: const MarkerId('initial_position'),
+          position: widget.initialPosition!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            HSVColor.fromColor(AppColors.primaryLight).hue,
+          ),
+          infoWindow: InfoWindow(
+            title: 'Location',
+            snippet:
+                '${widget.initialPosition!.latitude}, ${widget.initialPosition!.longitude}',
+          ),
+        ),
       );
 
       if (widget.canSelectLocation) {

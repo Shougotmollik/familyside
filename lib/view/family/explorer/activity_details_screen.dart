@@ -427,7 +427,7 @@ class _ActivityDetailsScreenState
     if (details.whatsapp != null && details.whatsapp!.isNotEmpty) {
       actions.add(_ActionItem('assets/icon/whatsapp.svg', 'WhatsApp'));
     }
-    actions.add(_ActionItem('assets/icon/call.svg', 'Call'));
+    // actions.add(_ActionItem('assets/icon/call.svg', 'Call'));
     actions.add(_ActionItem('assets/icon/mage_direction.svg', 'Direction'));
 
     if (actions.isEmpty) return const SizedBox.shrink();
